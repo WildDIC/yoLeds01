@@ -4,6 +4,8 @@
 uint8_t baza = 0;     // изменение оттенка LED
 uint8_t color = 0;
 
+
+/* Бегущая радужная вэйв */
 void animWave01(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
 	int pos = beatsin16(13, 0, NUM_LEDS - 1);
@@ -12,6 +14,7 @@ void animWave01(){
 	delay(yo.currentSpeed);
 }
 
+/* Костерок №01 */
 void animWave02(){    
 	leds[random8(NUM_LEDS)] = CHSV( random8(7, 24), yo.currentSaturn, random( 200, 255)); 
 	leds[random8(NUM_LEDS)].nscale8( random8(100));
@@ -22,6 +25,7 @@ void animWave02(){
 	delay(yo.currentSpeed / 2);
 }
 
+/* Моргающий градиент радуги = хуета */
 void animWave03(){
 	// for (int i = 0; i < NUM_LEDS; i++) {
     //   	leds[i].nscale8(250);
@@ -33,6 +37,7 @@ void animWave03(){
 	delay(yo.currentSpeed);
 }
 
+/* 8 волн с разной скоротью и наложением цвета */
 void animWave04(){
 	fadeToBlackBy(leds, NUM_LEDS, 2);
     for (int i = 0; i < 8; i++) {
@@ -42,6 +47,7 @@ void animWave04(){
     delay(yo.currentSpeed);
 }
 
+/* Ползущая радуга с проблесками беленьких диодов */
 void animWave05(){
     fill_rainbow( leds, NUM_LEDS, baza++, 7);
     if (random8() < 40) { leds[ random16(NUM_LEDS) ] = CRGB::White; }
@@ -52,6 +58,7 @@ void animWave05(){
     delay(yo.currentSpeed + 10);
 }
 
+/* Вжух-вжух радуга из цента типа странной цветомузыки */
 void animWave06(){
 	uint8_t rand = random8( 1, TOP_INDEX);
     for (int i = 0; i < rand; i++ ) {
@@ -84,6 +91,7 @@ void animWave06(){
 #define MINUS 10
 bool gReverseDirection = false;
 
+/* Fire 2012 */
 void animWave07(){
   static byte heat[NUM_LEDS];
   // Step 1.  Cool down every cell a little
@@ -114,6 +122,7 @@ void animWave07(){
 	FastLED.delay(yo.currentSpeed / 5);
 }
 
+/* Костерок №02 */
 void animWave08() {
 	uint8_t foundNEW = 0;
 
@@ -147,6 +156,7 @@ void animWave08() {
 	delay(yo.currentSpeed);
 }
 
+/* 4 симметричные волны навстречу с наложением цвета */
 void animWave09() {
  	if ( ++baza > NUM_LEDS) { baza = 0; }
     fadeToBlackBy(leds, NUM_LEDS, 10);

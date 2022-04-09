@@ -1,11 +1,14 @@
 #include <FastLED.h>
 #include "header.h"
 
-CRGB leds[NUM_LEDS];
-CHSV yoPalette[NUM_COLORS];
-uint8_t LEDS_HUE[NUM_LEDS];
-uint8_t LEDS_FEDOR[NUM_LEDS];
+CRGB leds[NUM_LEDS];            // Массив ленты
+CHSV yoPalette[NUM_COLORS];     // Кастомная палитра градиента двух цветов
+uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
+uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
+
+/* Включаем / выключаем питание (!!!) ленты, 
+тормозим анимацию и переходим ждущий режим (delay)  */
 void powerONOFF(){
 	if ( yo.ONOFF) {
 		yo.ONOFF = false;
@@ -19,6 +22,7 @@ void powerONOFF(){
 	Serial.printf( "State: %d\n", yo.ONOFF);  
 }
 
+/* Сброс ленты в черное и обнуление LEDS_массивов диодов */
 void ledOFF(){ 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
@@ -26,6 +30,7 @@ void ledOFF(){
 	}
 	FastLED.show(); }
 
+/* Включаем беленькую */
 void ledUPWhite(){
   	yo.ONOFF = false;
   	for( int i = 0; i < NUM_LEDS; ++i) {
@@ -34,12 +39,14 @@ void ledUPWhite(){
   	powerONOFF();
 }
 
+/* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
 	// fill_gradient_RGB( leds, NUM_LEDS, CRGB::Red, CRGB::Green); 	
 	for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPalette[pos]); }
 	FastLED.show();
 }
 
+/* Моргаем кратенько черненьким, при достижении края параметров */
 void ledBlink(){
 	FastLED.setMaxPowerInMilliWatts(0);
 	FastLED.show();
@@ -48,6 +55,9 @@ void ledBlink(){
 	FastLED.show();
 }
 
+/* Меняем общуу срость анимации (0-...)
+* @param delta +/- yo.currentSpeed.
+*/
 void changeSpeed( int delta){
 	yo.currentSpeed += delta;
 	if ( yo.currentSpeed > 100){ 
@@ -60,6 +70,9 @@ void changeSpeed( int delta){
 	Serial.printf( "Speed: %d\n", yo.currentSpeed);
 }
 
+/* Меняем общуу температуру цвета ленты (0-255)
+* @param delta +/- yo.currentTemp.
+*/
 void changeTemperature( int delta){
 	yo.currentTemp += delta;
 	if ( yo.currentTemp > TEMP_IND_MAX){ 
@@ -76,6 +89,9 @@ void changeTemperature( int delta){
 	Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
 }
 
+/* Меняем общуу яркость ленты (0-255)
+* @param delta +/- yo.currentBrightness.
+*/
 void changeBrightness( int delta){  
   	yo.currentBrightness = FastLED.getBrightness() + delta;
   	if ( yo.currentBrightness > 255){
@@ -90,6 +106,9 @@ void changeBrightness( int delta){
   	FastLED.show();
 }
 
+/* Меняем общуу сатурацию ленты (0-255)
+* @param delta +/- yo.currentSaturn.
+*/
 void changeSaturation( int delta){
 	yo.currentSaturn += delta;	
 	if ( yo.currentSaturn > 255){ 

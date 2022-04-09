@@ -5,7 +5,7 @@
 
 IRrecv irrecv(RECV_PIN);
 decode_results results;
-void (*pt2Func)();
+void (*pt2Func)(); 				// Указатель на функцию для CASE
 clock_t startTime = clock();
 
 extern config yo;
@@ -27,6 +27,7 @@ void setup() {
 	Serial.begin(115200);
 	irrecv.enableIRIn();
 }
+
 
 void loop() {
 	if (irrecv.decode(&results)) {

@@ -1,5 +1,3 @@
-// #include <FastLED.h>
-
 #define DEBUG_ENABLE true
 
 #ifdef DEBUG_ENABLE
@@ -10,24 +8,24 @@
 #define yoBugF(x, y)
 #endif
 
-#define DATA_PIN 13
-#define RECV_PIN 14 // for ESP32 micrcontroller
-#define NUM_LEDS 120
-#define NUM_TEMPS 51
-#define TOP_INDEX (NUM_LEDS / 2)
-#define NUM_COLORS  20
-#define TEMP_IND_MAX 40
+#define DATA_PIN 13                     // Выходной Пин ленты
+#define RECV_PIN 14                     // for ESP32 micrcontroller
+#define NUM_LEDS 120                    // Количество диодов в ленте
+#define NUM_TEMPS 51                    // Количество цветов в таблице температур
+#define TOP_INDEX (NUM_LEDS / 2)        // Половина длины ленты
+#define NUM_COLORS  20                  // Количество цветов в кастомной палитре
+#define TEMP_IND_MAX 40                 // Максимальный используемый индекс в таблице цветов
 
 struct config{
-	int currentBrightness = 255;
-	int currentTemp = TEMP_IND_MAX;
-	int currentSpeed = 10;
-	int currentSaturn = 255;
-	uint8_t antiSaturn = 0;
-	bool ONOFF = true;
-	bool animationON = false;
-	int lastReceive = 0;
-} yo;
+	int currentBrightness = 255;        // Уровень яркости ( 0-255)
+	int currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
+	int currentSpeed = 10;              // Скорость анимации ( задержка)
+	int currentSaturn = 255;            // Сатурация цвета ( 0-255)
+	uint8_t antiSaturn = 0;             // Обратная величина сатурации ( 255-0)
+	bool ONOFF = true;                  // Включено или выключено питание ленты
+	bool animationON = false;           // Включена или выключена анимация
+	int lastReceive = 0;                // ПОследнее значение с ИР приемника
+} yo;                                   // Конфиг с параметрами
 
 int temperList[NUM_TEMPS] = {0xFF3300,0xFF3800,0xFF4500,0xFF4700,0xFF5200,0xFF5300,0xFF5D00,0xFF5D00,0xFF6600,0xFF6500,0xFF6F00,0xFF6D00,0xFF7600,0xFF7300,0xFF7C00,0xFF7900,
 	0xFF8200,0xFF7E00,0xFF8700,0xFF8300,0xFF8D0B,0xFF8912,0xFF921D,0xFF8E21,0xFF9829,0xFF932C,0xFF9D33,0xFF9836,0xFFA23C,0xFF9D3F,0xFFA645,0xFFA148,0xFFAA4D,0xFFA54F,
