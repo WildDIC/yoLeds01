@@ -1,6 +1,9 @@
 #include "IRrecv.h"
 #include <FastLED.h>
+#include "main.h"
+#include "leds.h"
 #include "waves.h"
+#include "wifi_server.h"
 // #include <EEPROM.h>
 
 IRrecv irrecv(RECV_PIN);
@@ -16,20 +19,23 @@ extern CHSV yoPalette[NUM_COLORS];
 // 					SETUP / LOOP
 //*********************************************************************
 void setup() {
+	Serial.begin(115200);
 	// EEPROM.begin(EEPROM_SIZE);	
+	wifiConnect();
+
 	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );  // GRB ordering is typical
 	
 	fill_gradient( yoPalette, 0, 
 		CHSV( 0, 255, 255), NUM_COLORS, 
 		CHSV( 32, 255, 255)
 	);
-
-	Serial.begin(115200);
+	
 	irrecv.enableIRIn();
 }
 
 
 void loop() {
+
 	if (irrecv.decode(&results)) {
 		uint32_t resValue = results.value;   // получаем значение ИР-приеника
 		
@@ -54,7 +60,7 @@ void loop() {
 			case 551502015:  changeSaturation( 10); 	break;
 			case 551534655:  changeSaturation(-10); 	break;
 			case 551489775:  powerONOFF(); 				break; 					 // вкл/выкл
-			case 1270278422: changeBrightness(255); changeSpeed( -90); changeTemperature( TEMP_IND_MAX); changeSaturation( 255); break;
+			case 1270278422: ledReset(); break;
 			
 			case 1262547214: yo.animationON = false; pt2Func = NULL; ledUP(); 		break;
 			case 1262530894: yo.animationON = false; pt2Func = NULL; ledUPWhite();	break;
@@ -78,4 +84,10 @@ void loop() {
 	} else {
 		delay(300);
 	}  	
+
+	// server.handleClient();	
+	// WiFiClient client = server.available();
+  	// if (client) { 
+	// 	wifiClient( client);
+	// }
 }

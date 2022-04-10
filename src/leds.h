@@ -1,5 +1,3 @@
-#include <FastLED.h>
-#include "header.h"
 
 CRGB leds[NUM_LEDS];            // Массив ленты
 CHSV yoPalette[NUM_COLORS];     // Кастомная палитра градиента двух цветов
@@ -120,4 +118,12 @@ void changeSaturation( int delta){
 	}
 	yo.antiSaturn = 255 - yo.currentSaturn;
 	Serial.printf( "Saturation: %d ( anti: %d)\n", yo.currentSaturn, yo.antiSaturn);
+}
+
+/* Сброс параметров ленты в дефолтное состояние */
+void ledReset(){
+	changeBrightness(255); 
+	changeSpeed( -90); 
+	changeTemperature( TEMP_IND_MAX); 
+	changeSaturation( 255);
 }

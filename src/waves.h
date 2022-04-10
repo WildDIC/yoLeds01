@@ -1,5 +1,3 @@
-#include <FastLED.h>
-#include "leds.h"
 
 uint8_t baza = 0;     // изменение оттенка LED
 uint8_t color = 0;
