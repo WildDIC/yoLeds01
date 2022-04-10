@@ -21,7 +21,7 @@ struct config{
 	int currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
 	int currentSpeed = 10;              // Скорость анимации ( задержка)
 	int currentSaturn = 255;            // Сатурация цвета ( 0-255)
-	uint8_t antiSaturn = 0;             // Обратная величина сатурации ( 255-0)
+	int antiSaturn = 0;             // Обратная величина сатурации ( 255-0)
 	bool ONOFF = true;                  // Включено или выключено питание ленты
 	bool animationON = false;           // Включена или выключена анимация
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника

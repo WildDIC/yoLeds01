@@ -1,7 +1,6 @@
-#include <WiFi.h>
 // #include <WebServer.h>
 #include "ESPAsyncWebServer.h"
-#include "pass.h"
+
 
 AsyncWebServer server(80);
 // Set number of relays
@@ -81,23 +80,11 @@ String processor(const String& var){
 	return String();
 }
 
-/* Поднимаем ВайФай и подключаемся к домашней сети.
-WIFI_SSID и WIFI_PASS прописываем в файле pass.h:
-
-const char* WIFI_SSID = "";
-const char* WIFI_PASS = "";
+/*
+Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer
 */
-void wifiConnect(){
-    Serial.printf( "\nConnect to: %s\n", WIFI_SSID);
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
-    while (WiFi.status() != WL_CONNECTED) {
-      	delay(500);
-      	Serial.print(".");
-    }
-    Serial.print("\nWiFi connected.\nIP address: ");
-      	Serial.println( WiFi.localIP());
-
-      	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+void webServerStart(){
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     	request->send_P(200, "text/html", index_html, processor);
         }
     );

@@ -3,7 +3,8 @@
 #include "main.h"
 #include "leds.h"
 #include "waves.h"
-#include "wifi_server.h"
+#include "wi-fi.h"
+#include "webServer.h"
 // #include <EEPROM.h>
 
 IRrecv irrecv(RECV_PIN);
@@ -22,6 +23,7 @@ void setup() {
 	Serial.begin(115200);
 	// EEPROM.begin(EEPROM_SIZE);	
 	wifiConnect();
+	webServerStart();
 
 	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );  // GRB ordering is typical
 	
@@ -35,7 +37,6 @@ void setup() {
 
 
 void loop() {
-
 	if (irrecv.decode(&results)) {
 		uint32_t resValue = results.value;   // получаем значение ИР-приеника
 		
