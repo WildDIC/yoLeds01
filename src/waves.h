@@ -1,4 +1,3 @@
-
 uint8_t baza = 0;     // изменение оттенка LED
 uint8_t color = 0;
 
@@ -47,13 +46,15 @@ void animWave04(){
 
 /* Ползущая радуга с проблесками беленьких диодов */
 void animWave05(){
-    fill_rainbow( leds, NUM_LEDS, baza++, 7);
-    if (random8() < 40) { leds[ random16(NUM_LEDS) ] = CRGB::White; }
-	for ( int i = 0; i < NUM_LEDS; i++){
-		leds[i].addToRGB(yo.antiSaturn);    //+= CRGB( antiSaturn, antiSaturn, antiSaturn);
+	fill_rainbow( leds, NUM_LEDS, baza++, 7);
+	if (random8() < 40) { 
+		leds[ random16(NUM_LEDS) ] = CRGB::White; 
 	}
-    FastLED.show();
-    delay(yo.currentSpeed + 10);
+	for ( int i = 0; i < NUM_LEDS; i++){ 
+		leds[i].addToRGB(yo.antiSaturn);	
+	}
+  	FastLED.show();
+  	delay(yo.currentSpeed + 10);
 }
 
 /* Вжух-вжух радуга из цента типа странной цветомузыки */

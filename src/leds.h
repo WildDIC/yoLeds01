@@ -8,49 +8,73 @@ uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Ярко
 /* Включаем / выключаем питание (!!!) ленты, 
 тормозим анимацию и переходим ждущий режим (delay)  */
 void powerONOFF(){
-	if ( yo.ONOFF) {
-		yo.ONOFF = false;
+	if ( yo.ONOFF == true) {
 		FastLED.setMaxPowerInMilliWatts(0);
-		FastLED.show();
-	} else {
-		yo.ONOFF = true;
+	} else {	
 		FastLED.setMaxPowerInMilliWatts(50000);
-		FastLED.show();
 	}
+	yo.ONOFF = !yo.ONOFF;
 	Serial.printf( "State: %d\n", yo.ONOFF);  
+	FastLED.show();
 }
 
 /* Сброс ленты в черное и обнуление LEDS_массивов диодов */
-void ledOFF(){ 
+void ledOFF( int resValue){ 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
-	FastLED.show(); }
+	yo.lastPressed = resValue;
+	FastLED.show();
+}
 
 /* Включаем беленькую */
-void ledUPWhite(){
-  	yo.ONOFF = false;
-  	for( int i = 0; i < NUM_LEDS; ++i) {
-      	leds[i] = CRGB( 255,255,255); 
-    }
-  	powerONOFF();
+void ledUPWhite(){	
+  	if ( yo.ONOFF == true) {
+	  	for( int i = 0; i < NUM_LEDS; ++i) {
+      		leds[i] = CRGB::White; 
+    	}	
+		FastLED.show();
+	}
 }
 
 /* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
-	// fill_gradient_RGB( leds, NUM_LEDS, CRGB::Red, CRGB::Green); 	
-	for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPalette[pos]); }
-	FastLED.show();
+	if ( yo.ONOFF == true) {
+		fill_solid( leds, NUM_LEDS, CRGB::Black); 
+		for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPalette[pos]); }	
+		FastLED.show();
+	}
 }
 
 /* Моргаем кратенько черненьким, при достижении края параметров */
 void ledBlink(){
 	FastLED.setMaxPowerInMilliWatts(0);
 	FastLED.show();
-	delay(2);
+	delay(3);
 	FastLED.setMaxPowerInMilliWatts(50000);
 	FastLED.show();
+}
+
+void setSpeed( int value){ yo.currentSpeed = value; }
+
+void setSaturation( int value){ 
+	yo.currentSaturn  = value; 
+	yo.antiSaturn = 255 - yo.currentSaturn;
+}
+
+void setTemperature( int value){ 
+	yo.currentTemp = value; 
+	FastLED.setTemperature( temperList[yo.currentTemp] );
+	FastLED.show();
+	Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
+}
+
+
+void setBrightness( int value){ 
+	yo.currentBrightness = value; 
+	FastLED.setBrightness( yo.currentBrightness);
+  	FastLED.show();
 }
 
 /* Меняем общуу срость анимации (0-...)
