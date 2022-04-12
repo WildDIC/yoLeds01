@@ -1,5 +1,6 @@
 #define DEBUG_ENABLE 
 #define WEB_ENABLE 
+#define EERPROM_ENABLE 
 
 #ifdef DEBUG_ENABLE
 #define yoBug(x) Serial.println(x)

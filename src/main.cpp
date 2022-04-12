@@ -1,10 +1,13 @@
 #include "IRrecv.h"
-#include <EEPROM.h>
 #include <FastLED.h>
 
 #include "main.h"
 #include "leds.h"
 #include "waves.h"
+
+#ifdef EERPROM_ENABLE 
+#include "eerpromer.h"
+#endif
 
 #ifdef WEB_ENABLE
 #include "wi-fi.h"
@@ -12,10 +15,8 @@
 #else
 #endif
 
+
 #define IR_DELAY 200
-#define EEPROM_SIZE 100
-#define INIT_ADDR 61  // номер резервной ячейки
-#define INIT_KEY 50     // ключ первого запуска. 0-254, на выбор
 
 IRrecv irrecv(RECV_PIN);
 decode_results results;
@@ -24,11 +25,6 @@ clock_t startTime = clock();
 extern config yo;
 extern CHSV yoPalette[NUM_COLORS];
 
-
-void saveEEPROM(){
-	EEPROM.put( 0, yo);
-	EEPROM.commit();
-}
 
 void irServer( int codeFromWeb, int webValue){
 	uint32_t resValue = 10;
@@ -80,7 +76,10 @@ void irServer( int codeFromWeb, int webValue){
 			case 1262500804: yo.animationON = true;  pt2Func = &animWave08; ledOFF( resValue); break;
 			case 1262533444: yo.animationON = true;  pt2Func = &animWave09; ledOFF( resValue); break;
 		}	
-		saveEEPROM();	
+
+		#ifdef EERPROM_ENABLE
+			saveEEPROM();	
+		#endif
 	}   
 }
 
@@ -90,23 +89,9 @@ void irServer( int codeFromWeb, int webValue){
 //*********************************************************************
 void setup() {
 	Serial.begin(115200);
-	
-	EEPROM.begin(EEPROM_SIZE);	
-	if (EEPROM.read(INIT_ADDR) != INIT_KEY) { // первый запуск
-		Serial.println( "First run. EEPROM initialization...");
-    	EEPROM.write(INIT_ADDR, INIT_KEY);    // записали ключ		
-    	saveEEPROM();
-  	}
-	EEPROM.get(0, yo);
-
-	// Serial.println( yo.lastPressed);
-	// Serial.println( yo.currentSpeed);
-	// Serial.println( yo.currentBrightness);
-
+		
 	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );  // GRB ordering is typical
-	fill_solid( leds, NUM_LEDS, CRGB::Black); 
-	
-	setBrightness( yo.currentBrightness);
+	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	FastLED.show();
 
 	fill_gradient( yoPalette, 0, 
@@ -115,7 +100,12 @@ void setup() {
 	);
 	
 	irrecv.enableIRIn();
-	irServer( yo.lastPressed, 10);
+
+	#ifdef EERPROM_ENABLE
+		onLoadInit();
+		setBrightness( yo.currentBrightness);
+		irServer( yo.lastPressed, 10);
+	#endif
 
 	#ifdef WEB_ENABLE
 		wifiConnect();
