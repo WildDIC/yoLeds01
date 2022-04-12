@@ -33,91 +33,96 @@ void collectData(){
 	rList[3] = { 1066677703, 0, 30, "Speed"};
 }
 
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html>
+const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
   	<style>
     	html {font-family: Arial; display: inline-block; text-align: center;}
     	h2 {font-size: 3.0rem;}
-    	p {font-size: 3.0rem;}
+		div { align-self: center;}
     	body {max-width: 600px; margin:0px auto; background: #21252B; color: #E1E1E1; display: flex; flex-direction: column; align-items: flex-start; 
 			font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}
     	
-		button { width: 350px; background: #181E28; appearance: none; border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 16px;}
+		button { width: 350px; background: #181E28; appearance: none; border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em;}
 		button.active {background: #2196F3}
 		button:hover {   background: #474747}
-		button:active {  background-color: #2196F3;}
-		
+		button:active {  background-color: #2196F3;}		
 		button.power {background: #FF0E90}
-		button.power.active{background: #3CB371}
-
-        div { align-self: center;}
+		button.power.active{background: #3CB371} 
 		
 		.textLabel { text-align: center; font-weight: bold; font-size: 1.2em; margin: 10px auto; text-shadow: black 1px 1px 1px;}
 		
-		input[type="range"] { display: block; -webkit-appearance: none; background-color: #bdc3c7; width: 300px; height: 5px; border-radius: 5px; margin: 10px auto; margin-bottom: 20px; outline: 0;}
+		input[type="range"] { display: block; -webkit-appearance: none; background-color: #bdc3c7; width: 350px; height: 5px; border-radius: 5px; margin: 10px auto; margin-bottom: 20px; outline: 0;}
 		input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background-color: #181E28; width: 20px; height: 20px; border: 2px solid white; cursor: pointer; transition: .3s ease-in-out; border-radius: 10px;}​
   		input[type="range"]::-webkit-slider-thumb:hover { background-color: white; border: 2px solid #e74c3c; }
   		input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.3); }
   	</style>
 </head>
 <body>
-    <div>
-        <h2>noisex led server</h2>        
-    </div>  
-	
+    <div><h2>noisex led server</h2></div>  	
 	<div class="upser">upser</div>
 
 	%RANGEPLACEHOLDER%
     %BUTTONPLACEHOLDER%
        
-<script>
-    const wave = document.querySelectorAll('.wave');
-    function buttonClick(element) {
-		if ( element.classList.contains("power") == true) {
-			element.classList.toggle("active");   
-		};
-		
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "/update?funcID="+element.id, true); 
-		xhr.send();
-		updateDate();
-	}
-    function rInput( element) {
-		var value = element.value;
-		var classValue = '.' + element.className + '-value';
-		var target = document.querySelector( classValue);
-		target.innerHTML = value;
+	<script>
+		const wave = document.querySelectorAll('.wave');
+		function buttonClick(element) {
+			if ( element.classList.contains("power") == true) {
+				element.classList.toggle("active");   
+			};
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/update?funcID="+element.id, true); 
+			xhr.send();
+			updateDate();
+		}
+		function rInput( element) {
+			var value = element.value;
+			var classValue = '.' + element.className + '-value';
+			var target = document.querySelector( classValue);
+			target.innerHTML = value;
 
-		var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/update?funcID="+element.id+"&value="+value, true); 
-        xhr.send();
-	}  
-	function reseter( xhr){
-		wave.forEach((element) => element.classList.remove('active'));
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/update?funcID="+element.id+"&value="+value, true); 
+			xhr.send();
+		}  
+		function reseter( xhr){
+			wave.forEach((element) => element.classList.remove('active'));
+			var json = JSON.parse(xhr.responseText);
+			
+			document.querySelector( ".upser").innerHTML = json.vPressed;
+			document.getElementById( json.vPressed).classList.add('active');
 
-		var value = xhr.responseText;				
-		var target = document.getElementById( value);				
-		target.classList.add('active');
+			document.getElementById( 1066677700).value = json.vBrightness;
+			document.getElementById( 1066677701).value = json.vSaturn;
+			document.getElementById( 1066677702).value = json.vTemp;
+			document.getElementById( 1066677703).value = json.vSpeed;
 
-		var targetHTML = document.querySelector( ".upser");
-		targetHTML.innerHTML = value;
-	}
-	function updateDate(){
-		var xhr = new XMLHttpRequest();            
-		xhr.onreadystatechange = function() {
-			if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-				reseter( xhr);    
+			document.querySelector( ".Brightness-value").innerHTML = json.vBrightness;
+			document.querySelector( ".Saturations-value").innerHTML = json.vSaturn;
+			document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
+			document.querySelector( ".Speed-value").innerHTML = json.vSpeed;
+
+			var onoff = document.getElementById( 551489775)
+			if ( json.vONOFF == 1){
+				onoff.classList.add('active');
+			}else{
+				onoff.classList.remove('active');
 			}
-		};
-		xhr.open("GET", "/reset", true); 
-		xhr.send();
-	}
-
-	(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();
-
-</script>
+		}
+		function updateDate(){
+			var xhr = new XMLHttpRequest();            
+			xhr.onreadystatechange = function() {
+				if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+					reseter( xhr);    
+				}
+			};
+			xhr.open("GET", "/reset", true); 
+			xhr.send();
+		}
+		(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();
+	</script>
 </body>
 </html>
 )rawliteral";
@@ -150,7 +155,7 @@ String processor(const String& var){
 		buttons += "\n";
 		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[0].code) +"' class='power"+ active +"'>"+ bList[0].name +"</button></div>\n";
 
-		for ( int i = 1; i < NUM_BUTTONS-1; i++ ){
+		for ( int i = 1; i < NUM_BUTTONS; i++ ){
 			active = "";			
 			if ( yo.lastPressed == bList[i].code){
 				active = " active";
@@ -189,16 +194,31 @@ void webServerStart(){
 	});
 
 	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		Serial.println( "Send update to client...");
-		request->send(200, "text/plain", String( yo.lastPressed));
+		// Serial.println( "Send update to client...");
+		String out = "{";
+		out += "\"vBrightness\": "	+ String(yo.currentBrightness)	+", ";
+		out += "\"vSaturn\": "		+ String(yo.currentSaturn)		+", ";
+		out += "\"vTemp\": "		+ String(yo.currentTemp)		+", ";
+		out += "\"vSpeed\": "		+ String(yo.currentSpeed)		+", ";
+		out += "\"vPressed\": "		+ String(yo.lastPressed)		+", ";
+		out += "\"vONOFF\": "		+ String(yo.ONOFF)				+" ";
+		out += "}";
+		request->send(200, "application/json", out);
 	});
 
 	server.begin();
 }
 
-
 /*
 
+
+
+		String out = "{";
+		out += "\"0\": {\"id\": 1066677700, \"val\": "+ String(yo.currentBrightness)+"},";
+		out += "\"1\": {\"id\": 1066677701, \"val\": "+ String(yo.currentSaturn)+"},";
+		out += "\"2\": {\"id\": 1066677702, \"val\": "+ String(yo.currentTemp)+"},";
+		out += "\"3\": {\"id\": 1066677703, \"val\": "+ String(yo.currentSpeed)+"},";
+		out += "}";
 server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
   request->send(200, "application/json", "{\"message\":\"Welcome\"}");
 });

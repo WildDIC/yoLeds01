@@ -1,5 +1,5 @@
 uint8_t baza = 0;     // изменение оттенка LED
-uint8_t color = 0;
+int color = 0;
 
 
 /* Бегущая радужная вэйв */
@@ -158,19 +158,18 @@ void animWave08() {
 /* 4 симметричные волны навстречу с наложением цвета */
 void animWave09() {
  	if ( ++baza > NUM_LEDS) { baza = 0; }
-    fadeToBlackBy(leds, NUM_LEDS, 10);
-	// color++;
+    fadeToBlackBy(leds, NUM_LEDS, 6);
 
     for ( int ind = 0; ind < 3; ind++){
-		color = random8();		
         int pos = (baza + ind * NUM_LEDS / 3) % NUM_LEDS;
 
-        leds[pos] |= CHSV( color+=16, yo.currentSaturn, 255);
-        leds[NUM_LEDS - pos] |= CHSV( color+=16, yo.currentSaturn, 255);
+        leds[pos] 			 |= CHSV( color+=16, yo.currentSaturn, 200);
+        leds[NUM_LEDS - pos] |= CHSV( color+=16, yo.currentSaturn, 200);		
     }
+	leds[beatsin8( 13, 0, NUM_LEDS - 1)] += CHSV(baza*2, yo.currentSaturn, 255);
      
     FastLED.show();        
-  	delay( yo.currentSpeed*5);
+  	delay( yo.currentSpeed * 2);
 }
     // fadeToBlackBy(leds, NUM_LEDS, 8);
     // int pos01 = beatsin16(10, 0, NUM_LEDS - 1, 0, 0);
