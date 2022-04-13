@@ -1,3 +1,4 @@
+#define MAX_POWER 50000
 
 CRGB leds[NUM_LEDS];            // Массив ленты
 CHSV yoPalette[NUM_COLORS];     // Кастомная палитра градиента двух цветов
@@ -5,55 +6,70 @@ uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
 
+
+/* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
+void ledsStartUP(){
+	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
+	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
+	// ledFadeOUT();
+	FastLED.show();
+
+	fill_gradient( yoPalette, 0, 
+		CHSV( 0, 255, 255), NUM_COLORS, 
+		CHSV( 32, 255, 255)
+	);		
+}
+
+void powerON(){  FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	FastLED.show(); }
+void powerOFF(){ FastLED.setMaxPowerInMilliWatts(0); 			FastLED.show(); }
+
 /* Включаем / выключаем питание (!!!) ленты, 
 тормозим анимацию и переходим ждущий режим (delay)  */
 void powerONOFF(){
-	if ( yo.ONOFF == true) {
-		FastLED.setMaxPowerInMilliWatts(0);
-	} else {	
-		FastLED.setMaxPowerInMilliWatts(50000);
-	}
+	if ( yo.ONOFF == true){ powerOFF(); } 
+	else {					powerON(); 	}
+
 	yo.ONOFF = !yo.ONOFF;
-	Serial.printf( "State: %d\n", yo.ONOFF);  
-	FastLED.show();
+	Serial.printf( "State: %d\n", yo.ONOFF);  	
 }
 
 /* Сброс ленты в черное и обнуление LEDS_массивов диодов */
 void ledOFF( int resValue){ 
-	fill_solid( leds, NUM_LEDS, CRGB::Black); 
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
 	yo.lastPressed = resValue;
-	FastLED.show();
+	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
+	// FastLED.show();
 }
 
 /* Включаем беленькую */
 void ledUPWhite(){	
-  	if ( yo.ONOFF == true) {
-	  	for( int i = 0; i < NUM_LEDS; ++i) {
-      		leds[i] = CRGB::White; 
-    	}	
+  	if ( yo.ONOFF == true){
+	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
 		FastLED.show();
 	}
 }
 
 /* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
-	if ( yo.ONOFF == true) {
-		fill_solid( leds, NUM_LEDS, CRGB::Black); 
+	if ( yo.ONOFF == true){
 		for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPalette[pos]); }	
 		FastLED.show();
 	}
 }
 
 /* Моргаем кратенько черненьким, при достижении края параметров */
-void ledBlink(){
-	FastLED.setMaxPowerInMilliWatts(0);
-	FastLED.show();
-	delay(3);
-	FastLED.setMaxPowerInMilliWatts(50000);
-	FastLED.show();
+void ledBlink(){ powerOFF(); delay(3); powerON(); }
+
+/* Затухаем лентой вниз до нулевого состояния 10-го диода */
+void ledFadeOUT(){
+	for( int i = 0; i < 20; i++){
+		fadeToBlackBy(leds, NUM_LEDS, 2);
+		FastLED.show();
+		Serial.printf( "FadeOUT: (%d.%d.%d)", leds[10].r,  leds[10].g, leds[10].b );
+		delay(10);
+	}
 }
 
 void setSpeed( int value){ yo.currentSpeed = value; }
@@ -151,3 +167,4 @@ void ledReset(){
 	changeTemperature( TEMP_IND_MAX); 
 	changeSaturation( 255);
 }
+

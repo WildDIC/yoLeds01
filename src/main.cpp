@@ -1,7 +1,6 @@
-#include "IRrecv.h"
 #include <FastLED.h>
-
 #include "main.h"
+#include "irda.h"
 #include "leds.h"
 #include "waves.h"
 
@@ -15,96 +14,54 @@
 #else
 #endif
 
-
 #define IR_DELAY 200
-
-IRrecv irrecv(RECV_PIN);
-decode_results results;
 clock_t startTime = clock();
-
-extern config yo;
-extern CHSV yoPalette[NUM_COLORS];
-
-
-void irServer( int codeFromWeb, int webValue){
-	uint32_t resValue = 10;
-
-	if (irrecv.decode(&results)) {
-		resValue = results.value;   // получаем значение ИР-приеника
-		
-		if ( resValue == 4294967295){
-			resValue = yo.lastReceive;
-		} else{
-			yo.lastReceive = resValue;			
-		}
-		irrecv.resume();  // Receive the next value		
-		Serial.printf( "IR receive: %d\n", resValue);
-	}
-	
-	if ( codeFromWeb != 10){
-		resValue = codeFromWeb;
-	}
-	// Serial.printf( "Code from web: %d = (%d) - [%d]\n", codeFromWeb, webValue, resValue);
-	if ( resValue !=10){		
-		switch (resValue){
-			case 1270235582: changeBrightness( 15); 	break;
-			case 1270268222: changeBrightness(-15); 	break;
-			case 1270219007: changeTemperature(  1); 	break;
-			case 1270251647: changeTemperature( -1); 	break;
-			case 1270235327: changeSpeed(-2); 			break;
-			case 1270267967: changeSpeed( 2); 			break;
-			case 551502015:  changeSaturation( 10); 	break;
-			case 551534655:  changeSaturation(-10); 	break;
-			case 551489775:  powerONOFF(); 				break; 					 // вкл/выкл
-			case 1270278422: ledReset(); 				break;
-			
-			case 1066677700:  setBrightness( webValue); 	break;
-			case 1066677701:  setSaturation( webValue); 	break;
-			case 1066677702:  setTemperature( webValue); 	break;
-			case 1066677703:  setSpeed( webValue); 			break;
-
-			case 1262547214: yo.animationON = false; pt2Func = NULL; yo.lastPressed = resValue; ledUP();		break;
-			case 1262530894: yo.animationON = false; pt2Func = NULL; yo.lastPressed = resValue; ledUPWhite();	break;
-			
-			case 1262529364: yo.animationON = true;  pt2Func = &animWave01; ledOFF( resValue); break;
-			case 1262513044: yo.animationON = true;  pt2Func = &animWave02; ledOFF( resValue); break;
-			case 1262545684: yo.animationON = true;  pt2Func = &animWave03; ledOFF( resValue); break;
-			case 1262492644: yo.animationON = true;  pt2Func = &animWave04; ledOFF( resValue); break;
-			case 1262525284: yo.animationON = true;  pt2Func = &animWave05; ledOFF( resValue); break;
-			case 1262508964: yo.animationON = true;  pt2Func = &animWave06; ledOFF( resValue); break;
-			case 1262541604: yo.animationON = true;  pt2Func = &animWave07; ledOFF( resValue); break;
-			case 1262500804: yo.animationON = true;  pt2Func = &animWave08; ledOFF( resValue); break;
-			case 1262533444: yo.animationON = true;  pt2Func = &animWave09; ledOFF( resValue); break;
-		}	
-
-		#ifdef EERPROM_ENABLE
-			saveEEPROM();	
-		#endif
-	}   
-}
+// extern config yo;
 
 
 //********************************************************************
-// 					SETUP / LOOP
+// 						SETUP
 //*********************************************************************
 void setup() {
 	Serial.begin(115200);
-		
-	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );  // GRB ordering is typical
-	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
-	FastLED.show();
-
-	fill_gradient( yoPalette, 0, 
-		CHSV( 0, 255, 255), NUM_COLORS, 
-		CHSV( 32, 255, 255)
-	);
 	
-	irrecv.enableIRIn();
+	irdaStartup();
+	ledsStartUP();
+
+	/* struct irdaItems{     code;	  name; 		typeWeb	indForWeb; leadOFF; pt2change; 	pt2Funca 		pt2static		pt2prewave 		pt2setter		min		max*/
+	mButtons[551489775] =   { 0, "Power ON/OFF",		1, 		1, 		false, 	false,		NULL, 			&powerONOFF, 	NULL, 			NULL};
+	mButtons[1262530894] =  { 0, "White Color", 		1, 		2,  	true, 	true, 		NULL, 			&ledUPWhite, 	NULL, 			NULL};
+	mButtons[1262547214] =  { 0, "Pallette test", 		1, 		3,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL};
+	mButtons[1262513044] =  { 0, "Костерок 01", 		1, 		4,  	true, 	true, 		&animWave02, 	NULL, 			NULL, 			NULL};
+	mButtons[1262500804] =  { 0, "Костерок 02", 		1, 		5,  	true, 	true, 		&animWave08, 	NULL, 			NULL, 			NULL};
+	mButtons[1262541604] =  { 0, "Fire 2012", 			1, 		6,  	true, 	true, 		&animWave07, 	NULL, 			NULL, 			NULL};
+	mButtons[1262492644] =  { 0, "8 waves", 			1, 		7,  	true, 	true, 		&animWave04, 	NULL, 			NULL, 			NULL};
+	mButtons[1262533444] =  { 0, "8 waves сново", 		1, 		8,   	true, 	true, 		&animWave09, 	NULL, 			animWave09pre, 	NULL};
+	mButtons[1262529364] =  { 0, "Rainbow Wave", 		1, 		9,   	true, 	true, 		&animWave01, 	NULL, 			NULL, 			NULL};
+	mButtons[1262525284] =  { 0, "Ползучая rainbow", 	1, 		10,  	true, 	true, 		&animWave05, 	NULL, 			NULL, 			NULL};
+	mButtons[1262508964] =  { 0, "Musix echo", 			1, 		11,  	true, 	true, 		&animWave06, 	NULL, 			NULL, 			NULL};
+	mButtons[1262545684] =  { 0, "Flasher", 			1, 		12,  	true, 	true, 		&animWave03, 	NULL, 			NULL, 			NULL};
+
+	mButtons[1066677700] =  { 0, "Brightness",	 		2, 		1,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&setBrightness,		5,		255};
+	mButtons[1066677701] =  { 0, "Saturations", 		2, 		2,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSaturation, 	0,		255};
+	mButtons[1066677702] =  { 0, "Temperature", 		2, 		3,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setTemperature,	0,		TEMP_IND_MAX};
+	mButtons[1066677703] =  { 0, "Speed", 				2, 		4,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			0,		40};
+
+	mButtons[1270278422] =  { 0, "Leds reset",			0, 		0, 		false, 	false,		NULL, 			&ledReset, 		NULL, 			NULL};
+
+	mButtons[1270235582] =  { 0, "Brightness +", 		0, 		0,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeBrightness,	15};
+	mButtons[1270268222] =  { 0, "Brightness -", 		0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeBrightness, -15};
+	mButtons[1270219007] =  { 0, "Temperature +", 		0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeTemperature,	1};
+	mButtons[1270251647] =  { 0, "Temperature -",		0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeTemperature, -1};
+	mButtons[1270267967] =  { 0, "Speed +",				0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeSpeed, 		2};
+	mButtons[1270235327] =  { 0, "Speed -",				0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeSpeed, 		-2};
+	mButtons[551502015]  =  { 0, "Saturation +",		0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeSaturation, 	10};
+	mButtons[551534655]  =  { 0, "Saturation -",		0, 		0,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&changeSaturation, -10};
+
+	std::map<int, irdaItems>::iterator mButtonIter = mButtons.begin();	
 
 	#ifdef EERPROM_ENABLE
-		onLoadInit();
-		setBrightness( yo.currentBrightness);
-		irServer( yo.lastPressed, 10);
+		onLoadInit();		
 	#endif
 
 	#ifdef WEB_ENABLE
@@ -113,13 +70,16 @@ void setup() {
 	#endif	
 }
 
+//********************************************************************
+// 						LOOP
+//*********************************************************************
 void loop() {
 	if ( clock() - startTime > IR_DELAY){
 		startTime = clock();
-		irServer( 10, 10);
+		irdaServer( 10, 10);
 	}			
 
-	if ( yo.animationON && yo.ONOFF && pt2Func){
+	if ( yo.ONOFF && pt2Func){
 		pt2Func();
 		delay(1);
 	} else {

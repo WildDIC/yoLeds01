@@ -1,36 +1,33 @@
 // #include <WebServer.h>
 #include "ESPAsyncWebServer.h"
 
-
 AsyncWebServer server(80);
 
-#define NUM_RANGES  4
-#define NUM_BUTTONS 12
+byte NUM_RANGES = 1;
+byte NUM_BUTTONS = 1;
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
+extern void irServer( int codeFromWeb, int webValue);
 
-button bList[NUM_BUTTONS];
-range rList[NUM_RANGES];
+button bList[20];
+range rList[10];
 
-void collectData(){
-	bList[0] =  { 551489775, "Power ON/OFF"};
-	bList[1] =  { 1262530894, "White Color"};
-	bList[2] =  { 1262547214, "Pallette test"};
-	bList[3] =  { 1262529364, "Wave 01"};
-	bList[4] =  { 1262513044, "Костерок 01"};
-	bList[5] =  { 1262545684, "Flasher"};
-	bList[6] =  { 1262492644, "8 waves"};
-	bList[7] =  { 1262525284, "Crepping rainbow"};
-	bList[8] =  { 1262508964, "Musix echo"};
-	bList[9] =  { 1262541604, "Fire 2012"};
-	bList[10] = { 1262500804, "Костерок 02"};
-	bList[11] = { 1262533444, "Wave shit"};
-
-	rList[0] = { 1066677700, 5, 255, "Brightness"};
-	rList[1] = { 1066677701, 0, 255, "Saturations"};
-	rList[2] = { 1066677702, 0, TEMP_IND_MAX, "Temperature"};
-	rList[3] = { 1066677703, 0, 30, "Speed"};
+void collectData(){	
+	mButtonIter = mButtons.begin();
+	for (int i = 0; mButtonIter != mButtons.end(); mButtonIter++, i++) {
+		mButtonIter->second.code = mButtonIter->first;
+		if ( mButtonIter->second.indForWeb){
+			if ( mButtonIter->second.typeWeb == 1){
+				NUM_BUTTONS++;
+				bList[mButtonIter->second.indForWeb] = { mButtonIter->second.code, mButtonIter->second.name };		
+			}
+			else if ( mButtonIter->second.typeWeb == 2){
+				NUM_RANGES++;
+				rList[mButtonIter->second.indForWeb] = { mButtonIter->second.code, mButtonIter->second.min, mButtonIter->second.max, mButtonIter->second.name};
+			}			
+		} 
+    }	
 }
 
 const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
@@ -61,10 +58,7 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 <body>
     <div><h2>noisex led server</h2></div>  	
 	<div class="upser">upser</div>
-
 	%RANGEPLACEHOLDER%
-    %BUTTONPLACEHOLDER%
-       
 	<script>
 		const wave = document.querySelectorAll('.wave');
 		function buttonClick(element) {
@@ -142,7 +136,7 @@ String processor(const String& var){
 	//Serial.println(var);
 	if(var == "RANGEPLACEHOLDER"){
 		String buttons ="\n";		
-		for(int i = 0; i < NUM_RANGES; i++){
+		for(int i = 1; i < NUM_RANGES; i++){
 			int rValue = rState(i);
 			buttons += "<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
 			buttons += "<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
@@ -153,9 +147,9 @@ String processor(const String& var){
 			active = " active";
 		}
 		buttons += "\n";
-		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[0].code) +"' class='power"+ active +"'>"+ bList[0].name +"</button></div>\n";
+		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
 
-		for ( int i = 1; i < NUM_BUTTONS; i++ ){
+		for ( int i = 2; i < NUM_BUTTONS; i++ ){
 			active = "";			
 			if ( yo.lastPressed == bList[i].code){
 				active = " active";
@@ -166,8 +160,6 @@ String processor(const String& var){
 	}
 	return String();
 }
-
-extern void irServer( int codeFromWeb, int webValue);
 
 /*
 Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer
@@ -188,7 +180,7 @@ void webServerStart(){
 			if (request->hasParam(PARAM_INPUT_2)) {
 				inputMessage02 = request->getParam(PARAM_INPUT_2)->value();
 			}
-			irServer( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
+			irdaServer( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
 		}
 		request->send(200, "text/plain", "OK");
 	});

@@ -5,7 +5,7 @@ int color = 0;
 /* Бегущая радужная вэйв */
 void animWave01(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
-	int pos = beatsin16(13, 0, NUM_LEDS - 1);
+	int pos = beatsin8(13, 0, NUM_LEDS - 1);
 	leds[pos] += CHSV(baza++, yo.currentSaturn, 255);
 	FastLED.show();
 	delay(yo.currentSpeed);
@@ -13,7 +13,7 @@ void animWave01(){
 
 /* Костерок №01 */
 void animWave02(){    
-	leds[random8(NUM_LEDS)] = CHSV( random8(7, 24), yo.currentSaturn, random( 200, 255)); 
+	leds[random8(NUM_LEDS)] = CHSV( random8(7, 24), yo.currentSaturn, random8( 200, 255)); 
 	leds[random8(NUM_LEDS)].nscale8( random8(100));
 	if ( random8() < 35){
 		fadeToBlackBy(leds, NUM_LEDS, random8( 20));	
@@ -38,7 +38,7 @@ void animWave03(){
 void animWave04(){
 	fadeToBlackBy(leds, NUM_LEDS, 2);
     for (int i = 0; i < 8; i++) {
-      	leds[beatsin16(i + 7, 0, NUM_LEDS - 1)] |= CHSV(baza+=16, yo.currentSaturn-50, 255);
+      	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= CHSV(baza+=16, yo.currentSaturn-50, 255);
     }
 	FastLED.show();
     delay(yo.currentSpeed);
@@ -48,7 +48,7 @@ void animWave04(){
 void animWave05(){
 	fill_rainbow( leds, NUM_LEDS, baza++, 7);
 	if (random8() < 40) { 
-		leds[ random16(NUM_LEDS) ] = CRGB::White; 
+		leds[ random8(NUM_LEDS) ] = CRGB::White; 
 	}
 	for ( int i = 0; i < NUM_LEDS; i++){ 
 		leds[i].addToRGB(yo.antiSaturn);	
@@ -126,7 +126,6 @@ void animWave08() {
 	uint8_t foundNEW = 0;
 
     for (int pos = 0; pos < NUM_LEDS; pos++){	
-
         if ( LEDS_HUE[pos] > 1){
 			LEDS_HUE[pos] -= 1;
             leds[pos] = CHSV( yoPalette[LEDS_HUE[pos]].h, yo.currentSaturn, random8(220, 255));
@@ -135,12 +134,10 @@ void animWave08() {
             }
 			delay( 1);
         }
-
         if ( LEDS_FEDOR[pos] >= 10){
 			leds[pos] = CHSV( yoPalette[LEDS_HUE[pos]].h, yo.currentSaturn, LEDS_FEDOR[pos] /= 1.1); 
         } 
-    }	
-        
+    }	        
     for ( int pos01 = 0; pos01 < 10; pos01++){
         int pos = random8( NUM_LEDS);
         if ( LEDS_HUE[pos] <= 1 && LEDS_FEDOR[pos] <= 10) {
@@ -155,22 +152,38 @@ void animWave08() {
 	delay(yo.currentSpeed);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//											WAVE09
+//////////////////////////////////////////////////////////////////////////////////////////
+
+void animWave09pre(){
+	#define NUM_SEGMENTS 3
+	#define SPEED_WAVE 13
+	#define SAT_DIVINE 3
+
+	for ( int ind = 0; ind < NUM_SEGMENTS; ind++){
+		LEDS_HUE[ind] = random8();
+	}
+}
 /* 4 симметричные волны навстречу с наложением цвета */
 void animWave09() {
  	if ( ++baza > NUM_LEDS) { baza = 0; }
     fadeToBlackBy(leds, NUM_LEDS, 6);
 
-    for ( int ind = 0; ind < 3; ind++){
-        int pos = (baza + ind * NUM_LEDS / 3) % NUM_LEDS;
+    for ( int ind = 0; ind < NUM_SEGMENTS; ind++){
+        int pos = (baza + ind * NUM_LEDS / NUM_SEGMENTS) % NUM_LEDS;
 
-        leds[pos] 			 |= CHSV( color+=16, yo.currentSaturn, 200);
-        leds[NUM_LEDS - pos] |= CHSV( color+=16, yo.currentSaturn, 200);		
+        leds[pos] 			 |= CHSV( LEDS_HUE[ind]++, yo.currentSaturn / SAT_DIVINE, 200);
+        leds[NUM_LEDS - pos] |= CHSV( LEDS_HUE[ind]++, yo.currentSaturn / SAT_DIVINE, 200);		
     }
-	leds[beatsin8( 13, 0, NUM_LEDS - 1)] += CHSV(baza*2, yo.currentSaturn, 255);
+	leds[beatsin8( SPEED_WAVE, 0, NUM_LEDS - 1)] |= CHSV( baza << 1, yo.currentSaturn, 255);
      
     FastLED.show();        
   	delay( yo.currentSpeed * 2);
 }
+
+
     // fadeToBlackBy(leds, NUM_LEDS, 8);
     // int pos01 = beatsin16(10, 0, NUM_LEDS - 1, 0, 0);
     // int pos02 = NUM_LEDS-pos01-1;
