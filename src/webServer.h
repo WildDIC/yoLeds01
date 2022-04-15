@@ -8,25 +8,28 @@ byte NUM_BUTTONS = 1;
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
-extern void irServer( int codeFromWeb, int webValue);
+// extern void irdaServer( int codeFromWeb, int mbIter);
 
 button bList[20];
 range rList[10];
 
 void collectData(){	
-	mButtonIter = mButtons.begin();
-	for (int i = 0; mButtonIter != mButtons.end(); mButtonIter++, i++) {
-		mButtonIter->second.code = mButtonIter->first;
-		if ( mButtonIter->second.indForWeb){
-			if ( mButtonIter->second.typeWeb == 1){
+	mbIter = mButtons.begin();
+	for (int i = 0; mbIter != mButtons.end(); mbIter++, i++) {		
+		mbIter->second.code = mbIter->first;
+		if ( mbIter->second.indForWeb){
+			if ( mbIter->second.typeWeb == 1){
 				NUM_BUTTONS++;
-				bList[mButtonIter->second.indForWeb] = { mButtonIter->second.code, mButtonIter->second.name };		
+				bList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.name };		
 			}
-			else if ( mButtonIter->second.typeWeb == 2){
+			else if ( mbIter->second.typeWeb == 2){
 				NUM_RANGES++;
-				rList[mButtonIter->second.indForWeb] = { mButtonIter->second.code, mButtonIter->second.min, mButtonIter->second.max, mButtonIter->second.name};
+				rList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.min, mbIter->second.max, mbIter->second.name};
 			}			
 		} 
+		// if ( mbIter->second.pollitra > 0){
+			// yo.savePollitre[i] = { mbIter->first, mbIter->second.pollitra};
+		// }
     }	
 }
 
@@ -47,6 +50,10 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 		button.power {background: #FF0E90}
 		button.power.active{background: #3CB371} 
 		
+		select { width: 350px; background: #181E28;  border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em; font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}    
+        option.opt-active  { color: #3CB371;, font-weight: 600;}
+        option.default { background: #21252B;  font-weight: 600;}
+
 		.textLabel { text-align: center; font-weight: bold; font-size: 1.2em; margin: 10px auto; text-shadow: black 1px 1px 1px;}
 		
 		input[type="range"] { display: block; -webkit-appearance: none; background-color: #bdc3c7; width: 350px; height: 5px; border-radius: 5px; margin: 10px auto; margin-bottom: 20px; outline: 0;}
@@ -58,10 +65,11 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 <body>
     <div><h2>noisex led server</h2></div>  	
 	<div class="upser">upser</div>
+
 	%RANGEPLACEHOLDER%
 	<script>
 		const wave = document.querySelectorAll('.wave');
-		function buttonClick(element) {
+		function buttonClick( element) {
 			if ( element.classList.contains("power") == true) {
 				element.classList.toggle("active");   
 			};
@@ -71,6 +79,7 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 			xhr.send();
 			updateDate();
 		}
+
 		function rInput( element) {
 			var value = element.value;
 			var classValue = '.' + element.className + '-value';
@@ -81,30 +90,37 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 			xhr.open("GET", "/update?funcID="+element.id+"&value="+value, true); 
 			xhr.send();
 		}  
-		function reseter( xhr){
-			wave.forEach((element) => element.classList.remove('active'));
+
+		function reseter( xhr){			
 			var json = JSON.parse(xhr.responseText);
-			
-			document.querySelector( ".upser").innerHTML = json.vPressed;
-			document.getElementById( json.vPressed).classList.add('active');
+			var def = document.querySelector( ".default");
+			if ( def){ def.classList.remove( 'default'); }		
 
-			document.getElementById( 1066677700).value = json.vBrightness;
-			document.getElementById( 1066677701).value = json.vSaturn;
-			document.getElementById( 1066677702).value = json.vTemp;
-			document.getElementById( 1066677703).value = json.vSpeed;
+			def = document.querySelector( ".opt-active");
+			if ( def){ def.classList.remove( 'opt-active'); }			
 
-			document.querySelector( ".Brightness-value").innerHTML = json.vBrightness;
+			document.getElementById( 1066677700).value 				= json.vBrightness;
+			document.getElementById( 1066677701).value 				= json.vSaturn;
+			document.getElementById( 1066677702).value 				= json.vTemp;
+			document.getElementById( 1066677703).value 				= json.vSpeed;
+			document.querySelector( ".upser").innerHTML 			= json.vPressed;
+			document.querySelector( ".Brightness-value").innerHTML 	= json.vBrightness;
 			document.querySelector( ".Saturations-value").innerHTML = json.vSaturn;
 			document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
-			document.querySelector( ".Speed-value").innerHTML = json.vSpeed;
+			document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;
+			document.getElementById( "pollitre-select").value 		= json.vPollCurrent;
 
-			var onoff = document.getElementById( 551489775)
-			if ( json.vONOFF == 1){
-				onoff.classList.add('active');
-			}else{
-				onoff.classList.remove('active');
-			}
+			wave.forEach((element) => element.classList.remove('active'));
+			document.getElementById( json.vPressed).classList.add('active');	
+
+			document.getElementById( json.vPollDefault).classList.add( 'default');  
+			document.getElementById( json.vPollCurrent).classList.add( 'opt-active');
+
+			var onoff = document.getElementById( 551489775);
+			if ( json.vONOFF == 1){ onoff.classList.add('active');}
+			else{ 					onoff.classList.remove('active'); }
 		}
+
 		function updateDate(){
 			var xhr = new XMLHttpRequest();            
 			xhr.onreadystatechange = function() {
@@ -115,11 +131,25 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 			xhr.open("GET", "/reset", true); 
 			xhr.send();
 		}
+
+		function changeOption(){     			
+			wave.forEach((element) => {
+				if ( element.classList.contains("active") == true) {
+					var value = document.getElementById( "pollitre-select").selectedOptions[0].value;
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
+					xhr.send();	  
+				};
+			});
+		} 
+		document.getElementById( "pollitre-select").addEventListener("change", changeOption);
+
 		(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();
 	</script>
 </body>
 </html>
 )rawliteral";
+
 
 int rState(int numValue){
 	switch (numValue){		
@@ -143,17 +173,23 @@ String processor(const String& var){
 		}
 		
 		String active = "";			
-		if ( yo.ONOFF == true){
-			active = " active";
+		buttons += "\n<div class='select'>\n\t<select name='pollitres' id='pollitre-select'>\n";
+		for (size_t i = 0; i < NUM_POLLITR; i++){
+			if ( myPal[i].name.length() > 0){				
+				if ( i == mButtons[yo.lastPressed].min){ active = "selected = 'selected'";} 
+				else{	active = ""; }
+				buttons += "\t\t<option value='"+ String( i) +"' class='option"+ String( i) +"' id='"+ String( i) +"' "+ active +">"+ myPal[i].name +"</option>\n";
+			}
 		}
+		buttons += "</select></div>\n";
+
+		active = "";			
+		if ( yo.ONOFF == true){ active = " active"; }
 		buttons += "\n";
 		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
 
-		for ( int i = 2; i < NUM_BUTTONS; i++ ){
-			active = "";			
-			if ( yo.lastPressed == bList[i].code){
-				active = " active";
-			}
+		for ( int i = 2; i < NUM_BUTTONS; i++ ){ active = "";			
+			if ( yo.lastPressed == bList[i].code){ active = " active"; }
 			buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
 		}
 		return buttons;
@@ -164,7 +200,7 @@ String processor(const String& var){
 /*
 Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer
 */
-void webServerStart(){
+void webServerStartUP(){
 	collectData();
 
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -185,73 +221,28 @@ void webServerStart(){
 		request->send(200, "text/plain", "OK");
 	});
 
+	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) {
+		if (request->hasParam(PARAM_INPUT_1)) {			
+			String inputMessage01 = request->getParam(PARAM_INPUT_1)->value();				
+			ledSetPollitre( atoi( inputMessage01.c_str()));
+		}
+		request->send(200, "text/plain", "OK");
+	});
+
 	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {
 		// Serial.println( "Send update to client...");
 		String out = "{";
-		out += "\"vBrightness\": "	+ String(yo.currentBrightness)	+", ";
-		out += "\"vSaturn\": "		+ String(yo.currentSaturn)		+", ";
-		out += "\"vTemp\": "		+ String(yo.currentTemp)		+", ";
-		out += "\"vSpeed\": "		+ String(yo.currentSpeed)		+", ";
-		out += "\"vPressed\": "		+ String(yo.lastPressed)		+", ";
-		out += "\"vONOFF\": "		+ String(yo.ONOFF)				+" ";
-		out += "}";
+		out += "\"vBrightness\": "	+ String(yo.currentBrightness)					+", ";
+		out += "\"vSaturn\": "		+ String(yo.currentSaturn)						+", ";
+		out += "\"vTemp\": "		+ String(yo.currentTemp)						+", ";
+		out += "\"vSpeed\": "		+ String(yo.currentSpeed)						+", ";
+		out += "\"vPressed\": "		+ String(yo.lastPressed)						+", ";
+		out += "\"vONOFF\": "		+ String(yo.ONOFF)								+", ";
+		out += "\"vPollCurrent\": "	+ String(mButtons[yo.lastPressed].pollCurrent)	+", ";
+		out += "\"vPollDefault\": "	+ String(mButtons[yo.lastPressed].pollDefault)	+" ";
+		out += "}";      // 	ЗАРЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
 		request->send(200, "application/json", out);
 	});
 
 	server.begin();
 }
-
-/*
-
-
-
-		String out = "{";
-		out += "\"0\": {\"id\": 1066677700, \"val\": "+ String(yo.currentBrightness)+"},";
-		out += "\"1\": {\"id\": 1066677701, \"val\": "+ String(yo.currentSaturn)+"},";
-		out += "\"2\": {\"id\": 1066677702, \"val\": "+ String(yo.currentTemp)+"},";
-		out += "\"3\": {\"id\": 1066677703, \"val\": "+ String(yo.currentSpeed)+"},";
-		out += "}";
-server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  request->send(200, "application/json", "{\"message\":\"Welcome\"}");
-});
-
-Хранение многострочной строки JSON в переменной JS
-используя новые литералы шаблона ES6 
-
-var json = `{
-    "book": {
-        "name": "Harry Potter and the Goblet of Fire",
-        "author": "J. K. Rowling",
-        "year": 2000,
-        "characters": ["Harry Potter", "Hermione Granger", "Ron Weasley"],
-        "genre": "Fantasy Fiction",
-        "price": {
-            "paperback": "$10.40", "hardcover": "$20.32", "kindle": "$4.11"
-        }
-    }
-}`;
-
-// Преобразование объекта JSON в объект JS
-var obj = JSON.parse(json);
-
-// Рекурсивная функция для печати вложенных значений
-function printValues(obj) {
-    for(var k in obj) {
-        if(obj[k] instanceof Object) {
-            printValues(obj[k]);
-        } else {
-            document.write(obj[k] + "<br>");
-        };
-    }
-};
-
-// Печать всех значений из результирующего объекта
-printValues(obj);
-
-document.write("<hr>");
-
-// Печать одного значения
-document.write(obj["book"]["author"] + "<br>");  // Выводит: J. K. Rowling
-document.write(obj["book"]["characters"][0] + "<br>");  // Выводит: Harry Potter
-document.write(obj["book"]["price"]["hardcover"]);  // Выводит: $20.32
-*/

@@ -1,11 +1,16 @@
 #define MAX_POWER 50000
 
 CRGB leds[NUM_LEDS];            // Массив ленты
-CHSV yoPalette[NUM_COLORS];     // Кастомная палитра градиента двух цветов
+CHSV *yoPal; 			    	// Активная поллитра из массива поллитр: myPal
 uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
+struct pollitra{
+    String name;				// Имя палитры
+	CHSV pollitra[NUM_COLORS];	// Массив поллитровых собсна цветов
+};
 
+pollitra myPal[NUM_POLLITR];
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
 void ledsStartUP(){
@@ -14,10 +19,35 @@ void ledsStartUP(){
 	// ledFadeOUT();
 	FastLED.show();
 
-	fill_gradient( yoPalette, 0, 
-		CHSV( 0, 255, 255), NUM_COLORS, 
-		CHSV( 32, 255, 255)
-	);		
+	byte ind = 0; // -1? Просто, что было красиво в ++
+	myPal[++ind] = { "*solid white"};	 fill_solid(    myPal[ind].pollitra, NUM_COLORS, CHSV( 0, 0, 255));
+	myPal[++ind] = { "random 1 color"};	 
+	myPal[++ind] = { "random 2 colors"}; 
+	myPal[++ind] = { "random 3 colors"}; 
+	myPal[++ind] = { "random 4 colors"}; 
+	myPal[++ind] = { "full raindow"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 0, 255, 255), CHSV( 255, 255, 255), FORWARD_HUES );
+	myPal[++ind] = { "orange fire"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 7, 255, 255),  CHSV( 35, 255, 255), FORWARD_HUES );
+	myPal[++ind] = { "green to blue"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 75, 255, 255), CHSV( 160, 255, 255), FORWARD_HUES );
+	
+
+	// uint8_t paletteIndex = i;
+  	// if (mapping && SEGLEN > 1) paletteIndex = (i*255)/(SEGLEN -1);
+  	// if (!wrap) paletteIndex = scale8(paletteIndex, 240); //cut off blend at palette "end"
+  	// CRGB fastled_col;
+	// fastled_col = ColorFromPalette(currentPalette, paletteIndex, pbri, (paletteBlend == 3)? NOBLEND:LINEARBLEND);
+}
+
+/* Меням активную палитру и записываем ее в текующую активность ленты
+@param byte pollitraID = Номер паллитры из myPal */
+void ledSetPollitre( byte pollitraID){
+	if ( 	  myPal[pollitraID].name == "random 1 color"){ 	fill_solid(    myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)));}
+	else if ( myPal[pollitraID].name == "random 2 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
+	else if ( myPal[pollitraID].name == "random 3 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
+	else if ( myPal[pollitraID].name == "random 4 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), 	CHSV(random8(), 255, random8(128, 255)));}
+
+	yoPal = myPal[pollitraID].pollitra;
+	mButtons[yo.lastPressed].pollCurrent = pollitraID;
+	// Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mButtons[yo.lastPressed].name);
 }
 
 void powerON(){  FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	FastLED.show(); }
@@ -54,7 +84,8 @@ void ledUPWhite(){
 /* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
 	if ( yo.ONOFF == true){
-		for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPalette[pos]); }	
+		for ( int pos = 0; pos < NUM_LEDS; pos++){ leds[pos] = CHSV( yoPal[pos*255/NUM_LEDS]); }	
+		// for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPal[pos]); }	
 		FastLED.show();
 	}
 }

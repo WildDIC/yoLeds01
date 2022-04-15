@@ -5,22 +5,26 @@ decode_results results;
 
 
 extern void ledOFF( int resValue);
-extern void saveEEPROM();
-
+extern void eepromSave();
+extern void ledSetPollitre( byte pollitraID);
 
 /* Поднимаем ИР-сервер*/
-void irdaStartup(){
+void irdaStartUP(){
     irrecv.enableIRIn();
+}
+
+/* Скипаем до следующих данных с приемника*/
+void irdaNext(){
+	irrecv.resume();  // Receive the next value		
 }
 
 /* Обработка ИР приемника, через обход мапы mButtons
 и сохранение в ЕЕПроМ, если код с передатчика нашелся.
-Принимает входные параметры и вебсерра
+Принимает входные параметры с вебсерра
 @param int codeFromWeb - свой ИК-код
-@param int webValue - значение для установки параметров
-*/
-void irdaServer( int codeFromWeb, int webValue){
-    uint32_t resValue = 10;
+@param int webValue - значение для установки параметров*/
+void irdaServer( int codeFromWeb = 0, int webValue = 0){
+    uint32_t resValue = 0;
 
 	if (irrecv.decode(&results)) {
 		resValue = results.value;   // получаем значение ИР-приеника
@@ -30,34 +34,39 @@ void irdaServer( int codeFromWeb, int webValue){
 		} else{
 			yo.lastReceive = resValue;			
 		}
-		irrecv.resume();  // Receive the next value		
-		yoBugF( "IR receive: %d\n", resValue);
+		irdaNext();
+		yoBugF( "-=>> IR receive: %d\n", resValue);
 	}
 	
-	if ( codeFromWeb != 10){ resValue = codeFromWeb; }
+	if ( codeFromWeb){ resValue = codeFromWeb; }
 
 	// Serial.printf( "Code from web: %d = (%d) - [%d]\n", codeFromWeb, webValue, resValue);
-	if ( resValue > 0 && resValue !=10){		
+	if ( resValue){		
 
-		mButtonIter = mButtons.find( resValue);
-		if ( mButtonIter != mButtons.end()){
-			yoBug( mButtonIter->second.name);			
-						
-			if ( mButtonIter->second.pt2change){	pt2Func = mButtonIter->second.pt2Funca;}
-			if ( mButtonIter->second.leadOFF){		ledOFF( resValue);}
-			if ( mButtonIter->second.pt2prewave){ 	mButtonIter->second.pt2prewave();}			
-			if ( mButtonIter->second.pt2static){ 	mButtonIter->second.pt2static();}
-			if ( mButtonIter->second.pt2setter){ 	
-				if ( mButtonIter->second.typeWeb == 0){
-					mButtonIter->second.pt2setter( mButtonIter->second.min);
-				}else{
-					mButtonIter->second.pt2setter( webValue);
+		mbIter = mButtons.find( resValue);
+		if ( mbIter != mButtons.end()){
+			yoBug( "-=>> Наш выбор: ");			
+			yoBugN( mbIter->second.name);			
+
+			if ( mbIter->second.leadOFF){		ledOFF( resValue);}
+			if ( mbIter->second.pollDefault){	
+				if ( mbIter->second.pollCurrent < 1) { 
+					mbIter->second.pollCurrent = mbIter->second.pollDefault; }
+				ledSetPollitre( mbIter->second.pollCurrent);}
+			if ( mbIter->second.pt2prewave){ 	mbIter->second.pt2prewave();}			
+			if ( mbIter->second.pt2static){ 	mbIter->second.pt2static();}
+			if ( mbIter->second.pt2change){		pt2Func = mbIter->second.pt2Funca;}
+            if ( mbIter->second.pt2setter){ 	
+				if ( mbIter->second.typeWeb == 0){
+					mbIter->second.pt2setter( mbIter->second.min);
+				}else if ( webValue){
+					mbIter->second.pt2setter( webValue);
 				}
 			} 
 
 			#ifdef EERPROM_ENABLE
-				saveEEPROM();	
-				yoBug( "-=>> EEPROM Saved from irDA");
+				eepromSave();	
+				yoBugN( "-=>> EEPROM Saved from irDA");
 			#endif
 		}		
 	}   

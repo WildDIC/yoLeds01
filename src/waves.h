@@ -6,14 +6,14 @@ int color = 0;
 void animWave01(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
 	int pos = beatsin8(13, 0, NUM_LEDS - 1);
-	leds[pos] += CHSV(baza++, yo.currentSaturn, 255);
+	leds[pos] += CHSV( yoPal[baza++].h, yo.currentSaturn, 255);
 	FastLED.show();
 	delay(yo.currentSpeed);
 }
 
 /* Костерок №01 */
 void animWave02(){    
-	leds[random8(NUM_LEDS)] = CHSV( random8(7, 24), yo.currentSaturn, random8( 200, 255)); 
+	leds[random8(NUM_LEDS)] = CHSV( yoPal[random8( 255)].h, yo.currentSaturn, random8( 200, 255)); 
 	leds[random8(NUM_LEDS)].nscale8( random8(100));
 	if ( random8() < 35){
 		fadeToBlackBy(leds, NUM_LEDS, random8( 20));	
@@ -28,7 +28,7 @@ void animWave03(){
     //   	leds[i].nscale8(250);
     // }
     for (int i = 0; i < NUM_LEDS; i++) {
-    	leds[i] = CHSV(baza++, yo.currentSaturn, 255);
+    	leds[i] = CHSV( yoPal[baza++].h, yo.currentSaturn, 255);
       	FastLED.show();
     }
 	delay(yo.currentSpeed);
@@ -38,7 +38,8 @@ void animWave03(){
 void animWave04(){
 	fadeToBlackBy(leds, NUM_LEDS, 2);
     for (int i = 0; i < 8; i++) {
-      	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= CHSV(baza+=16, yo.currentSaturn-50, 255);
+      	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= CHSV(  yoPal[baza+=16].h, yo.currentSaturn-50, 255);
+      	// leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= CHSV(baza+=16, yo.currentSaturn-50, 255);
     }
 	FastLED.show();
     delay(yo.currentSpeed);
@@ -46,7 +47,10 @@ void animWave04(){
 
 /* Ползущая радуга с проблесками беленьких диодов */
 void animWave05(){
-	fill_rainbow( leds, NUM_LEDS, baza++, 7);
+	// fill_rainbow( leds, NUM_LEDS, baza++, 7);
+  	for (int i = 0; i < NUM_LEDS; i++) {
+    	leds[i] = CHSV( yoPal[baza+=7].h, yo.currentSaturn, 255);
+  	}
 	if (random8() < 40) { 
 		leds[ random8(NUM_LEDS) ] = CRGB::White; 
 	}
@@ -61,8 +65,8 @@ void animWave05(){
 void animWave06(){
 	uint8_t rand = random8( 1, TOP_INDEX);
     for (int i = 0; i < rand; i++ ) {
-		leds[TOP_INDEX + i] = CHSV( i*3, yo.currentSaturn, 255);
-		leds[TOP_INDEX - i] = CHSV( i*3, yo.currentSaturn, 255);
+		leds[TOP_INDEX + i] = CHSV( yoPal[i*3].h, yo.currentSaturn, 255);
+		leds[TOP_INDEX - i] = CHSV( yoPal[i*3].h, yo.currentSaturn, 255);
         delay( 100 / rand);
         FastLED.show();
 	}
@@ -128,20 +132,20 @@ void animWave08() {
     for (int pos = 0; pos < NUM_LEDS; pos++){	
         if ( LEDS_HUE[pos] > 1){
 			LEDS_HUE[pos] -= 1;
-            leds[pos] = CHSV( yoPalette[LEDS_HUE[pos]].h, yo.currentSaturn, random8(220, 255));
+            leds[pos] = CHSV( yoPal[LEDS_HUE[pos]*10].h, yo.currentSaturn, random8(220, 255));
             if ( LEDS_HUE[pos] <= 1){
                 LEDS_FEDOR[pos] = 255;    
             }
 			delay( 1);
         }
         if ( LEDS_FEDOR[pos] >= 10){
-			leds[pos] = CHSV( yoPalette[LEDS_HUE[pos]].h, yo.currentSaturn, LEDS_FEDOR[pos] /= 1.1); 
+		    leds[pos] = CHSV( yoPal[LEDS_HUE[pos]*10].h, yo.currentSaturn, LEDS_FEDOR[pos] /= 1.1); 
         } 
     }	        
     for ( int pos01 = 0; pos01 < 10; pos01++){
         int pos = random8( NUM_LEDS);
         if ( LEDS_HUE[pos] <= 1 && LEDS_FEDOR[pos] <= 10) {
-            LEDS_HUE[pos] = NUM_COLORS;
+            LEDS_HUE[pos] = 25;
 			if ( foundNEW += 1 > 3){
 				break;
 			}
@@ -163,7 +167,7 @@ void animWave09pre(){
 	#define SAT_DIVINE 3
 
 	for ( int ind = 0; ind < NUM_SEGMENTS; ind++){
-		LEDS_HUE[ind] = random8();
+		LEDS_HUE[ind] = random8( 255);
 	}
 }
 /* 4 симметричные волны навстречу с наложением цвета */
@@ -174,8 +178,8 @@ void animWave09() {
     for ( int ind = 0; ind < NUM_SEGMENTS; ind++){
         int pos = (baza + ind * NUM_LEDS / NUM_SEGMENTS) % NUM_LEDS;
 
-        leds[pos] 			 |= CHSV( LEDS_HUE[ind]++, yo.currentSaturn / SAT_DIVINE, 200);
-        leds[NUM_LEDS - pos] |= CHSV( LEDS_HUE[ind]++, yo.currentSaturn / SAT_DIVINE, 200);		
+        leds[pos] 			 |= CHSV( yoPal[LEDS_HUE[ind]++].h, yo.currentSaturn / SAT_DIVINE, 200);
+        leds[NUM_LEDS - pos] |= CHSV( yoPal[LEDS_HUE[ind]++].h, yo.currentSaturn / SAT_DIVINE, 200);		
     }
 	leds[beatsin8( SPEED_WAVE, 0, NUM_LEDS - 1)] |= CHSV( baza << 1, yo.currentSaturn, 255);
      
