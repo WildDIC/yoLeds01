@@ -1,7 +1,8 @@
 #include <map>
 
+#define MAX_SATURATIOIN 100
 #define WEB_ENABLE 
-#define EERPROM_ENABLE 
+// #define EERPROM_ENABLE 
 // #define DEBUG_ENABLE 
 
 #ifdef DEBUG_ENABLE
@@ -19,11 +20,11 @@
 #define NUM_LEDS 120                    // Количество диодов в ленте
 #define NUM_TEMPS 51                    // Количество цветов в таблице температур
 #define TOP_INDEX (NUM_LEDS / 2)        // Половина длины ленты
-#define NUM_COLORS  255                  // Количество цветов в кастомной палитре
-#define NUM_POLLITR  10                  // Количество кастомных поллитров
+#define NUM_COLORS  255                 // Количество цветов в кастомной палитре
+#define NUM_POLLITR  80                 // Количество кастомных поллитров
 #define TEMP_IND_MAX 40                 // Максимальный используемый индекс в таблице цветов
 
-void (*pt2Func)(); 				// Указатель на функцию для CASE
+void (*pt2Func)(); 						// Указатель на функцию для CASE
 
 struct sPol{
 	int id;
@@ -35,7 +36,7 @@ struct config{
 	int currentBrightness = 255;        // Уровень яркости ( 0-255)
 	int currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
 	int currentSpeed = 10;              // Скорость анимации ( задержка)
-	int currentSaturn = 255;            // Сатурация цвета ( 0-255)
+	int currentSaturn = MAX_SATURATIOIN;// Сатурация цвета ( 0-255)
 	int antiSaturn = 0;             	// Обратная величина сатурации ( 255-0)
 	bool ONOFF = false;                 // Включено или выключено питание ленты
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
@@ -68,14 +69,14 @@ struct irdaItems{
 	byte typeWeb;				// 0 = None, 1 = bList, 2 = rList 
 	byte indForWeb;				// IND in web list 
 	bool leadOFF;				// fill black and save LastPressed
-	bool pt2change;				// is pt2 change ( ON/OF)
+	bool isEffect;				// is pt2 change ( ON/OF)
 	void (*pt2Funca)(void);		// point to amination function
 	void (*pt2static)(void);	// point to solo function
 	void (*pt2prewave)(void);	// point to pre-wave function
 	void (*pt2setter)(int);		// point to pre-wave function
 	int min;					// min value for web-range
 	int max;					// max value for web-range
-	byte pollDefault;			// ID код кастомной по-умолчанию из myPollitra[]
+	byte pollDefault;			// ID код поллитры по-умолчанию из myPollitra[]
 	byte pollCurrent;			// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
 };								// list for: IRDA - function - WEB
 
@@ -90,41 +91,23 @@ int temperList[NUM_TEMPS] = {0xFF3300,0xFF3800,0xFF4500,0xFF4700,0xFF5200,0xFF53
 };   								// массив с номерами цветов по верхней части таблицы Кельвина
 
 
+/* Platformio.ini
+
+[env:IR Test with FastLED 01]
+platform = espressif32
+board = esp32dev
+framework = arduino
+upload_speed = 512000
+monitor_speed = 115200
+lib_deps = 
+	fastled/FastLED@^3.5.0
+	crankyoldgit/IRremoteESP8266@^2.8.2
+	ottowinter/ESPAsyncWebServer-esphome@^2.1.0
+*/
 
 
 
-// CRGB leds[NUM_LEDS];
-// CHSV yoPalette[NUM_COLORS];
-// uint8_t LEDS_HUE[NUM_LEDS];
-// uint8_t LEDS_FEDOR[NUM_LEDS];
 
-// void ShowPalette(CRGBPalette16 aPalette){
-//   for ( int i = 0; i < NUM_LEDS; i++)  {
-//     leds[i] =  aPalette[i];
-//   }
-//   FastLED.show();
-//  }
-//   CRGBPalette16 MyPalette;
-//   //My palette #2
-//   fill_gradient_RGB(MyPalette, NUM_LEDS, CRGB::Red, CRGB::Blue);
-//   ShowPalette(MyPalette);
-
-//   //My palette #3
-//   fill_rainbow(MyPalette, NUM_LEDS, HUE_RED, 255 / NUM_LEDS); //full rainbow
-//   ShowPalette(MyPalette);
-
-
-// EEPROM.write(0, ledState);
-// EEPROM.commit();
-// void saveEEPROM(){
-// 	EEPROM.write(0, currentBrightness);
-// 	EEPROM.write(1, currentTemp);
-// 	EEPROM.write(2, yo.currentSpeed);
-// 	EEPROM.write(3, pt2Func);
-// 	EEPROM.write(4, yo.ONOFF);
-// 	EEPROM.write(5, yo.animationON);
-// 	EEPROM.commit();
-// }
 
 // void flicker() {                          //-m9-FLICKER EFFECT
 //   int random_bright = random(0, 255);

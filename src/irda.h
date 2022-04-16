@@ -5,8 +5,8 @@ decode_results results;
 
 
 extern void ledOFF( int resValue);
-extern void eepromSave();
-extern void ledSetPollitre( byte pollitraID);
+extern void eepromSave( bool forceSaveEEPROM);
+extern void paletteSetActive( byte pollitraID);
 
 /* Поднимаем ИР-сервер*/
 void irdaStartUP(){
@@ -21,8 +21,8 @@ void irdaNext(){
 /* Обработка ИР приемника, через обход мапы mButtons
 и сохранение в ЕЕПроМ, если код с передатчика нашелся.
 Принимает входные параметры с вебсерра
-@param int codeFromWeb - свой ИК-код
-@param int webValue - значение для установки параметров*/
+@param codeFromWeb свой ИК-код
+@param webValue значение для установки параметров*/
 void irdaServer( int codeFromWeb = 0, int webValue = 0){
     uint32_t resValue = 0;
 
@@ -50,12 +50,11 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 
 			if ( mbIter->second.leadOFF){		ledOFF( resValue);}
 			if ( mbIter->second.pollDefault){	
-				if ( mbIter->second.pollCurrent < 1) { 
-					mbIter->second.pollCurrent = mbIter->second.pollDefault; }
-				ledSetPollitre( mbIter->second.pollCurrent);}
+				if ( mbIter->second.pollCurrent < 1) { mbIter->second.pollCurrent = mbIter->second.pollDefault; }
+				paletteSetActive( mbIter->second.pollCurrent);}
 			if ( mbIter->second.pt2prewave){ 	mbIter->second.pt2prewave();}			
 			if ( mbIter->second.pt2static){ 	mbIter->second.pt2static();}
-			if ( mbIter->second.pt2change){		pt2Func = mbIter->second.pt2Funca;}
+			if ( mbIter->second.isEffect){		pt2Func = mbIter->second.pt2Funca;}
             if ( mbIter->second.pt2setter){ 	
 				if ( mbIter->second.typeWeb == 0){
 					mbIter->second.pt2setter( mbIter->second.min);
@@ -65,8 +64,7 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 			} 
 
 			#ifdef EERPROM_ENABLE
-				eepromSave();	
-				yoBugN( "-=>> EEPROM Saved from irDA");
+				eepromSave( false);	
 			#endif
 		}		
 	}   

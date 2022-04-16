@@ -51,8 +51,8 @@ const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 		button.power.active{background: #3CB371} 
 		
 		select { width: 350px; background: #181E28;  border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em; font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}    
-        option.opt-active  { color: #3CB371;, font-weight: 600;}
-        option.default { background: #21252B;  font-weight: 600;}
+        option.default    { color: #3CB371;, font-weight: 600;}
+        option.opt-active { background: #21252B;  font-weight: 600;}
 
 		.textLabel { text-align: center; font-weight: bold; font-size: 1.2em; margin: 10px auto; text-shadow: black 1px 1px 1px;}
 		
@@ -224,7 +224,7 @@ void webServerStartUP(){
 	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) {
 		if (request->hasParam(PARAM_INPUT_1)) {			
 			String inputMessage01 = request->getParam(PARAM_INPUT_1)->value();				
-			ledSetPollitre( atoi( inputMessage01.c_str()));
+			paletteSetActive( atoi( inputMessage01.c_str()));
 		}
 		request->send(200, "text/plain", "OK");
 	});

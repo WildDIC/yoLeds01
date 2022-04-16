@@ -1,54 +1,49 @@
 #define MAX_POWER 50000
+#include "palettes.h"
 
 CRGB leds[NUM_LEDS];            // Массив ленты
-CHSV *yoPal; 			    	// Активная поллитра из массива поллитр: myPal
+// CHSV *yoPal; 			    	// Активная поллитра из массива поллитр: myPal
 uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
-struct pollitra{
-    String name;				// Имя палитры
-	CHSV pollitra[NUM_COLORS];	// Массив поллитровых собсна цветов
-};
-
-pollitra myPal[NUM_POLLITR];
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
 void ledsStartUP(){
-	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
+	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS); //.setCorrection( TypicalLEDStrip ); 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	// ledFadeOUT();
 	FastLED.show();
 
-	byte ind = 0; // -1? Просто, что было красиво в ++
-	myPal[++ind] = { "*solid white"};	 fill_solid(    myPal[ind].pollitra, NUM_COLORS, CHSV( 0, 0, 255));
-	myPal[++ind] = { "random 1 color"};	 
-	myPal[++ind] = { "random 2 colors"}; 
-	myPal[++ind] = { "random 3 colors"}; 
-	myPal[++ind] = { "random 4 colors"}; 
-	myPal[++ind] = { "full raindow"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 0, 255, 255), CHSV( 255, 255, 255), FORWARD_HUES );
-	myPal[++ind] = { "orange fire"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 7, 255, 255),  CHSV( 35, 255, 255), FORWARD_HUES );
-	myPal[++ind] = { "green to blue"};	 fill_gradient( myPal[ind].pollitra, NUM_COLORS, CHSV( 75, 255, 255), CHSV( 160, 255, 255), FORWARD_HUES );
-	
-
-	// uint8_t paletteIndex = i;
-  	// if (mapping && SEGLEN > 1) paletteIndex = (i*255)/(SEGLEN -1);
-  	// if (!wrap) paletteIndex = scale8(paletteIndex, 240); //cut off blend at palette "end"
-  	// CRGB fastled_col;
-	// fastled_col = ColorFromPalette(currentPalette, paletteIndex, pbri, (paletteBlend == 3)? NOBLEND:LINEARBLEND);
+	paletteStartUP();
 }
 
-/* Меням активную палитру и записываем ее в текующую активность ленты
-@param byte pollitraID = Номер паллитры из myPal */
-void ledSetPollitre( byte pollitraID){
-	if ( 	  myPal[pollitraID].name == "random 1 color"){ 	fill_solid(    myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)));}
-	else if ( myPal[pollitraID].name == "random 2 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
-	else if ( myPal[pollitraID].name == "random 3 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
-	else if ( myPal[pollitraID].name == "random 4 colors"){ fill_gradient( myPal[pollitraID].pollitra, NUM_COLORS, CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), 	CHSV(random8(), 255, random8(128, 255)));}
 
-	yoPal = myPal[pollitraID].pollitra;
-	mButtons[yo.lastPressed].pollCurrent = pollitraID;
-	// Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mButtons[yo.lastPressed].name);
+/* Забираем цвет colorID из указанной colorPalette палитры.
+@param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
+@param colorID номер цвета в паллитре ( 0-255)
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param brightness  уйти в темненькое ( 0-255)
+@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
+@param blenType размытие переходов между цветами ( 0-1) */
+CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND){
+	if ( isMapped){ colorID = ( colorID * 255) / ( NUM_LEDS -1); }	
+	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, blenType); 
+	if ( addToColor || yo.antiSaturn){ color.addToRGB( addToColor + yo.antiSaturn);}
+	return color;
 }
+
+/* Забираем цвет colorID из текущей targetPalette палитры.
+@param colorID номер цвета в паллитре ( 0-255)
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param brightness  уйти в темненькое ( 0-255)
+@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
+@param blenType размытие переходов между цветами ( 0-1) */
+CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND){
+	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, LINEARBLEND);
+	return color;
+}
+
+
 
 void powerON(){  FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	FastLED.show(); }
 void powerOFF(){ FastLED.setMaxPowerInMilliWatts(0); 			FastLED.show(); }
@@ -79,12 +74,23 @@ void ledUPWhite(){
 	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
 		FastLED.show();
 	}
+	#ifdef DEBUG_ENABLE
+		Serial.printf( "\nStatic RGB = (%d.%d.%d)\n", leds[10].r, leds[10].g, leds[10].b);
+	#endif
 }
 
 /* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
 	if ( yo.ONOFF == true){
-		for ( int pos = 0; pos < NUM_LEDS; pos++){ leds[pos] = CHSV( yoPal[pos*255/NUM_LEDS]); }	
+		for ( int pos = 0; pos < NUM_LEDS; pos++){ 
+			// leds[pos] = pollitrR[pos*255/NUM_LEDS]; 
+			// leds[pos] = ColorFromPalette( targetPalette, colorID, 255, LINEARBLEND);
+			leds[pos] = ledGCfP( pos);
+
+			#ifdef DEBUG_ENABLE
+				Serial.printf( "pos [%d], (%d.%d.%d)\n", pos, leds[pos].r, leds[pos].g, leds[pos].b);
+			#endif
+		}	
 		// for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPal[pos]); }	
 		FastLED.show();
 	}
@@ -107,7 +113,7 @@ void setSpeed( int value){ yo.currentSpeed = value; }
 
 void setSaturation( int value){ 
 	yo.currentSaturn  = value; 
-	yo.antiSaturn = 255 - yo.currentSaturn;
+	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 }
 
 void setTemperature( int value){ 
@@ -125,8 +131,7 @@ void setBrightness( int value){
 }
 
 /* Меняем общуу срость анимации (0-...)
-* @param delta +/- yo.currentSpeed.
-*/
+* @param delta +/- yo.currentSpeed.*/
 void changeSpeed( int delta){
 	yo.currentSpeed += delta;
 	if ( yo.currentSpeed > 100){ 
@@ -140,8 +145,7 @@ void changeSpeed( int delta){
 }
 
 /* Меняем общуу температуру цвета ленты (0-255)
-* @param delta +/- yo.currentTemp.
-*/
+* @param delta +/- yo.currentTemp.*/
 void changeTemperature( int delta){
 	yo.currentTemp += delta;
 	if ( yo.currentTemp > TEMP_IND_MAX){ 
@@ -159,8 +163,7 @@ void changeTemperature( int delta){
 }
 
 /* Меняем общуу яркость ленты (0-255)
-* @param delta +/- yo.currentBrightness.
-*/
+* @param delta +/- yo.currentBrightness.*/
 void changeBrightness( int delta){  
   	yo.currentBrightness = FastLED.getBrightness() + delta;
   	if ( yo.currentBrightness > 255){
@@ -176,18 +179,17 @@ void changeBrightness( int delta){
 }
 
 /* Меняем общуу сатурацию ленты (0-255)
-* @param delta +/- yo.currentSaturn.
-*/
+* @param delta +/- yo.currentSaturn.*/
 void changeSaturation( int delta){
 	yo.currentSaturn += delta;	
-	if ( yo.currentSaturn > 255){ 
-		yo.currentSaturn = 255; 
+	if ( yo.currentSaturn > MAX_SATURATIOIN){ 
+		yo.currentSaturn = MAX_SATURATIOIN; 
 		ledBlink();
 	} else if ( yo.currentSaturn < 0){ 
 		yo.currentSaturn = 0;
 		ledBlink();
 	}
-	yo.antiSaturn = 255 - yo.currentSaturn;
+	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 	Serial.printf( "Saturation: %d ( anti: %d)\n", yo.currentSaturn, yo.antiSaturn);
 }
 
