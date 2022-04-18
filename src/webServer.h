@@ -2,22 +2,32 @@
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
 
+// need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
+//C:\Users\vanilka\Documents\PlatformIO\Projects\220401-111103-esp32dev\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
+// #define TEMPLATE_PLACEHOLDER '`'
 AsyncWebServer server(80);
 
 byte NUM_RANGES = 1;
-byte NUM_BUTTONS = 1;
-
-// need replace in  .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
-// #define TEMPLATE_PLACEHOLDER '`'
+byte NUM_BUTTONS = 1;			
+String CSS_HOLDER = "\n";		// css градиенты для select палитров
+String RANGE_HOLDER = "\n";		// полоски-двигалки
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
-// extern void irdaServer( int codeFromWeb, int mbIter);
 
 button bList[20];
 range rList[10];
 
-byte size;
+// возможно не стоит это выносить сыда, а вернуть в процессорку 200
+int rState(int numValue){
+	switch (numValue){		
+		case 0: numValue = yo.currentBrightness; break;
+		case 1: numValue = yo.currentSaturn; break;
+		case 2: numValue = yo.currentTemp; break;		
+		case 3: numValue = yo.currentSpeed; break;
+	}
+	return numValue;
+}
 
 void collectData(){	
 	mbIter = mButtons.begin();
@@ -37,57 +47,40 @@ void collectData(){
 			// yo.savePollitre[i] = { mbIter->first, mbIter->second.pollitra};
 		// }
     }	
-}
+	
+	// собираем css градиенты для выбора палитр
+	String coma = "%,";
+	byte tcp[72]; //support gradient palettes with up to 18 entries
+	for ( int i = 0; i < 58; i++){
+		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
+		CSS_HOLDER += "\t#ui-id-"+ String(i+17) +", .ui-id-"+ String(i+17) +" { background: linear-gradient(to right, ";
 
-int rState(int numValue){
-	switch (numValue){		
-		case 0: numValue = yo.currentBrightness; break;
-		case 1: numValue = yo.currentSaturn; break;
-		case 2: numValue = yo.currentTemp; break;		
-		case 3: numValue = yo.currentSpeed; break;
+		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
+			if ( tcp[ind] == 255){ coma = "%";}
+			else{ coma = "%,";}			
+			CSS_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
+			// Serial.printf( "\ti=%d, byte=%d (%d.%d.%d)\n", ind, (tcp[ind]*100/255), tcp[ind+1], tcp[ind+2], tcp[ind+3]);
+			if ( tcp[ind]== 255){ break;}
+		}
+		CSS_HOLDER += ")}\n";
 	}
-	return numValue;
+
+	// собираем полоски-двигалки 
+	for(int i = 1; i < NUM_RANGES; i++){
+		int rValue = rState(i);
+		RANGE_HOLDER += "<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+	}
 }
 
 // Replaces placeholder with button section in your web page
 String processor(const String& var){
 	//Serial.println(var);
 
-	if(var == "CSSPLACEHOLEDFR"){
-		byte plus = 17;
-		String cssItems = "\n";		
-		String coma = ",";
-		for ( int i = 0; i < 58; i++){
-			byte tcp[72]; //support gradient palettes with up to 18 entries
-			memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
-
-			size = sizeof(tcp);
-			cssItems += "\t#ui-id-"+ String(i+plus) +", .ui-id-"+ String(i+plus) +" { background: linear-gradient(to right, ";
-
-			for ( byte ind = 0; ind < size; ind+=4){
-				
-				if ( tcp[ind]== 255){ coma = "";}
-				else{ coma = ",";}
-				
-				cssItems += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + "%"+ coma;
-				// Serial.printf( "\ti=%d, byte=%d (%d.%d.%d)\n", ind, (tcp[ind]*100/255), tcp[ind+1], tcp[ind+2], tcp[ind+3]);
-
-				if ( tcp[ind]== 255){ break;}
-			}
-			cssItems += ")}\n";
-		}
-		return cssItems;
-	}
-
-	if(var == "RANGEPLACEHOLDER"){
-		String buttons ="\n";		
-		for(int i = 1; i < NUM_RANGES; i++){
-			int rValue = rState(i);
-			buttons += "<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
-			buttons += "<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
-		}
-
-		// </optgroup>	<optgroup label="Other files">
+	if(var == "CSSPLACEHOLEDFR"){	return CSS_HOLDER;}
+	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
+	if(var == "SELECTHOLDER"){
+		String buttons = "";
 		String active = "";			
 		buttons += "\n<div class=\"select\">\n\t<select name=\"pollitres\" id=\"pollitres\">\n";
 		for (size_t i = 0; i < NUM_POLLITR; i++){
@@ -112,8 +105,12 @@ String processor(const String& var){
 			}
 		}
 		buttons += "</select></div>\n";
+		return buttons;
+	}
 
-		active = "";			
+	if(var == "BUTTONPLACEHOLDER"){
+		String buttons = "";
+		String active = "";			
 		if ( yo.ONOFF == true){ active = " active"; }
 		buttons += "\n";
 		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
@@ -187,9 +184,9 @@ void webServerStartUP(){
 
 	// Route to load style.css file
   	server.on("/style.css", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", 		"text/css"); });
-  	server.on("/jquery-ui.css", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.css", 	"text/css"); });
-  	server.on("/jquery-3.6.0.js", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-3.6.0.js", "text/css"); });
-  	server.on("/jquery-ui.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.js", 	"text/css"); });
+  	// server.on("/jquery-ui.css", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.css", 	"text/css"); });
+  	// server.on("/jquery-3.6.0.js", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-3.6.0.js", "text/css"); });
+  	// server.on("/jquery-ui.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.js", 	"text/css"); });
   	server.on("/script.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", 		"text/css"); });
 
 
