@@ -9,14 +9,11 @@ uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Ярко
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
 void ledsStartUP(){
-	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS); //.setCorrection( TypicalLEDStrip ); 
+	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	// ledFadeOUT();
 	FastLED.show();
-
-	paletteStartUP();
 }
-
 
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
@@ -42,8 +39,6 @@ CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, u
 	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, LINEARBLEND);
 	return color;
 }
-
-
 
 void powerON(){  FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	FastLED.show(); }
 void powerOFF(){ FastLED.setMaxPowerInMilliWatts(0); 			FastLED.show(); }

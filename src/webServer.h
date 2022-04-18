@@ -1,10 +1,14 @@
 // #include <WebServer.h>
 #include "ESPAsyncWebServer.h"
+#include "SPIFFS.h"
 
 AsyncWebServer server(80);
 
 byte NUM_RANGES = 1;
 byte NUM_BUTTONS = 1;
+
+// need replace in  .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
+// #define TEMPLATE_PLACEHOLDER '`'
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
@@ -12,6 +16,8 @@ const char* PARAM_INPUT_2 = "value";
 
 button bList[20];
 range rList[10];
+
+byte size;
 
 void collectData(){	
 	mbIter = mButtons.begin();
@@ -33,124 +39,6 @@ void collectData(){
     }	
 }
 
-const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
-<head>
-	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-  	<style>
-    	html {font-family: Arial; display: inline-block; text-align: center;}
-    	h2 {font-size: 3.0rem;}
-		div { align-self: center;}
-    	body {max-width: 600px; margin:0px auto; background: #21252B; color: #E1E1E1; display: flex; flex-direction: column; align-items: flex-start; 
-			font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}
-    	
-		button { width: 350px; background: #181E28; appearance: none; border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em;}
-		button.active {background: #2196F3}
-		button:hover {   background: #474747}
-		button:active {  background-color: #2196F3;}		
-		button.power {background: #FF0E90}
-		button.power.active{background: #3CB371} 
-		
-		select { width: 350px; background: #181E28;  border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em; font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}    
-        option.default    { color: #3CB371;, font-weight: 600;}
-        option.opt-active { background: #21252B;  font-weight: 600;}
-
-		.textLabel { text-align: center; font-weight: bold; font-size: 1.2em; margin: 10px auto; text-shadow: black 1px 1px 1px;}
-		
-		input[type="range"] { display: block; -webkit-appearance: none; background-color: #bdc3c7; width: 350px; height: 5px; border-radius: 5px; margin: 10px auto; margin-bottom: 20px; outline: 0;}
-		input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background-color: #181E28; width: 20px; height: 20px; border: 2px solid white; cursor: pointer; transition: .3s ease-in-out; border-radius: 10px;}​
-  		input[type="range"]::-webkit-slider-thumb:hover { background-color: white; border: 2px solid #e74c3c; }
-  		input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.3); }
-  	</style>
-</head>
-<body>
-    <div><h2>noisex led server</h2></div>  	
-	<div class="upser">upser</div>
-
-	%RANGEPLACEHOLDER%
-	<script>
-		const wave = document.querySelectorAll('.wave');
-		function buttonClick( element) {
-			if ( element.classList.contains("power") == true) {
-				element.classList.toggle("active");   
-			};
-			
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/update?funcID="+element.id, true); 
-			xhr.send();
-			updateDate();
-		}
-
-		function rInput( element) {
-			var value = element.value;
-			var classValue = '.' + element.className + '-value';
-			var target = document.querySelector( classValue);
-			target.innerHTML = value;
-
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/update?funcID="+element.id+"&value="+value, true); 
-			xhr.send();
-		}  
-
-		function reseter( xhr){			
-			var json = JSON.parse(xhr.responseText);
-			var def = document.querySelector( ".default");
-			if ( def){ def.classList.remove( 'default'); }		
-
-			def = document.querySelector( ".opt-active");
-			if ( def){ def.classList.remove( 'opt-active'); }			
-
-			document.getElementById( 1066677700).value 				= json.vBrightness;
-			document.getElementById( 1066677701).value 				= json.vSaturn;
-			document.getElementById( 1066677702).value 				= json.vTemp;
-			document.getElementById( 1066677703).value 				= json.vSpeed;
-			document.querySelector( ".upser").innerHTML 			= json.vPressed;
-			document.querySelector( ".Brightness-value").innerHTML 	= json.vBrightness;
-			document.querySelector( ".Saturations-value").innerHTML = json.vSaturn;
-			document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
-			document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;
-			document.getElementById( "pollitre-select").value 		= json.vPollCurrent;
-
-			wave.forEach((element) => element.classList.remove('active'));
-			document.getElementById( json.vPressed).classList.add('active');	
-
-			document.getElementById( json.vPollDefault).classList.add( 'default');  
-			document.getElementById( json.vPollCurrent).classList.add( 'opt-active');
-
-			var onoff = document.getElementById( 551489775);
-			if ( json.vONOFF == 1){ onoff.classList.add('active');}
-			else{ 					onoff.classList.remove('active'); }
-		}
-
-		function updateDate(){
-			var xhr = new XMLHttpRequest();            
-			xhr.onreadystatechange = function() {
-				if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-					reseter( xhr);    
-				}
-			};
-			xhr.open("GET", "/reset", true); 
-			xhr.send();
-		}
-
-		function changeOption(){     			
-			wave.forEach((element) => {
-				if ( element.classList.contains("active") == true) {
-					var value = document.getElementById( "pollitre-select").selectedOptions[0].value;
-					var xhr = new XMLHttpRequest();
-					xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
-					xhr.send();	  
-				};
-			});
-		} 
-		document.getElementById( "pollitre-select").addEventListener("change", changeOption);
-
-		(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();
-	</script>
-</body>
-</html>
-)rawliteral";
-
-
 int rState(int numValue){
 	switch (numValue){		
 		case 0: numValue = yo.currentBrightness; break;
@@ -164,6 +52,33 @@ int rState(int numValue){
 // Replaces placeholder with button section in your web page
 String processor(const String& var){
 	//Serial.println(var);
+
+	if(var == "CSSPLACEHOLEDFR"){
+		byte plus = 17;
+		String cssItems = "\n";		
+		String coma = ",";
+		for ( int i = 0; i < 58; i++){
+			byte tcp[72]; //support gradient palettes with up to 18 entries
+			memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
+
+			size = sizeof(tcp);
+			cssItems += "\t#ui-id-"+ String(i+plus) +", .ui-id-"+ String(i+plus) +" { background: linear-gradient(to right, ";
+
+			for ( byte ind = 0; ind < size; ind+=4){
+				
+				if ( tcp[ind]== 255){ coma = "";}
+				else{ coma = ",";}
+				
+				cssItems += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + "%"+ coma;
+				// Serial.printf( "\ti=%d, byte=%d (%d.%d.%d)\n", ind, (tcp[ind]*100/255), tcp[ind+1], tcp[ind+2], tcp[ind+3]);
+
+				if ( tcp[ind]== 255){ break;}
+			}
+			cssItems += ")}\n";
+		}
+		return cssItems;
+	}
+
 	if(var == "RANGEPLACEHOLDER"){
 		String buttons ="\n";		
 		for(int i = 1; i < NUM_RANGES; i++){
@@ -171,8 +86,23 @@ String processor(const String& var){
 			buttons += "<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
 			buttons += "<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
 		}
-		
+
+		// </optgroup>	<optgroup label="Other files">
 		String active = "";			
+		buttons += "\n<div class=\"select\">\n\t<select name=\"pollitres\" id=\"pollitres\">\n";
+		for (size_t i = 0; i < NUM_POLLITR; i++){
+			if ( myPal[i].name.length() > 0){				
+				if ( i == mButtons[yo.lastPressed].min){ active = "selected = \"selected\"";} 
+				else{	active = ""; }
+				if ( i == 17){
+					buttons += "<optgroup label=\"WLEDs Pollitres(c)\">";
+				}
+				buttons += "\t\t<option>"+ myPal[i].name +"</option>\n";
+			}
+		}
+		buttons += "\t</optgroup>\n</select></div>\n\n";
+
+		// String active = "";			
 		buttons += "\n<div class='select'>\n\t<select name='pollitres' id='pollitre-select'>\n";
 		for (size_t i = 0; i < NUM_POLLITR; i++){
 			if ( myPal[i].name.length() > 0){				
@@ -203,8 +133,19 @@ String processor(const String& var){
 void webServerStartUP(){
 	collectData();
 
+	if(!SPIFFS.begin(true)){
+ 	 	Serial.println("An Error has occurred while mounting SPIFFS");
+  		return;
+	}
+
+// request->send(SPIFFS, "/index.htm", String(), false, processor);
+// server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+//   request->send(SPIFFS, "/style.css","text/css");
+// });
+
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    	request->send_P(200, "text/html", index_html, processor);
+    	request->send( SPIFFS, "/index.htm", String(), false, processor);
+    	// request->send_P(200, "text/html", index_html, processor);
         }
     );
 
@@ -244,5 +185,62 @@ void webServerStartUP(){
 		request->send(200, "application/json", out);
 	});
 
+	// Route to load style.css file
+  	server.on("/style.css", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", 		"text/css"); });
+  	server.on("/jquery-ui.css", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.css", 	"text/css"); });
+  	server.on("/jquery-3.6.0.js", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-3.6.0.js", "text/css"); });
+  	server.on("/jquery-ui.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.js", 	"text/css"); });
+  	server.on("/script.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", 		"text/css"); });
+
+
 	server.begin();
 }
+
+
+/*
+
+// const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
+// <head>
+// 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+
+// )rawliteral";
+
+
+<div class="lstI btn fxbtn " data-id="46" onclick="setPalette(46)"> 
+   <label class="radio fxchkl"> 
+    <input type="radio" value="46" name="palette"> 
+    <span class="radiomark"></span> 
+   </label> 
+      <span class="lstIname"> April Night</span> 
+    <div class="lstIprev" style="background: linear-gradient(to right, rgb(1, 5, 45) 0%, rgb(1, 5, 45) 3.92157%, rgb(5, 169, 175) 9.80392%, rgb(1, 5, 45) 15.6863%, rgb(1, 5, 45) 23.9216%, rgb(45, 175, 31) 29.8039%, rgb(1, 5, 45) 35.6863%, rgb(1, 5, 45) 43.9216%, rgb(249, 150, 5) 49.8039%, rgb(1, 5, 45) 56.0784%, rgb(1, 5, 45) 63.5294%, rgb(255, 92, 0) 69.8039%, rgb(1, 5, 45) 75.6863%, rgb(1, 5, 45) 83.9216%, rgb(223, 45, 72) 89.8039%, rgb(1, 5, 45) 95.6863%, rgb(1, 5, 45) 100%);">
+	</div> 
+</div>
+
+	<div class="select"> 
+		<select name="pollitres" id="pollitres">
+			<optgroup label="Scripts">
+				<option>1</option>
+				<option selected="selected">2</option>
+				<option>3</option>
+				<option>4</option>
+				<option>5</option>
+			</optgroup>
+			<optgroup label="Other files">
+				<option color="red">666 text</option>
+				<option>7</option>
+				<option>8</option>
+				<option>9</option>
+				<option>10</option>
+				<option>11</option>
+				<option>12</option>
+				<option>13</option>
+				<option>14</option>
+				<option>15</option>
+				<option>16</option>
+				<option>17</option>
+				<option>18</option>
+				<option>19</option>
+			</optgroup>
+		</select>
+	</div>
+*/

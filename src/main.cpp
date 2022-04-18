@@ -16,6 +16,7 @@
 
 #define IR_DELAY 100
 clock_t startTime = clock();
+clock_t startAnime = clock();
 
 
 //********************************************************************
@@ -26,6 +27,7 @@ void setup() {
 	
 	irdaStartUP();
 	ledsStartUP();
+	paletteStartUP();
 	
 	byte ind = 0;
 	/* struct irdaItems{     code;	  name; 		typeWeb	indForWeb; leadOFF; isEffect; 	pt2Funca 		pt2static		pt2prewave 		pt2setter			min		max		pollDefault*/
@@ -41,6 +43,7 @@ void setup() {
 	mButtons[1262525284] =  { 0, "Ползучая rainbow", 	1, 	++ind,  	true, 	true, 		&animWave05, 	NULL, 			NULL, 			NULL, 				0, 		0,			6};
 	mButtons[1262508964] =  { 0, "Musix echo", 			1, 	++ind,  	true, 	true, 		&animWave06, 	NULL, 			NULL, 			NULL, 				0, 		0,			6};
 	mButtons[1262545684] =  { 0, "Flasher", 			1, 	++ind,  	true, 	true, 		&animWave03, 	NULL, 			NULL, 			NULL, 				0, 		0,			3};
+	mButtons[1262545666] =  { 0, "4 beatSins waves",	1, 	++ind,  	true, 	true, 		&animaWave10, 	NULL, 			NULL, 			NULL, 				0, 		0,			4};
 	ind = 0;
 	mButtons[1066677700] =  { 0, "Brightness",	 		2, 	++ind,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&setBrightness,		5,		255};
 	mButtons[1066677701] =  { 0, "Saturations", 		2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSaturation, 	0,		100};
@@ -82,14 +85,15 @@ void loop() {
 	if ( clock() - startTime > IR_DELAY){
 		startTime = clock();
 		irdaServer();
-	} else {
-		// irdaNext();
 	}
 
 	if ( yo.ONOFF && pt2Func){
-		pt2Func();
-		delay(1);
-	} else {
-		delay( 500);
+		if ( clock() - startAnime > yo.currentSpeed){
+			startAnime = clock();
+			pt2Func();
+		} 
+	}	
+	else { 
+		delay( 500); 
 	}  	
 }

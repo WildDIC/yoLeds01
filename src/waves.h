@@ -9,7 +9,7 @@ void animWave01(){
 	leds[pos] = ledGCfP( baza++, false);
 	// leds[pos] += CHSV( yoPal[baza++].h, yo.currentSaturn, 255);
 	FastLED.show();
-	delay(yo.currentSpeed);
+	// delay(yo.currentSpeed);
 }
 
 /* Костерок №01 */
@@ -18,7 +18,7 @@ void animWave02(){
 	// leds[random8(NUM_LEDS)] = CHSV( yoPal[random8( 255)].h, yo.currentSaturn, random8( 200, 255)); 
 	leds[random8(NUM_LEDS)].nscale8( random8(100));
 	if ( random8() < 35){
-		fadeToBlackBy(leds, NUM_LEDS, random8( 20));	
+		fadeToBlackBy(leds, NUM_LEDS, 10);	
 	}
     FastLED.show();
 	delay(yo.currentSpeed / 2);
@@ -30,17 +30,17 @@ void animWave03(){
     	leds[i] = ledGCfP( baza++, false);
       	FastLED.show();
     }
-	delay(yo.currentSpeed);
+	// delay(yo.currentSpeed);
 }
 
 /* 8 волн с разной скоротью и наложением цвета */
 void animWave04(){
-	fadeToBlackBy(leds, NUM_LEDS, 2);
+	fadeToBlackBy(leds, NUM_LEDS, 4);
     for (int i = 0; i < 8; i++) {
       	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 15);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
 	FastLED.show();
-    delay(yo.currentSpeed);
+    // delay(yo.currentSpeed);
 }
 
 /* Ползущая радуга с проблесками беленьких диодов */
@@ -50,7 +50,7 @@ void animWave05(){
 	
     if (random8() < 40) { leds[ random8(NUM_LEDS)] = CRGB::White; }
   	FastLED.show();
-  	delay(yo.currentSpeed * 5);
+  	delay(yo.currentSpeed * 4);
 }
 
 /* Вжух-вжух радуга из цента типа странной цветомузыки */
@@ -114,7 +114,7 @@ void animWave07(){
       leds[pixelnumber] = color;
     }
 	FastLED.show(); // display this frame
-	FastLED.delay(yo.currentSpeed / 5);
+	// FastLED.delay(yo.currentSpeed / 5);
 }
 
 /* Костерок №02 */
@@ -145,7 +145,7 @@ void animWave08() {
     }
     FastLED.show();
 	// Serial.printf( "%d ( %d, %d, %d)- %d \n", leds[1], leds[1].r, leds[1].g, leds[1].b, LEDS_HUE[1]);
-	delay(yo.currentSpeed);
+	// delay(yo.currentSpeed);
 }
 
 
@@ -179,9 +179,62 @@ void animWave09() {
   	delay( yo.currentSpeed * 2);
 }
 
+#define TS01 255
+#define TS02 TS01 * 0.25
+#define TS03 TS01 * 0.75
+#define TS04 TS01 * 0.5
 
+void animaWave10(){
+	baza++;
+    fadeToBlackBy(leds, NUM_LEDS, 8);
+	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS01)] = ledGCfP( baza);
+	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS02)] = ledGCfP( baza + TS02);
+	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS03)] = ledGCfP( baza + TS03);
+	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS04)] = ledGCfP( baza + TS04);
+
+    FastLED.show();
+    // FastLED.delay(  yo.currentSpeed);
+}
     // fadeToBlackBy(leds, NUM_LEDS, 8);
     // int pos01 = beatsin16(10, 0, NUM_LEDS - 1, 0, 0);
     // int pos02 = NUM_LEDS-pos01-1;
     // int pos03 = beatsin16(10, 11, NUM_LEDS - 12, 0);
     // int pos04 = NUM_LEDS-pos03-1;
+
+
+	/*
+	#include <FastLED.h>
+#define NUM_LEDS    60
+CRGB leds[NUM_LEDS];
+// #define TS01 35768
+#define TS01 255
+#define TS02 TS01 * 0.25
+#define TS03 TS01 * 0.75
+#define TS04 TS01 * 0.5
+
+void sinTest(){
+    fadeToBlackBy(leds, NUM_LEDS, 24);
+    int pos01 = beatsin8(13, 0, NUM_LEDS - 1, 0, TS01);
+	leds[pos01] = CRGB::Red;
+    
+    int pos02 = beatsin8(13, 0, NUM_LEDS - 1, 0, TS02);
+	leds[pos02] = CRGB::Green;
+
+    int pos03 = beatsin8(13, 0, NUM_LEDS - 1, 0, TS03);
+	leds[pos03] = CRGB::Blue;
+
+    int pos04 = beatsin8(13, 0, NUM_LEDS - 1, 0, TS04);
+	leds[pos04] = CRGB::Yellow;
+
+    FastLED.show();
+    FastLED.delay(100);
+}
+void setup() {    
+    FastLED.addLeds<WS2811, 5, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+    sinTest();
+    sinTest();sinTest();sinTest();sinTest();sinTest();sinTest();sinTest();sinTest();sinTest();sinTest();
+}
+void loop(){    sinTest();    }
+
+	
+	*/
