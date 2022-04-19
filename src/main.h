@@ -91,6 +91,36 @@ int temperList[NUM_TEMPS] = {0xFF3300,0xFF3800,0xFF4500,0xFF4700,0xFF5200,0xFF53
 };   								// массив с номерами цветов по верхней части таблицы Кельвина
 
 
+
+
+/*
+// ! плохой стиль - даже в C99 этого уже не требуется !
+#define RED   0xFF0000
+#define GREEN 0x00FF00
+#define BLUE  0x0000FF
+#define CYAN  0x00FFFF
+
+// стиль, совместимый с C99, но имена констант слишком короткие
+enum ColorId : unsigned
+{
+    RED = 0xFF0000,
+    GREEN = 0x00FF00,
+    BLUE = 0x0000FF,
+    CYAN = 0x00FFFF,
+};
+
+// стиль Modern C++
+enum class WebColorRGB
+{
+    Red = 0xFF0000,
+    Green = 0x00FF00,
+    Blue = 0x0000FF,
+    Cyan = 0x00FFFF,
+};
+
+*/
+
+
 /* Platformio.ini
 
 [env:IR Test with FastLED 01]

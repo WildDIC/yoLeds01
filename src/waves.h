@@ -5,11 +5,8 @@ int color = 0;
 /* Бегущая радужная вэйв */
 void animWave01(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
-	int pos = beatsin8(13, 0, NUM_LEDS - 1);
-	leds[pos] = ledGCfP( baza++, false);
-	// leds[pos] += CHSV( yoPal[baza++].h, yo.currentSaturn, 255);
+	leds[beatsin8(13, 0, NUM_LEDS - 1)] = ledGCfP( baza++, false);
 	FastLED.show();
-	// delay(yo.currentSpeed);
 }
 
 /* Костерок №01 */
@@ -30,7 +27,6 @@ void animWave03(){
     	leds[i] = ledGCfP( baza++, false);
       	FastLED.show();
     }
-	// delay(yo.currentSpeed);
 }
 
 /* 8 волн с разной скоротью и наложением цвета */
@@ -40,7 +36,6 @@ void animWave04(){
       	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 15);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
 	FastLED.show();
-    // delay(yo.currentSpeed);
 }
 
 /* Ползущая радуга с проблесками беленьких диодов */
@@ -114,7 +109,6 @@ void animWave07(){
       leds[pixelnumber] = color;
     }
 	FastLED.show(); // display this frame
-	// FastLED.delay(yo.currentSpeed / 5);
 }
 
 /* Костерок №02 */
@@ -145,7 +139,6 @@ void animWave08() {
     }
     FastLED.show();
 	// Serial.printf( "%d ( %d, %d, %d)- %d \n", leds[1], leds[1].r, leds[1].g, leds[1].b, LEDS_HUE[1]);
-	// delay(yo.currentSpeed);
 }
 
 
@@ -193,7 +186,6 @@ void animaWave10(){
 	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS04)] = ledGCfP( baza + TS04);
 
     FastLED.show();
-    // FastLED.delay(  yo.currentSpeed);
 }
     // fadeToBlackBy(leds, NUM_LEDS, 8);
     // int pos01 = beatsin16(10, 0, NUM_LEDS - 1, 0, 0);

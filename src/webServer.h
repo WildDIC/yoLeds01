@@ -11,6 +11,7 @@ byte NUM_RANGES = 1;
 byte NUM_BUTTONS = 1;			
 String CSS_HOLDER = "\n";		// css градиенты для select палитров
 String RANGE_HOLDER = "\n";		// полоски-двигалки
+String ROOT_HOLDER = ":root{\n\t\t--gr0: #181E28;\n";
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
@@ -52,18 +53,21 @@ void collectData(){
 	String coma = "%,";
 	byte tcp[72]; //support gradient palettes with up to 18 entries
 	for ( int i = 0; i < 58; i++){
-		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
-		CSS_HOLDER += "\t#ui-id-"+ String(i+17) +", .ui-id-"+ String(i+17) +" { background: linear-gradient(to right, ";
+		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
+
+		CSS_HOLDER +=  "\t#ui-id-"+ String(i+17) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String(i+17)+")}\n";
+		ROOT_HOLDER += "\t\t--gr"+ String(i+17) +": linear-gradient( to right, ";
 
 		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
 			if ( tcp[ind] == 255){ coma = "%";}
 			else{ coma = "%,";}			
-			CSS_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
+			ROOT_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
 			// Serial.printf( "\ti=%d, byte=%d (%d.%d.%d)\n", ind, (tcp[ind]*100/255), tcp[ind+1], tcp[ind+2], tcp[ind+3]);
 			if ( tcp[ind]== 255){ break;}
 		}
-		CSS_HOLDER += ")}\n";
+		ROOT_HOLDER += ");\n";
 	}
+	ROOT_HOLDER += "}";
 
 	// собираем полоски-двигалки 
 	for(int i = 1; i < NUM_RANGES; i++){
@@ -77,34 +81,39 @@ void collectData(){
 String processor(const String& var){
 	//Serial.println(var);
 
-	if(var == "CSSPLACEHOLEDFR"){	return CSS_HOLDER;}
+	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
 	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
 	if(var == "SELECTHOLDER"){
 		String buttons = "";
 		String active = "";			
-		buttons += "\n<div class=\"select\">\n\t<select name=\"pollitres\" id=\"pollitres\">\n";
+		buttons += "\n<div class=\"selectZ\">\n\t<select name=\"pollitres\" id=\"pollitres\">\n";
 		for (size_t i = 0; i < NUM_POLLITR; i++){
 			if ( myPal[i].name.length() > 0){				
 				if ( i == mButtons[yo.lastPressed].min){ active = "selected = \"selected\"";} 
 				else{	active = ""; }
 				if ( i == 17){
-					buttons += "<optgroup label=\"WLEDs Pollitres(c)\">";
+					buttons += "\t<optgroup label=\"WLEDs Pollitres(c)\">\n";
 				}
-				buttons += "\t\t<option>"+ myPal[i].name +"</option>\n";
+				
+				if ( i == mButtons[yo.lastPressed].min){ active = " selected = 'selected'";} 
+				else{	active = ""; }
+
+				buttons += "\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
 			}
 		}
 		buttons += "\t</optgroup>\n</select></div>\n\n";
 
-		// String active = "";			
-		buttons += "\n<div class='select'>\n\t<select name='pollitres' id='pollitre-select'>\n";
-		for (size_t i = 0; i < NUM_POLLITR; i++){
-			if ( myPal[i].name.length() > 0){				
-				if ( i == mButtons[yo.lastPressed].min){ active = "selected = 'selected'";} 
-				else{	active = ""; }
-				buttons += "\t\t<option value='"+ String( i) +"' class='option"+ String( i) +"' id='"+ String( i) +"' "+ active +">"+ myPal[i].name +"</option>\n";
-			}
-		}
-		buttons += "</select></div>\n";
+		// // String active = "";			
+		// buttons += "\n<div class='select'>\n\t<select name='pollitres' id='pollitre-select'>\n";
+		// for (size_t i = 0; i < NUM_POLLITR; i++){
+		// 	if ( myPal[i].name.length() > 0){				
+		// 		if ( i == mButtons[yo.lastPressed].min){ active = "selected = 'selected'";} 
+		// 		else{	active = ""; }
+		// 		buttons += "\t\t<option value='"+ String( i) +"' class='option"+ String( i) +"' id='"+ String( i) +"' "+ active +">"+ myPal[i].name +"</option>\n";
+		// 	}
+		// }
+		// buttons += "</select></div>\n";
+
 		return buttons;
 	}
 
@@ -134,11 +143,6 @@ void webServerStartUP(){
  	 	Serial.println("An Error has occurred while mounting SPIFFS");
   		return;
 	}
-
-// request->send(SPIFFS, "/index.htm", String(), false, processor);
-// server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
-//   request->send(SPIFFS, "/style.css","text/css");
-// });
 
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     	request->send( SPIFFS, "/index.htm", String(), false, processor);
@@ -195,7 +199,38 @@ void webServerStartUP(){
 
 
 /*
+		$( "#pollitres" ).selectmenu( "open")._refreshMenu();
+		$( "#pollitres" ).selectmenu( "close");
 
+		<!-- $('#pollitres').selectmenu( "instance" )._refreshMenu(); -->
+
+		<!-- $('#pollitres').val( 1);
+		$('#pollitres').selectmenu('refresh', true); -->
+
+	<script type="text/javascript">
+   		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
+   		<!-- $( "#pollitres" ).selectmenu( "open"); -->
+
+   		$('#pollitres').selectmenu('instance')._renderButtonItem = function( item ) {
+  			var buttonItem = $( "<span>", {
+    			"class": "ui-selectmenu-text"
+  			})
+  			this._setText( buttonItem, item.label );
+
+  			var value = $('#pollitres option:selected').val();
+  			
+  			buttonItem.addClass( "ui-id-" + value);
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
+			xhr.send();	  
+			return buttonItem;
+		}
+
+   		$( "#pollitres111" ).selectmenu();	
+	</script>
+
+	
 // const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE HTML><html>
 // <head>
 // 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">

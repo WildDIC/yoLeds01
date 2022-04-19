@@ -13,8 +13,8 @@ button.power.active{background: #3CB371}
 
 select { width: 350px; background: #181E28;  border: 0; border-radius: 5px; color: #E1E1E1; padding: 8px 16px; margin: 10px; font-size: 1.1em; font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}    
 select option { padding: 30px;}
-option.default    { color: #3CB371; font-weight: 600;}
-option.opt-active { background: #21252B;  font-weight: 600;}
+div.default    { color: #3CB371; font-size: 1.0em; font-weight: 600;}
+div.opt-active { color: #ffff00; font-size: 1.0em; font-weight: 600;}
 
 .textLabel { text-align: center; font-weight: bold; font-size: 1.2em; margin: 10px auto; text-shadow: black 1px 1px 1px;}
 
@@ -43,8 +43,8 @@ input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.3); }
 	width: 300px;
 	color: #E1E1E1;
 	background: #181E28;	
-	font-size: 1.4em;
-	-webkit-text-stroke: 1px rgb(102, 102, 102);			
+	/* font-size: 1.1em; */
+	/* -webkit-text-stroke: 1px rgb(102, 102, 102);			 */
 }
 .ui-selectmenu-menu .ui-menu .ui-selectmenu-optgroup {
 	font-size: 1em;

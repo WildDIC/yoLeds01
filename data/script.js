@@ -33,18 +33,53 @@ function reseter( xhr){
 	document.getElementById( 1066677701).value 				= json.vSaturn;
 	document.getElementById( 1066677702).value 				= json.vTemp;
 	document.getElementById( 1066677703).value 				= json.vSpeed;
-	document.querySelector( ".upser").innerHTML 			= json.vPressed;
+	// document.querySelector( ".upser").innerHTML 			= json.vPressed;
 	document.querySelector( ".Brightness-value").innerHTML 	= json.vBrightness;
 	document.querySelector( ".Saturations-value").innerHTML = json.vSaturn;
 	document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
-	document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;
-	document.getElementById( "pollitre-select").value 		= json.vPollCurrent;
+	document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;	
+		
+	var menu = $( "#pollitres" ).selectmenu( "instance" );
+
+	if ( document.querySelector( ".ui-menu-item")) {		
+		if ( menu.isOpen == false){ 
+			var oldValue = $('#pollitres option:selected').val();
+			// console.log( "Old value: " + $('#pollitres option:selected').val());
+
+			if ( oldValue != json.vPollCurrent){
+				// document.getElementById( "pollitres").value 		= json.vPollCurrent;
+				var item = menu.menuItems.eq( json.vPollCurrent-1 ).parent( "li" );		
+				menu._select( item.data( "ui-selectmenu-item" ))
+
+				// console.log( "Current value: " + menu.focusIndex);
+				// console.log( item );
+			}					
+			// $( "#pollitres option[value="+ json.vPollCurrent +"]" ).prop('selected', 'selected');
+			// $( "#pollitres" ).trigger( "change" );
+			// $( "#pollitres" ).selectmenu( "instance" )._renderButtonItem( );
+			// $('#pollitres').selectmenu('refresh', true);
+		} 
+		var sItem = document.getElementById( "ui-id-" + json.vPollDefault);
+		if ( sItem){ sItem.classList.add( 'default');  }
+		var aItem = document.getElementById( "ui-id-" + json.vPollCurrent);
+		if ( aItem){ aItem.classList.add( 'opt-active');}
+	}
+	
+	// $( "#pollitres option[value="+ json.vPollCurrent +"]" ).attr('selected', 'selected');
+	// $("#pollitres").val( json.vPollCurrent).change();
+	// $("#pollitres").trigger("change");
+	// $( "#pollitres" ).selectmenu( "option", "selected",  json.vPollCurrent ).trigger( "change" );
+	//.prop('selected', true);;
+
+	var value = $('#pollitres option:selected').val();
+	document.querySelector( ".upser").innerHTML 			= "new value: " + oldValue + " -=- " + json.vPollCurrent + " -=- " + value;
+	// console.log( "new value: " + json.vPollDefault + " -=- " + json.vPollCurrent + " -=- " + value);
 
 	wave.forEach((element) => element.classList.remove('active'));
-	document.getElementById( json.vPressed).classList.add('active');	
 
-	document.getElementById( json.vPollDefault).classList.add( 'default');  
-	document.getElementById( json.vPollCurrent).classList.add( 'opt-active');
+	if ( document.getElementById( json.vPressed)){
+		document.getElementById( json.vPressed).classList.add('active');	
+	}	
 
 	var onoff = document.getElementById( 551489775);
 	if ( json.vONOFF == 1){ onoff.classList.add('active');}
@@ -62,16 +97,16 @@ function updateDate(){
 	xhr.send();
 }
 
-function changeOption(){     			
-	wave.forEach((element) => {
-		if ( element.classList.contains("active") == true) {
-			var value = document.getElementById( "pollitre-select").selectedOptions[0].value;
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
-			xhr.send();	  
-		};
-	});
-} 
-document.getElementById( "pollitre-select").addEventListener("change", changeOption);
+// function changeOption(){     			
+// 	wave.forEach((element) => {
+// 		if ( element.classList.contains("active") == true) {
+// 			var value = document.getElementById( "pollitre-select").selectedOptions[0].value;
+// 			var xhr = new XMLHttpRequest();
+// 			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
+// 			xhr.send();	  
+// 		};
+// 	});
+// } 
+// document.getElementById( "pollitre-select").addEventListener("change", changeOption);
 
 (function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();

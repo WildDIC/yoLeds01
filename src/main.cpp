@@ -91,6 +91,8 @@ void loop() {
 		if ( clock() - startAnime > yo.currentSpeed){
 			startAnime = clock();
 			pt2Func();
+			// delay( yo.currentSpeed);
+			// Serial.println( yo.currentSpeed);
 		} 
 	}	
 	else { 

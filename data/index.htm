@@ -4,17 +4,14 @@
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<style>
- 		%CSSPLACEHOLEDFR%
+ 		`CSSPLACEHOLEDFR`
 	</style>
 
 	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
   	<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
   	<script>
   		$( function() {
-    		$( "#pollitres" )
-      			.selectmenu()
-      			.selectmenu( "menuWidget" )
-        		.addClass( "overflow" ); 
+    		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
     		$( "#pollitres111" ).selectmenu();	
   		} );
   	</script>
@@ -24,10 +21,43 @@
     <div><h2>noisex led server</h2></div>  	
 	<div class="upser">upser</div>
 
-	%RANGEPLACEHOLDER%
-	%SELECTHOLDER%
-	%BUTTONPLACEHOLDER%
+	`RANGEPLACEHOLDER`
+	`SELECTHOLDER`
+	`BUTTONPLACEHOLDER`   		
 
 	<script src="script.js"></script>
+	<script type="text/javascript">
+   		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
+
+		$( "#pollitres" ).selectmenu( "open");
+		$( "#pollitres" ).selectmenu( "close");
+
+		$( "#pollitres" ).selectmenu( "instance" )._renderButtonItem = function( item ) {
+			var buttonItem = $( "<span>", {
+				"class": "ui-selectmenu-text"
+			})
+			this._setText( buttonItem, item.label );
+
+			var value = $('#pollitres option:selected').val();
+			var button = document.getElementById( "pollitres-button");
+			if ( value > 16) {			
+				button.style.background = "var(--gr"+value+")";
+			} else {
+				button.style.background = "var(--gr0)";
+			}
+
+			<!-- console.log( "Render button! " + item);  id="pollitres-button" -->
+			<!-- buttonItem.addClass( "ui-id-" + value); -->
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
+			xhr.send();	  
+			return buttonItem;
+
+			
+		}
+
+		<!-- console.log( [...document.querySelector("#pollitres").options].map( opt => opt.value ) ); -->
+	</script>
 </body>
 </html>

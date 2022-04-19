@@ -1,5 +1,8 @@
 #define MAX_POWER 50000
+#define REVERS_NUM_LEDS 255 / ( NUM_LEDS - 1)
+
 #include "palettes.h"
+
 
 CRGB leds[NUM_LEDS];            // Массив ленты
 // CHSV *yoPal; 			    	// Активная поллитра из массива поллитр: myPal
@@ -23,7 +26,8 @@ void ledsStartUP(){
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
 CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND){
-	if ( isMapped){ colorID = ( colorID * 255) / ( NUM_LEDS -1); }	
+	if ( isMapped){ colorID *= REVERS_NUM_LEDS; }	
+	// if ( isMapped){ colorID = ( colorID * 255) / ( NUM_LEDS -1); }	
 	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, blenType); 
 	if ( addToColor || yo.antiSaturn){ color.addToRGB( addToColor + yo.antiSaturn);}
 	return color;
@@ -132,8 +136,8 @@ void changeSpeed( int delta){
 	if ( yo.currentSpeed > 100){ 
 		yo.currentSpeed = 100; 
 		ledBlink();
-	} else if ( yo.currentSpeed < 0){ 
-		yo.currentSpeed = 0;
+	} else if ( yo.currentSpeed < 2){ 
+		yo.currentSpeed = 2;
 		ledBlink();
 	}
 	Serial.printf( "Speed: %d\n", yo.currentSpeed);
