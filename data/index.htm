@@ -18,8 +18,8 @@
 
 </head>
 <body>
-    <div><h2>noisex led server</h2></div>  	
-	<div class="upser">upser</div>
+    <div><h3>noisex led server</h3></div>  	
+	<!-- <div class="upser">upser</div> -->
 
 	`RANGEPLACEHOLDER`
 	`SELECTHOLDER`
@@ -40,7 +40,7 @@
 
 			var value = $('#pollitres option:selected').val();
 			var button = document.getElementById( "pollitres-button");
-			if ( value > 16) {			
+			if ( value > 1) {			
 				button.style.background = "var(--gr"+value+")";
 			} else {
 				button.style.background = "var(--gr0)";
@@ -57,6 +57,29 @@
 			
 		}
 
+		if (!!window.EventSource) {
+			var source = new EventSource('/events');
+
+			source.addEventListener('open', function(e) {
+				console.log("Events Connected");
+				updateDate();
+			}, false);
+
+			source.addEventListener('error', function(e) {
+				if (e.target.readyState != EventSource.OPEN) {
+				console.log("Events Disconnected");
+				}
+			}, false);
+
+			source.addEventListener('upRndVars', function(e) {
+				randomUpdate( e.data);
+			}, false);
+
+			source.addEventListener('myevent', function(e) {
+				<!-- console.log("myevent", e.data); -->
+				updateDate();
+			}, false);
+		}
 		<!-- console.log( [...document.querySelector("#pollitres").options].map( opt => opt.value ) ); -->
 	</script>
 </body>

@@ -48,7 +48,7 @@ void setup() {
 	mButtons[1066677700] =  { 0, "Brightness",	 		2, 	++ind,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&setBrightness,		5,		255};
 	mButtons[1066677701] =  { 0, "Saturations", 		2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSaturation, 	0,		100};
 	mButtons[1066677702] =  { 0, "Temperature", 		2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setTemperature,	0,		TEMP_IND_MAX};
-	mButtons[1066677703] =  { 0, "Speed", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			0,		40};
+	mButtons[1066677703] =  { 0, "Speed", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			2,		40};
 
 	mButtons[1270278422] =  { 0, "Leds reset",			0, 		0, 		false, 	false,		NULL, 			&ledReset, 		NULL, 			NULL};
 
@@ -70,7 +70,7 @@ void setup() {
 	#ifdef WEB_ENABLE
 		int wifiStatus = wifiStartUP();
 		if ( wifiStatus == WL_CONNECTED){
-			Serial.println( "Поднимаем как-то WebServer...");
+			Serial.println( "Поднимаем как-то WebServer.");
 			webServerStartUP();
 		} else{
 			Serial.printf( "WiFi нетути, ( Ошибка подключения номер: %d).\nWebServera вам не будет...:(", wifiStatus);
@@ -98,4 +98,8 @@ void loop() {
 	else { 
 		delay( 500); 
 	}  	
+
+	#ifdef EERPROM_ENABLE
+		eepromSaveHandler();
+	#endif
 }

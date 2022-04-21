@@ -6,12 +6,13 @@
 //C:\Users\vanilka\Documents\PlatformIO\Projects\220401-111103-esp32dev\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
 // #define TEMPLATE_PLACEHOLDER '`'
 AsyncWebServer server(80);
+AsyncEventSource events("/events");
 
 byte NUM_RANGES = 1;
 byte NUM_BUTTONS = 1;			
 String CSS_HOLDER = "\n";		// css градиенты для select палитров
 String RANGE_HOLDER = "\n";		// полоски-двигалки
-String ROOT_HOLDER = ":root{\n\t\t--gr0: #181E28;\n";
+String ROOT_HOLDER = ":root{\n\t\t--gr0: #181E28;\n --rnd10: #ff0000;		--rnd20: #ff0000;		--rnd21: #00ff00;		--rnd30: #ff0000;		--rnd31: #00ff00;		--rnd32: #0000ff;		--rnd40: #ff0000;		--rnd41: #00ff00;		--rnd42: #0000ff;		--rnd43: #ff00ff;		--gr2: var( --rnd10);		--gr3: linear-gradient( to right, var( --rnd20), var( --rnd21));		--gr4: linear-gradient( to right, var( --rnd30), var( --rnd31), var( --rnd32));		--gr5: linear-gradient( to right, var( --rnd40), var( --rnd41), var( --rnd42), var( --rnd43));";
 
 const char* PARAM_INPUT_1 = "funcID";  
 const char* PARAM_INPUT_2 = "value";
@@ -51,18 +52,18 @@ void collectData(){
 	
 	// собираем css градиенты для выбора палитр
 	String coma = "%,";
+	const byte shift = 6;
 	byte tcp[72]; //support gradient palettes with up to 18 entries
-	for ( int i = 0; i < 58; i++){
+	for ( int i = 0; i < 58 + 11; i++){
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
 
-		CSS_HOLDER +=  "\t#ui-id-"+ String(i+17) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String(i+17)+")}\n";
-		ROOT_HOLDER += "\t\t--gr"+ String(i+17) +": linear-gradient( to right, ";
+		CSS_HOLDER +=  "\t#ui-id-"+ String( i+ shift) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + shift)+")}\n";
+		ROOT_HOLDER += "\t\t--gr"+ String( i+ shift) +": linear-gradient( to right, ";
 
 		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
 			if ( tcp[ind] == 255){ coma = "%";}
 			else{ coma = "%,";}			
 			ROOT_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
-			// Serial.printf( "\ti=%d, byte=%d (%d.%d.%d)\n", ind, (tcp[ind]*100/255), tcp[ind+1], tcp[ind+2], tcp[ind+3]);
 			if ( tcp[ind]== 255){ break;}
 		}
 		ROOT_HOLDER += ");\n";
@@ -133,9 +134,17 @@ String processor(const String& var){
 	return String();
 }
 
-/*
-Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer
-*/
+
+void webServerUpdate(){
+	events.send("time to update...","myevent",millis());
+}
+
+void webServerEventRND( char ret[]){
+	events.send( ret, "upRndVars", millis());
+}
+
+
+/*Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer*/
 void webServerStartUP(){
 	collectData();
 
@@ -188,17 +197,34 @@ void webServerStartUP(){
 
 	// Route to load style.css file
   	server.on("/style.css", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", 		"text/css"); });
-  	// server.on("/jquery-ui.css", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.css", 	"text/css"); });
-  	// server.on("/jquery-3.6.0.js", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-3.6.0.js", "text/css"); });
-  	// server.on("/jquery-ui.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/jquery-ui.js", 	"text/css"); });
   	server.on("/script.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", 		"text/css"); });
 
 
+	events.onConnect([](AsyncEventSourceClient *client){
+		if(client->lastId()){
+		Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
+		}
+		//send event with message "hello!", id current millis
+		// and set reconnect delay to 1 second
+		client->send("hello!",NULL,millis(),1000);
+	});
+	//HTTP Basic authentication
+	// events.setAuthentication("user", "pass");
+	server.addHandler(&events);
+	
 	server.begin();
 }
 
 
 /*
+
+document.documentElement.style.cssText = "--main-background-color: red";
+or
+document.documentElement.style.setProperty("--main-background-color", "green");
+or
+document.documentElement.setAttribute("style", "--main-background-color: green");
+
+
 		$( "#pollitres" ).selectmenu( "open")._refreshMenu();
 		$( "#pollitres" ).selectmenu( "close");
 

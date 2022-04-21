@@ -21,6 +21,13 @@ function rInput( element) {
 	xhr.send();
 }  
 
+function randomUpdate( request){
+	var json = JSON.parse( request);
+	if ( json.p01){ 
+		document.documentElement.setAttribute("style", json.p01);
+	}
+}
+
 function reseter( xhr){			
 	var json = JSON.parse(xhr.responseText);
 	var def = document.querySelector( ".default");
@@ -71,8 +78,8 @@ function reseter( xhr){
 	// $( "#pollitres" ).selectmenu( "option", "selected",  json.vPollCurrent ).trigger( "change" );
 	//.prop('selected', true);;
 
-	var value = $('#pollitres option:selected').val();
-	document.querySelector( ".upser").innerHTML 			= "new value: " + oldValue + " -=- " + json.vPollCurrent + " -=- " + value;
+	// var value = $('#pollitres option:selected').val();
+	// document.querySelector( ".upser").innerHTML 			= "new value: " + oldValue + " -=- " + json.vPollCurrent + " -=- " + value;
 	// console.log( "new value: " + json.vPollDefault + " -=- " + json.vPollCurrent + " -=- " + value);
 
 	wave.forEach((element) => element.classList.remove('active'));
@@ -108,5 +115,5 @@ function updateDate(){
 // 	});
 // } 
 // document.getElementById( "pollitre-select").addEventListener("change", changeOption);
-
-(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();
+updateDate();
+//(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();

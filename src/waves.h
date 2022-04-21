@@ -33,7 +33,7 @@ void animWave03(){
 void animWave04(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
     for (int i = 0; i < 8; i++) {
-      	leds[beatsin8(i + 7, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 15);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
+      	leds[beatsin8( i + 5, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 15);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
 	FastLED.show();
 }

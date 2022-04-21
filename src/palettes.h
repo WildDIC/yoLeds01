@@ -307,8 +307,8 @@ const byte fierce_ice_gp[] PROGMEM = {
   119,   0, 38,255,
   149,   3,100,255,
   180,  23,199,255,
-  217, 100,235,255,
-  255, 255,255,255};
+  227, 100,235,255,
+  255, 150,255,255};
 
 
 // Gradient palette "Colorfull_gp", originally from
@@ -854,11 +854,165 @@ const byte candy2_gp[] PROGMEM = {
   211,  39, 33, 34,
   255,   1,  1,  1};
 
+
+
+const byte RainbowStripeColors_my[] PROGMEM = {
+	0,		255,	0,		0,
+	17,		0,		0,		0,
+	34,		171,	85,		0,
+	51,		0,		0,		0,
+	68,		171,	171,	0,
+	85,		0,		0,		0,
+	102,	0,		255,	0,
+	119,	0,		0,		0,
+	136,	0,		171,	85,
+	153,	0,		0,		0,
+	170,	0,		0,		255,
+	187,	0,		0,		0,
+	204,	85,		0,		171,
+	221,	0,		0,		0,
+	238,	171,	0,		85,
+	255,	0,		0,		0,
+};
+
+const byte PartyColors_my[] PROGMEM = {
+	0,	85,	0,	171,
+	17,	132,	0,	124,
+	34,	181,	0,	75,
+	51,	229,	0,	27,
+	68,	232,	23,	0,
+	85,	184,	71,	0,
+	102,	171,	119,	0,
+	119,	171,	171,	0,
+	136,	171,	85,	0,
+	153,	221,	34,	0,
+	170,	242,	0,	14,
+	187,	194,	0,	62,
+	204,	143,	0,	113,
+	221,	95,	0,	161,
+	238,	47,	0,	208,
+	255,	0,	7,	249};
+
+const byte RainbowColors_my[] PROGMEM = {
+	0,		255,	0,		0,
+	17,		213,	42,		0,
+	34,		171,	85,		0,
+	51,		171,	127,	0,
+	68,		171,	171,	0,
+	85,		86,		213,	0,
+	102,	0,		255,	0,
+	119,	0,		213,	42,
+	136,	0,		171,	85,
+	153,	0,		86,		170,
+	170,	0,		0,		255,
+	187,	42,		0,		213,
+	204,	85,		0,		171,
+	221,	127,	0,		129,
+	238,	171,	0,		85,
+	255,	213,	0,		43};
+
+const byte orangeFire_my[] PROGMEM = {
+	0, 		255, 0, 	0, 
+	255, 	255, 136, 	0};
+
+const byte greenToBlue_my[] PROGMEM = {
+	0, 		50, 	255, 	0, 
+	255, 	0, 		50, 	255};
+
+const byte redToViolet_my[] PROGMEM = {
+	0, 		255, 	0, 		0,
+	255, 	127, 	0, 		255};
+
+const byte redGreenBlue_my[] PROGMEM = {
+	0, 		255, 	0, 		0,
+	127,	0, 		255, 	0,
+	255, 	0, 		0, 		255};
+
+const byte deepForest_my[] PROGMEM = {
+	0,		9,		78,		32,
+	18,		10,		126,	76,
+	36,		14,		148,	92,
+	55,		11,		182,	112,
+	73,		12,		207,	126,
+	91,		66,		214,	152,
+	109,	105,	195,	161,
+	128,	127,	180,	160,
+	146,	108,	135,	120,
+	164,	90,		106,	97,
+	182,	74,		88,		79,
+	200,	21,		22,		21,
+	219,	0,		0,		81,
+	237,	0,		0,		142,
+	255,	0,		0,		190};
+
+const byte heatColor_my[] PROGMEM = {
+	0, 		0, 		0, 		0,
+	85,		136,	0, 		0,
+	170,	255,	0, 		0,
+	255, 	255, 	165,	0};
+
+const byte OceanColors_my[] PROGMEM = {
+	0,		25,		25,		112,
+	17,		0,		0,		136,
+	34,		25,		25,		112,
+	51,		0,		0,		128,
+	68,		0,		0,		136,
+	85,		0,		0,		205,
+	102,	46,		136,	87,
+	119,	0,		128,	128,
+	136,	95,		158,	160,
+	153,	0,		0,		255,
+	170,	0,		139,	139,
+	187,	100,	149,	237,
+	204,	127,	255,	212,
+	221,	46,		139,	87,
+	238,	0,		255,	255,
+	255,	135,	206,	250
+	// "191970", "000088", "191970", "000080", "000088", "0000CD", "2E8857", "008080", 
+	// "5F9EA0", "0000FF", "008B8B", "6495ED", "7FFFD4", "2E8B57", "00FFFF", "87CEFA"
+};
+
+const byte ForestColors_my[] PROGMEM = {
+	// "0x006400", "0x006400", "0x556B2F", "0x006400", "0x008000", "0x228B22", "0x6B8E23", "0x008000", 
+	// "0x2E8B57", "0x66CDAA", "0x32CD32", "0x9ACD32", "0x90EE90", "0x7CFC00", "0x66CDAA", "0x228B22"
+	0,		0,		100,	0,
+	17,		0,		100,	0,
+	34,		85,		107,	47,
+	51,		0,		100,	0,
+	68,		0,		128,	0,
+	85,		34,		139,	34,
+	102,	107,	142,	35,
+	119,	0,		128,	0,
+	136,	46,		139,	87,
+	153,	102,	205,	170,
+	170,	50,		205,	50,
+	187,	154,	205,	50,
+	204,	144,	238,	144,
+	221,	124,	252,	0,
+	238,	102,	205,	170,
+	255,	34,		139,	34
+};
+
+
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on
 // a number, rather than having to activate each explicitly
 // by name every time.
 const byte* const gGradientPalettes[] PROGMEM = {
+	// + 11
+  	RainbowColors_my,			// 05 - 
+	orangeFire_my,
+	greenToBlue_my,
+	redToViolet_my,
+	redGreenBlue_my,
+	deepForest_my,
+
+	PartyColors_my,
+	OceanColors_my,
+	ForestColors_my,
+	heatColor_my,
+	RainbowStripeColors_my,
+
   Sunset_Real_gp,               //13-00 Sunset
   es_rivendell_15_gp,           //14-01 Rivendell
   es_ocean_breeze_036_gp,       //15-02 Breeze
@@ -919,20 +1073,18 @@ const byte* const gGradientPalettes[] PROGMEM = {
   candy2_gp                     //70-57 Candy2
 };
 
-
-// #endif
 String palette_names[100] = {
 // "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
 // "Forest","Rainbow","Rainbow Bands",
+"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- red green blue", "- deep forest", 
+"PartyColors", "OceanColors", "ForestColors", "HeatColors", "RainbowStripeColors",
+
 "Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",
 "Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
 "Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
 "Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
 "Aurora","Atlantica","C9 2","C9 New","Temperature","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
-"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Yelblu Hot","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide",
-"Candy2"
-};
-
+"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Yelblu Hot","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2"};
 
 /**/
 void paletteStartUP(){
@@ -942,45 +1094,95 @@ void paletteStartUP(){
 	myPal[++ind] = { "- 2 Random colors"}; 
 	myPal[++ind] = { "- 3 Random colors"}; 
 	myPal[++ind] = { "- 4 Random colors"}; 
-	myPal[++ind] = { "RainbowColors"}; 			myPal[ind].palette = RainbowColors_p;	
-	myPal[++ind] = { "- orange fire"};	 		myPal[ind].palette = CRGBPalette16( CHSV( 3, 255, 255),  CHSV( 30, 255, 255));
-	myPal[++ind] = { "- green to blue"};	 	myPal[ind].palette = CRGBPalette16( CHSV( 75, 255, 255), CHSV( 160, 255, 255));
-	myPal[++ind] = { "- red to violet"};	 	myPal[ind].palette = CRGBPalette16( CRGB::Red, CRGB( 127, 0, 255));
-	myPal[++ind] = { "- red green blue"};	 	myPal[ind].palette = CRGBPalette16( CRGB::Red, CRGB::Green, CRGB::Blue);
-	myPal[++ind] = { "- deep forest"};	 		myPal[ind].palette = CRGBPalette16( CHSV(106,85,78), CHSV(93,91,90), CHSV(84,83,129));
-
-	myPal[++ind] = { "PartyColors"};	 		myPal[ind].palette = PartyColors_p;
-	myPal[++ind] = { "OceanColors"};	 		myPal[ind].palette = OceanColors_p;
-	myPal[++ind] = { "ForestColors"};	 		myPal[ind].palette = ForestColors_p;
-	myPal[++ind] = { "HeatColors my"};	 		myPal[ind].palette = CRGBPalette16( CRGB::Black, CRGB::DarkRed, CRGB::Red, CRGB::Orange);
-	myPal[++ind] = { "-RainbowStripeColors"};	myPal[ind].palette = RainbowStripeColors_p;
 
 	++ind;
-	for ( int i = 0; i < 58; i++){
+	for ( int i = 0; i < 58 + 11; i++){
 		byte tcp[72]; //support gradient palettes with up to 18 entries
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
 		activePollitre.loadDynamicGradientPalette(tcp);
 		myPal[i+ind].palette = activePollitre;
-		myPal[i+ind].name = String( i) + ". " + palette_names[i];
+		if ( i + ind > 11){
+			myPal[i+ind].name = String( i) + ". " + palette_names[i];
+		} else{
+			myPal[i+ind].name = palette_names[i];
+		}		
 	}
 	
 	// if (!wrap) paletteIndex = scale8(paletteIndex, 240); //cut off blend at palette "end"
 	// fastled_col = ColorFromPalette(currentPalette, paletteIndex, pbri, (paletteBlend == 3)? NOBLEND:LINEARBLEND);
 }
 
+extern void webServerEventRND( char ret[]);
+
+CRGB c01, c02, c03, c04;
+String str;		
+char asd[200];
+
+String getHEX( CRGB color){
+	// long hex = ( color.r * 65536) + ( color.g * 256) * color.b;
+	// return " #" + String( hex, HEX);
+	// return " #" + String( color.r, HEX) + String( color.g, HEX) +String( color.b, HEX);
+	return " rgb(" + String( color.r) + ","+  String( color.g) +","+String( color.b) + ")";
+}
+
+
+CRGB getCol(){
+	return 	CHSV(random8( 255), random8( 240, 255), random8( 150, 255));
+}
 
 /* Меням активную палитру и записываем ее в текующую активность ленты
 @param byte pollitraID = Номер паллитры из myPal */
 void paletteSetActive( byte pollitraID){
-	
-	if ( 	  pollitraID == 2){ activePollitre = CRGBPalette16( CHSV(random8(), 255, random8(128, 255)));}
-	else if ( pollitraID == 3){ activePollitre = CRGBPalette16( CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
-	else if ( pollitraID == 4){ activePollitre = CRGBPalette16( CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
-	else if ( pollitraID == 5){ activePollitre = CRGBPalette16( CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)), CHSV(random8(), 255, random8(128, 255)));}
+// document.documentElement.style.cssText = "--main-background-color: red";
+
+	if ( 	  pollitraID == 2){ 
+		c01 = getCol();
+		#ifdef WEB_ENABLE
+			str = "{\"p01\":\"--rnd10:"+ getHEX( c01) +"\"}";		
+    		strcpy( asd, str.c_str());		
+			webServerEventRND( asd);
+		#endif
+
+		activePollitre = CRGBPalette16( c01);
+	}
+	else if ( pollitraID == 3){ 
+		c01 = getCol();	c02 = getCol();
+		#ifdef WEB_ENABLE
+			str = "{\"p01\":\"--rnd21:"+ getHEX( c01) +";--rnd20:"+ getHEX( c02) +"\"}";				
+			strcpy( asd, str.c_str());
+			webServerEventRND( asd);
+		#endif
+
+		activePollitre = CRGBPalette16( c01, c02);
+	}
+	else if ( pollitraID == 4){ 
+		c01 = getCol(); c02 = getCol(); c03 = getCol();
+		#ifdef WEB_ENABLE
+			str = "{\"p01\":\"--rnd30:"+ getHEX( c01) +";--rnd31:"+ getHEX( c02) +";--rnd32:"+ getHEX( c03) +"\"}";
+			strcpy( asd, str.c_str());
+			webServerEventRND( asd);
+		#endif
+
+		activePollitre = CRGBPalette16( c01, c02, c03);	 
+	}
+	else if ( pollitraID == 5){ 
+		c01 = getCol(); c02 = getCol();	c03 = getCol();	c04 = getCol();
+		#ifdef WEB_ENABLE
+			str = "{\"p01\": \"--rnd40:"+ getHEX( c01) +";--rnd41:"+ getHEX( c02) +";--rnd42:"+ getHEX( c03) +";--rnd43:"+ getHEX( c04) +"\"}";		
+			strcpy( asd, str.c_str());
+			webServerEventRND( asd);
+		#endif
+		activePollitre = CRGBPalette16( c01, c02, c03, c04);	
+	}
 	else { activePollitre = myPal[pollitraID].palette;}
 
 	mButtons[yo.lastPressed].pollCurrent = pollitraID;
-	
+	currentPal[yo.lastPressed] = pollitraID;
+
+	#ifdef EERPROM_ENABLE 
+		isNeedSaveEEPROM = true;
+	#endif
+
 	#ifdef DEBUG_ENABLE
 		Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mButtons[yo.lastPressed].name);	
 	#endif

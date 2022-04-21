@@ -1,5 +1,5 @@
 html {font-family: Arial; display: inline-block; text-align: center;}
-h2 {font-size: 3.0rem;}
+h3 {font-size: 2.5rem;}
 div { align-self: center;}
 body {max-width: 600px; margin:0px auto; background: #21252B; color: #E1E1E1; display: flex; flex-direction: column; align-items: flex-start; 
 	font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;}
@@ -78,9 +78,11 @@ background-color: red;
 	white-space: nowrap;
 	background: #181E28;
 	width: 340px;
-	font-size: 1.1em; 
+	font-size: 1.0em; 
 	font-family: 'Microsoft JhengHei UI', 'Open Sans', Arial, sans-serif;
 	border: 0px;		
+	text-indent: 0.5em;
+	border-radius: 5px;
 }
 .ui-selectmenu-icon.ui-icon {
 	float: right;

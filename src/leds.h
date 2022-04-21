@@ -195,7 +195,8 @@ void changeSaturation( int delta){
 /* Сброс параметров ленты в дефолтное состояние */
 void ledReset(){
 	changeBrightness(255); 
-	changeSpeed( -90); 
+	// changeSpeed( -90); 
+	setSpeed( 10);
 	changeTemperature( TEMP_IND_MAX); 
 	changeSaturation( 255);
 }

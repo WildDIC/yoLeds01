@@ -3,9 +3,8 @@
 IRrecv irrecv(RECV_PIN);
 decode_results results;
 
-
 extern void ledOFF( int resValue);
-extern void eepromSave( bool forceSaveEEPROM);
+extern void webServerUpdate();
 extern void paletteSetActive( byte pollitraID);
 
 /* Поднимаем ИР-сервер*/
@@ -63,8 +62,13 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 				}
 			} 
 
+			#ifdef WEB_ENABLE
+				webServerUpdate();
+			#endif
+
 			#ifdef EERPROM_ENABLE
-				eepromSave( false);	
+				isNeedSaveEEPROM = true;
+				// eepromSave( false);	
 			#endif
 		}		
 	}   

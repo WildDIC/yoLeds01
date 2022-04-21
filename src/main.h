@@ -2,7 +2,7 @@
 
 #define MAX_SATURATIOIN 100
 #define WEB_ENABLE 
-// #define EERPROM_ENABLE 
+#define EERPROM_ENABLE 
 // #define DEBUG_ENABLE 
 
 #ifdef DEBUG_ENABLE
@@ -25,6 +25,7 @@
 #define TEMP_IND_MAX 40                 // Максимальный используемый индекс в таблице цветов
 
 void (*pt2Func)(); 						// Указатель на функцию для CASE
+bool isNeedSaveEEPROM = false; 			// Флаг необходимости загрузить данные в ЕЕПРОМ
 
 struct sPol{
 	int id;
@@ -32,18 +33,21 @@ struct sPol{
 };
 sPol savePollitre[NUM_POLLITR];
 
+typedef std::map<int, byte> mapPaletts;
+mapPaletts currentPal; 
+std::map<int, byte>::iterator palIter;
+
 struct config{
 	int currentBrightness = 255;        // Уровень яркости ( 0-255)
 	int currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
-	int currentSpeed = 10;              // Скорость анимации ( задержка)
+	int currentSpeed = 10;          // Скорость анимации ( задержка)
 	int currentSaturn = MAX_SATURATIOIN;// Сатурация цвета ( 0-255)
 	int antiSaturn = 0;             	// Обратная величина сатурации ( 255-0)
 	bool ONOFF = false;                 // Включено или выключено питание ленты
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
 	int lastPressed;					// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
-	byte aPollitra;						// Текуущая активная паллитра
-	// sPol savePollitre[NUM_POLLITR];
 } yo;                                   // Конфиг с параметрами
+
 
 struct button{
     int code;
