@@ -10,6 +10,8 @@ struct pollitraZ{
 };
 pollitraZ myPal[NUM_POLLITR];
 
+CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
+
 // From ColorWavesWithPalettes by Mark Kriegsman: https://gist.github.com/kriegsman/8281905786e8b2632aeb
 // Unfortunaltely, these are stored in RAM!
 
@@ -917,16 +919,19 @@ const byte orangeFire_my[] PROGMEM = {
 
 const byte greenToBlue_my[] PROGMEM = {
 	0, 		50, 	255, 	0, 
-	255, 	0, 		50, 	255};
+	127, 	0, 		50, 	255,
+	255, 	50,		255, 	0};
 
 const byte redToViolet_my[] PROGMEM = {
 	0, 		255, 	0, 		0,
-	255, 	127, 	0, 		255};
+	127, 	127, 	0, 		255,
+	255, 	255, 	0, 		0};
 
 const byte redGreenBlue_my[] PROGMEM = {
 	0, 		255, 	0, 		0,
-	127,	0, 		255, 	0,
-	255, 	0, 		0, 		255};
+	85,		0, 		255, 	0,
+	170, 	0, 		0, 		255,
+	255, 	255,	0, 		0};
 
 const byte deepForest_my[] PROGMEM = {
 	0,		9,		78,		32,
@@ -1112,11 +1117,6 @@ void paletteStartUP(){
 	// fastled_col = ColorFromPalette(currentPalette, paletteIndex, pbri, (paletteBlend == 3)? NOBLEND:LINEARBLEND);
 }
 
-extern void webServerEventRND( char ret[]);
-
-CRGB c01, c02, c03, c04;
-String str;		
-char asd[200];
 
 String getHEX( CRGB color){
 	// long hex = ( color.r * 65536) + ( color.g * 256) * color.b;
@@ -1125,62 +1125,62 @@ String getHEX( CRGB color){
 	return " rgb(" + String( color.r) + ","+  String( color.g) +","+String( color.b) + ")";
 }
 
+/* Генерим новый CHSV случайный цвет для "рэндомных" палитр. 
+Если цвет чорный или у веб-клиента повторно нажата активность - создаем новый.
 
-CRGB getCol(){
-	return 	CHSV(random8( 255), random8( 240, 255), random8( 150, 255));
+@param color CRGB текущего цвета, возвращаем его, если не требуется обновления.
+@return CRGB из сгенерированного CHSV цвета, потому что, сделать нормальный цвет можно только в HSV...*/
+CRGB getCol( CRGB color){
+	if ( yo.againButton || color.r == 0){
+		return 	CHSV(random8( 1, 255), random8( 200, 255), random8( 200, 255));
+	}
+	return color;	
 }
 
 /* Меням активную палитру и записываем ее в текующую активность ленты
 @param byte pollitraID = Номер паллитры из myPal */
 void paletteSetActive( byte pollitraID){
-// document.documentElement.style.cssText = "--main-background-color: red";
-
-	if ( 	  pollitraID == 2){ 
-		c01 = getCol();
+	if (  pollitraID == 2){ 
+		c10 = getCol( c10);
 		#ifdef WEB_ENABLE
-			str = "{\"p01\":\"--rnd10:"+ getHEX( c01) +"\"}";		
-    		strcpy( asd, str.c_str());		
-			webServerEventRND( asd);
+			yo.rndStyle = "\"--gr2: "+ getHEX( c10)+ ";\"";
 		#endif
 
-		activePollitre = CRGBPalette16( c01);
+		activePollitre = CRGBPalette16( c10);
 	}
 	else if ( pollitraID == 3){ 
-		c01 = getCol();	c02 = getCol();
+		c20 = getCol( c20);	c21 = getCol( c21);
 		#ifdef WEB_ENABLE
-			str = "{\"p01\":\"--rnd21:"+ getHEX( c01) +";--rnd20:"+ getHEX( c02) +"\"}";				
-			strcpy( asd, str.c_str());
-			webServerEventRND( asd);
+			yo.rndStyle = "\"--gr3: linear-gradient( 90deg, "+ getHEX(c20)+", "+ getHEX(c21)+", "+ getHEX(c20)+");\"";
 		#endif
 
-		activePollitre = CRGBPalette16( c01, c02);
+		activePollitre = CRGBPalette16( c20, c21);
 	}
 	else if ( pollitraID == 4){ 
-		c01 = getCol(); c02 = getCol(); c03 = getCol();
+		c30 = getCol( c30); c31 = getCol( c31); c32 = getCol( c32);
 		#ifdef WEB_ENABLE
-			str = "{\"p01\":\"--rnd30:"+ getHEX( c01) +";--rnd31:"+ getHEX( c02) +";--rnd32:"+ getHEX( c03) +"\"}";
-			strcpy( asd, str.c_str());
-			webServerEventRND( asd);
+			yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+", "+ getHEX(c30)+");\"";
 		#endif
 
-		activePollitre = CRGBPalette16( c01, c02, c03);	 
+		activePollitre = CRGBPalette16( c30, c31, c32);	 
 	}
 	else if ( pollitraID == 5){ 
-		c01 = getCol(); c02 = getCol();	c03 = getCol();	c04 = getCol();
+		c40 = getCol( c40); c41 = getCol( c41);	c42 = getCol( c42);	c43 = getCol( c43);
 		#ifdef WEB_ENABLE
-			str = "{\"p01\": \"--rnd40:"+ getHEX( c01) +";--rnd41:"+ getHEX( c02) +";--rnd42:"+ getHEX( c03) +";--rnd43:"+ getHEX( c04) +"\"}";		
-			strcpy( asd, str.c_str());
-			webServerEventRND( asd);
+			yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43)+", "+ getHEX(c40)+");\"";
 		#endif
-		activePollitre = CRGBPalette16( c01, c02, c03, c04);	
+		activePollitre = CRGBPalette16( c40, c41, c42, c43);	
 	}
-	else { activePollitre = myPal[pollitraID].palette;}
+	else { 
+		yo.rndStyle = "false";
+		activePollitre = myPal[pollitraID].palette;
+	}
 
 	mButtons[yo.lastPressed].pollCurrent = pollitraID;
 	currentPal[yo.lastPressed] = pollitraID;
 
 	#ifdef EERPROM_ENABLE 
-		isNeedSaveEEPROM = true;
+		yo.isNeedSaveEEPROM = true;
 	#endif
 
 	#ifdef DEBUG_ENABLE

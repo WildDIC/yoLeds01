@@ -21,7 +21,7 @@ void ledsStartUP(){
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
@@ -35,7 +35,7 @@ CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true,
 
 /* Забираем цвет colorID из текущей targetPalette палитры.
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
@@ -63,8 +63,13 @@ void ledOFF( int resValue){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
 	yo.lastPressed = resValue;
-	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
-	// FastLED.show();
+
+	// for( uint8_t i = 0; i < 50; i++){
+	// 	fadeToBlackBy( leds, NUM_LEDS, 10);
+	// 	FastLED.show();
+	// 	// delay( 5);
+	// }
+	fill_solid( leds, NUM_LEDS, CRGB::Black); 		
 }
 
 /* Включаем беленькую */
@@ -194,10 +199,58 @@ void changeSaturation( int delta){
 
 /* Сброс параметров ленты в дефолтное состояние */
 void ledReset(){
-	changeBrightness(255); 
+	changeBrightness(128); 
 	// changeSpeed( -90); 
 	setSpeed( 10);
 	changeTemperature( TEMP_IND_MAX); 
 	changeSaturation( 255);
 }
 
+CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend) {
+  if( blend == 0)  return c1;
+  if(blend == 255) return c2;
+
+  uint32_t r3 = (( c2.r * blend) + ( c1.r * ( 255 - blend))) >> 8;
+  uint32_t g3 = (( c2.g * blend) + ( c1.g * ( 255 - blend))) >> 8;
+  uint32_t b3 = (( c2.b * blend) + ( c1.b * ( 255 - blend))) >> 8;
+
+  return CRGB(r3, g3, b3);
+}
+
+
+/*
+ * fade out function, higher rate = quicker fade
+
+void WS2812FX::fade_out(uint8_t rate) {
+  rate = (255-rate) >> 1;
+  float mappedRate = float(rate) +1.1;
+
+  uint32_t color = SEGCOLOR(1); // target color
+  int w2 = W(color);
+  int r2 = R(color);
+  int g2 = G(color);
+  int b2 = B(color);
+
+  for(uint16_t i = 0; i < SEGLEN; i++) {
+    color = getPixelColor(i);
+    int w1 = W(color);
+    int r1 = R(color);
+    int g1 = G(color);
+    int b1 = B(color);
+
+    int wdelta = (w2 - w1) / mappedRate;
+    int rdelta = (r2 - r1) / mappedRate;
+    int gdelta = (g2 - g1) / mappedRate;
+    int bdelta = (b2 - b1) / mappedRate;
+
+    // if fade isn't complete, make sure delta is at least 1 (fixes rounding issues)
+    wdelta += (w2 == w1) ? 0 : (w2 > w1) ? 1 : -1;
+    rdelta += (r2 == r1) ? 0 : (r2 > r1) ? 1 : -1;
+    gdelta += (g2 == g1) ? 0 : (g2 > g1) ? 1 : -1;
+    bdelta += (b2 == b1) ? 0 : (b2 > b1) ? 1 : -1;
+
+    setPixelColor(i, r1 + rdelta, g1 + gdelta, b1 + bdelta, w1 + wdelta);
+  }
+}
+
+*/

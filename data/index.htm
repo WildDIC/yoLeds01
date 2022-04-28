@@ -1,6 +1,7 @@
 <!DOCTYPE HTML><html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+	<link rel="icon" href="data:;base64,=">
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<style>
@@ -9,78 +10,27 @@
 
 	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
   	<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-  	<script>
-  		$( function() {
-    		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
-    		$( "#pollitres111" ).selectmenu();	
-  		} );
-  	</script>
-
+	<script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 </head>
 <body>
-    <div><h3>noisex led server</h3></div>  	
+	<div><button onclick='buttonClick(this)' id='551489775' class='powerbutton'>
+		<span class="unsaver0">x </span>Power ON/OFF<span class="unsaver1"> x</span>
+	</button></div>
+
 	<!-- <div class="upser">upser</div> -->
 
 	`RANGEPLACEHOLDER`
+	<div class="wrap">
+		<div class="half">
+			<div id="picker"></div>
+		</div>
+		<div class="half01">
+			<div id="colorList"></div>
+		</div>	
+	</div>
 	`SELECTHOLDER`
 	`BUTTONPLACEHOLDER`   		
 
 	<script src="script.js"></script>
-	<script type="text/javascript">
-   		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
-
-		$( "#pollitres" ).selectmenu( "open");
-		$( "#pollitres" ).selectmenu( "close");
-
-		$( "#pollitres" ).selectmenu( "instance" )._renderButtonItem = function( item ) {
-			var buttonItem = $( "<span>", {
-				"class": "ui-selectmenu-text"
-			})
-			this._setText( buttonItem, item.label );
-
-			var value = $('#pollitres option:selected').val();
-			var button = document.getElementById( "pollitres-button");
-			if ( value > 1) {			
-				button.style.background = "var(--gr"+value+")";
-			} else {
-				button.style.background = "var(--gr0)";
-			}
-
-			<!-- console.log( "Render button! " + item);  id="pollitres-button" -->
-			<!-- buttonItem.addClass( "ui-id-" + value); -->
-			
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
-			xhr.send();	  
-			return buttonItem;
-
-			
-		}
-
-		if (!!window.EventSource) {
-			var source = new EventSource('/events');
-
-			source.addEventListener('open', function(e) {
-				console.log("Events Connected");
-				updateDate();
-			}, false);
-
-			source.addEventListener('error', function(e) {
-				if (e.target.readyState != EventSource.OPEN) {
-				console.log("Events Disconnected");
-				}
-			}, false);
-
-			source.addEventListener('upRndVars', function(e) {
-				randomUpdate( e.data);
-			}, false);
-
-			source.addEventListener('myevent', function(e) {
-				<!-- console.log("myevent", e.data); -->
-				updateDate();
-			}, false);
-		}
-		<!-- console.log( [...document.querySelector("#pollitres").options].map( opt => opt.value ) ); -->
-	</script>
 </body>
 </html>

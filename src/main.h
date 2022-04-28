@@ -24,8 +24,11 @@
 #define NUM_POLLITR  80                 // Количество кастомных поллитров
 #define TEMP_IND_MAX 40                 // Максимальный используемый индекс в таблице цветов
 
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#define MAX(a,b) ((a)>(b)?(a):(b))
+
+
 void (*pt2Func)(); 						// Указатель на функцию для CASE
-bool isNeedSaveEEPROM = false; 			// Флаг необходимости загрузить данные в ЕЕПРОМ
 
 struct sPol{
 	int id;
@@ -37,15 +40,30 @@ typedef std::map<int, byte> mapPaletts;
 mapPaletts currentPal; 
 std::map<int, byte>::iterator palIter;
 
+// typedef void (*pt2webUpdate)(void); 	// function pointer type
+typedef void (*pt2Funca)(void); 	// function pointer type
+typedef void (*pt2static)(void); 	// function pointer type
+typedef void (*pt2prewave)(void); 	// function pointer type
+typedef void (*pt2setter)(int); 	// function pointer type
+
 struct config{
 	int currentBrightness = 255;        // Уровень яркости ( 0-255)
 	int currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
-	int currentSpeed = 10;          // Скорость анимации ( задержка)
+	int currentSpeed = 10;      	    // Скорость анимации ( задержка)
 	int currentSaturn = MAX_SATURATIOIN;// Сатурация цвета ( 0-255)
 	int antiSaturn = 0;             	// Обратная величина сатурации ( 255-0)
 	bool ONOFF = false;                 // Включено или выключено питание ленты
+	bool isNeedSaveEEPROM = false;
+	bool againButton = 1;				// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
+	clock_t now = 0;
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
 	int lastPressed;					// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
+	void (*pt2webUpdate)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	void (*pt2webUnsave)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	String rndStyle;					// строка для подмены переменных стиля случайных палитр через json на веб-клиент ( reseter)
+	CRGB c1 = CRGB( 255, 0, 0);
+	CRGB c2 = CRGB( 0,  255, 0);
+	CRGB c3 = CRGB( 0, 0, 255);
 } yo;                                   // Конфиг с параметрами
 
 
@@ -61,11 +79,6 @@ struct range{
     String name;
 	int *value;
 };
-
-typedef void (*pt2Funca)(void); 	// function pointer type
-typedef void (*pt2static)(void); 	// function pointer type
-typedef void (*pt2prewave)(void); 	// function pointer type
-typedef void (*pt2setter)(int); 	// function pointer type
 
 struct irdaItems{
     int code;					// IR code
@@ -96,6 +109,20 @@ int temperList[NUM_TEMPS] = {0xFF3300,0xFF3800,0xFF4500,0xFF4700,0xFF5200,0xFF53
 
 
 
+int powInt(int x, int y){
+    for (int i = 0; i < y; i++) { x *= 10;  }
+    return x;
+}
+
+int parseInt(char* chars){
+    int sum = 0;
+    int len = strlen(chars);
+    for (int x = 0; x < len; x++) {
+        int n = chars[len - (x + 1)] - '0';
+        sum = sum + powInt(n, x);
+    }
+    return sum;
+}
 
 /*
 // ! плохой стиль - даже в C99 этого уже не требуется !

@@ -8,14 +8,16 @@
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
 
+
 byte NUM_RANGES = 1;
 byte NUM_BUTTONS = 1;			
 String CSS_HOLDER = "\n";		// css градиенты для select палитров
 String RANGE_HOLDER = "\n";		// полоски-двигалки
-String ROOT_HOLDER = ":root{\n\t\t--gr0: #181E28;\n --rnd10: #ff0000;		--rnd20: #ff0000;		--rnd21: #00ff00;		--rnd30: #ff0000;		--rnd31: #00ff00;		--rnd32: #0000ff;		--rnd40: #ff0000;		--rnd41: #00ff00;		--rnd42: #0000ff;		--rnd43: #ff00ff;		--gr2: var( --rnd10);		--gr3: linear-gradient( to right, var( --rnd20), var( --rnd21));		--gr4: linear-gradient( to right, var( --rnd30), var( --rnd31), var( --rnd32));		--gr5: linear-gradient( to right, var( --rnd40), var( --rnd41), var( --rnd42), var( --rnd43));";
+String ROOT_HOLDER = ":root{\n" ;
+String colorString = "";
 
-const char* PARAM_INPUT_1 = "funcID";  
-const char* PARAM_INPUT_2 = "value";
+#define PARAM_INPUT_1 "funcID"
+#define PARAM_INPUT_2  "value"
 
 button bList[20];
 range rList[10];
@@ -29,6 +31,12 @@ int rState(int numValue){
 		case 3: numValue = yo.currentSpeed; break;
 	}
 	return numValue;
+}
+
+void makeColorString(){
+	colorString  = "\"vC1\": \"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\", ";
+	colorString += "\"vC2\": \"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\", ";
+	colorString += "\"vC3\": \"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\", ";
 }
 
 void collectData(){	
@@ -50,6 +58,12 @@ void collectData(){
 		// }
     }	
 	
+	ROOT_HOLDER += "\t\t--gr0: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr2: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
+	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	
 	// собираем css градиенты для выбора палитр
 	String coma = "%,";
 	const byte shift = 6;
@@ -58,7 +72,7 @@ void collectData(){
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
 
 		CSS_HOLDER +=  "\t#ui-id-"+ String( i+ shift) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + shift)+")}\n";
-		ROOT_HOLDER += "\t\t--gr"+ String( i+ shift) +": linear-gradient( to right, ";
+		ROOT_HOLDER += "\t\t--gr"+ String( i+ shift) +": linear-gradient( 90deg, ";
 
 		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
 			if ( tcp[ind] == 255){ coma = "%";}
@@ -104,17 +118,6 @@ String processor(const String& var){
 		}
 		buttons += "\t</optgroup>\n</select></div>\n\n";
 
-		// // String active = "";			
-		// buttons += "\n<div class='select'>\n\t<select name='pollitres' id='pollitre-select'>\n";
-		// for (size_t i = 0; i < NUM_POLLITR; i++){
-		// 	if ( myPal[i].name.length() > 0){				
-		// 		if ( i == mButtons[yo.lastPressed].min){ active = "selected = 'selected'";} 
-		// 		else{	active = ""; }
-		// 		buttons += "\t\t<option value='"+ String( i) +"' class='option"+ String( i) +"' id='"+ String( i) +"' "+ active +">"+ myPal[i].name +"</option>\n";
-		// 	}
-		// }
-		// buttons += "</select></div>\n";
-
 		return buttons;
 	}
 
@@ -123,7 +126,7 @@ String processor(const String& var){
 		String active = "";			
 		if ( yo.ONOFF == true){ active = " active"; }
 		buttons += "\n";
-		buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
+		// buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
 
 		for ( int i = 2; i < NUM_BUTTONS; i++ ){ active = "";			
 			if ( yo.lastPressed == bList[i].code){ active = " active"; }
@@ -135,18 +138,22 @@ String processor(const String& var){
 }
 
 
+// запуск эвента, который сообщает клиенту, что что-то изменались и ему надо запросить данные с сервера.
 void webServerUpdate(){
-	events.send("time to update...","myevent",millis());
+	// Serial.println( "Server update...");
+	events.send("time to update...","update",millis());
 }
 
-void webServerEventRND( char ret[]){
-	events.send( ret, "upRndVars", millis());
+//передаем через эвет "рэндомные" палитры для подмены фона кнопки селектора
+void webServerUnsave(){
+	events.send( yo.isNeedSaveEEPROM ? "1" : "0", "unsave", millis());
 }
-
 
 /*Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer*/
 void webServerStartUP(){
 	collectData();
+	yo.pt2webUpdate = &webServerUpdate;
+	yo.pt2webUnsave = &webServerUnsave;
 
 	if(!SPIFFS.begin(true)){
  	 	Serial.println("An Error has occurred while mounting SPIFFS");
@@ -160,28 +167,71 @@ void webServerStartUP(){
     );
 
 	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		if (request->hasParam(PARAM_INPUT_1)) {			
-			String inputMessage01 = request->getParam(PARAM_INPUT_1)->value();
+		if (request->hasParam( PARAM_INPUT_1)) {  
+			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();
 			String inputMessage02 = "0";
 
-			if (request->hasParam(PARAM_INPUT_2)) {
-				inputMessage02 = request->getParam(PARAM_INPUT_2)->value();
-			}
+			if (request->hasParam( PARAM_INPUT_2)) { 
+				inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
+				yo.againButton = atoi( inputMessage02.c_str());
+			}			
+			// Serial.println( inputMessage02);
 			irdaServer( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
 		}
 		request->send(200, "text/plain", "OK");
 	});
 
 	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		if (request->hasParam(PARAM_INPUT_1)) {			
-			String inputMessage01 = request->getParam(PARAM_INPUT_1)->value();				
+		if (request->hasParam( PARAM_INPUT_2)) { 
+			String inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
+			yo.againButton = atoi( inputMessage02.c_str());
+		}	
+		if (request->hasParam( PARAM_INPUT_1)) {			
+			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();				
 			paletteSetActive( atoi( inputMessage01.c_str()));
+			webServerUpdate();
+		}
+		request->send(200, "text/plain", "OK");
+	});
+
+	server.on("/colorset", HTTP_GET, [] (AsyncWebServerRequest *request) {
+		if (request->hasParam( PARAM_INPUT_1)) {
+			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();	
+			
+			uint8_t colors[9];
+			int ind = 0;
+			char * cstr = new char [inputMessage01.length()+1];
+			strcpy (cstr, inputMessage01.c_str());
+
+			char * pch;
+			pch = strtok ( cstr, "-");
+			while (pch != NULL)	{				
+				// Serial.println( parseInt( pch) + 1);
+				colors[ind] = parseInt( pch);
+				ind++;
+				pch = strtok (NULL, "-");	
+			}
+
+			yo.c1 = CRGB( colors[0], colors[1], colors[2]);
+			yo.c2 = CRGB( colors[3], colors[4], colors[5]);
+			yo.c3 = CRGB( colors[6], colors[7], colors[8]);
+
+			makeColorString();
+			webServerUpdate();
+
+			// Serial.printf( "%d.%d.%d\n", yo.c1.r, yo.c1.g, yo.c1.b);
+			// Serial.printf( "%d.%d.%d\n", colors[0], colors[1], colors[2]);
 		}
 		request->send(200, "text/plain", "OK");
 	});
 
 	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {
 		// Serial.println( "Send update to client...");
+		// if (request->hasParam( "full")) {
+		// 	makeColorString();
+		// }
+		makeColorString();
+
 		String out = "{";
 		out += "\"vBrightness\": "	+ String(yo.currentBrightness)					+", ";
 		out += "\"vSaturn\": "		+ String(yo.currentSaturn)						+", ";
@@ -189,10 +239,15 @@ void webServerStartUP(){
 		out += "\"vSpeed\": "		+ String(yo.currentSpeed)						+", ";
 		out += "\"vPressed\": "		+ String(yo.lastPressed)						+", ";
 		out += "\"vONOFF\": "		+ String(yo.ONOFF)								+", ";
+		out += "\"vUnsave\": "		+ String(yo.isNeedSaveEEPROM)					+", ";
 		out += "\"vPollCurrent\": "	+ String(mButtons[yo.lastPressed].pollCurrent)	+", ";
+		out += "\"vRndStyle\": "	+ yo.rndStyle 									+", ";
+		out += colorString;
 		out += "\"vPollDefault\": "	+ String(mButtons[yo.lastPressed].pollDefault)	+" ";
 		out += "}";      // 	ЗАРЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
 		request->send(200, "application/json", out);
+
+		colorString = "";
 	});
 
 	// Route to load style.css file
@@ -202,7 +257,7 @@ void webServerStartUP(){
 
 	events.onConnect([](AsyncEventSourceClient *client){
 		if(client->lastId()){
-		Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
+			Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
 		}
 		//send event with message "hello!", id current millis
 		// and set reconnect delay to 1 second
@@ -274,31 +329,4 @@ document.documentElement.setAttribute("style", "--main-background-color: green")
 	</div> 
 </div>
 
-	<div class="select"> 
-		<select name="pollitres" id="pollitres">
-			<optgroup label="Scripts">
-				<option>1</option>
-				<option selected="selected">2</option>
-				<option>3</option>
-				<option>4</option>
-				<option>5</option>
-			</optgroup>
-			<optgroup label="Other files">
-				<option color="red">666 text</option>
-				<option>7</option>
-				<option>8</option>
-				<option>9</option>
-				<option>10</option>
-				<option>11</option>
-				<option>12</option>
-				<option>13</option>
-				<option>14</option>
-				<option>15</option>
-				<option>16</option>
-				<option>17</option>
-				<option>18</option>
-				<option>19</option>
-			</optgroup>
-		</select>
-	</div>
 */
