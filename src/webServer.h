@@ -138,10 +138,36 @@ String processor(const String& var){
 }
 
 
+String webServerMakeJSON(){
+	makeColorString();
+
+	String out = "{";
+	out += "\"vBrightness\": "	+ String(yo.currentBrightness)					+", ";
+	out += "\"vSaturn\": "		+ String(yo.currentSaturn)						+", ";
+	out += "\"vTemp\": "		+ String(yo.currentTemp)						+", ";
+	out += "\"vSpeed\": "		+ String(yo.currentSpeed)						+", ";
+	out += "\"vPressed\": "		+ String(yo.lastPressed)						+", ";
+	out += "\"vONOFF\": "		+ String(yo.ONOFF)								+", ";
+	out += "\"vUnsave\": "		+ String(yo.isNeedSaveEEPROM)					+", ";
+	out += "\"vPollCurrent\": "	+ String(mButtons[yo.lastPressed].pollCurrent)	+", ";
+	out += "\"vRndStyle\": "	+ yo.rndStyle 									+", ";
+	out += colorString;
+	out += "\"vPollDefault\": "	+ String(mButtons[yo.lastPressed].pollDefault)	+" ";
+	out += "}";      // 	ЗАПЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
+	
+	colorString = "";
+	
+	return out;
+}
+
+
 // запуск эвента, который сообщает клиенту, что что-то изменались и ему надо запросить данные с сервера.
 void webServerUpdate(){
-	// Serial.println( "Server update...");
-	events.send("time to update...","update",millis());
+	String out 	 = webServerMakeJSON();
+	char * chOut = new char [out.length()+1];
+	strcpy ( chOut, out.c_str());
+
+	events.send( chOut,"update", millis());
 }
 
 //передаем через эвет "рэндомные" палитры для подмены фона кнопки селектора
@@ -175,7 +201,6 @@ void webServerStartUP(){
 				inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
 				yo.againButton = atoi( inputMessage02.c_str());
 			}			
-			// Serial.println( inputMessage02);
 			irdaServer( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
 		}
 		request->send(200, "text/plain", "OK");
@@ -206,7 +231,6 @@ void webServerStartUP(){
 			char * pch;
 			pch = strtok ( cstr, "-");
 			while (pch != NULL)	{				
-				// Serial.println( parseInt( pch) + 1);
 				colors[ind] = parseInt( pch);
 				ind++;
 				pch = strtok (NULL, "-");	
@@ -215,53 +239,28 @@ void webServerStartUP(){
 			yo.c1 = CRGB( colors[0], colors[1], colors[2]);
 			yo.c2 = CRGB( colors[3], colors[4], colors[5]);
 			yo.c3 = CRGB( colors[6], colors[7], colors[8]);
-
-			makeColorString();
+			// makeColorString();
 			webServerUpdate();
-
 			// Serial.printf( "%d.%d.%d\n", yo.c1.r, yo.c1.g, yo.c1.b);
 			// Serial.printf( "%d.%d.%d\n", colors[0], colors[1], colors[2]);
 		}
 		request->send(200, "text/plain", "OK");
 	});
 
-	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		// Serial.println( "Send update to client...");
-		// if (request->hasParam( "full")) {
-		// 	makeColorString();
-		// }
-		makeColorString();
-
-		String out = "{";
-		out += "\"vBrightness\": "	+ String(yo.currentBrightness)					+", ";
-		out += "\"vSaturn\": "		+ String(yo.currentSaturn)						+", ";
-		out += "\"vTemp\": "		+ String(yo.currentTemp)						+", ";
-		out += "\"vSpeed\": "		+ String(yo.currentSpeed)						+", ";
-		out += "\"vPressed\": "		+ String(yo.lastPressed)						+", ";
-		out += "\"vONOFF\": "		+ String(yo.ONOFF)								+", ";
-		out += "\"vUnsave\": "		+ String(yo.isNeedSaveEEPROM)					+", ";
-		out += "\"vPollCurrent\": "	+ String(mButtons[yo.lastPressed].pollCurrent)	+", ";
-		out += "\"vRndStyle\": "	+ yo.rndStyle 									+", ";
-		out += colorString;
-		out += "\"vPollDefault\": "	+ String(mButtons[yo.lastPressed].pollDefault)	+" ";
-		out += "}";      // 	ЗАРЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
-		request->send(200, "application/json", out);
-
-		colorString = "";
+	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {		
+		request->send(200, "application/json", webServerMakeJSON());		
 	});
 
-	// Route to load style.css file
-  	server.on("/style.css", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", 		"text/css"); });
-  	server.on("/script.js", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", 		"text/css"); });
+  	server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", "text/css"); });
+  	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", "text/css"); });
 
 
 	events.onConnect([](AsyncEventSourceClient *client){
 		if(client->lastId()){
 			Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
 		}
-		//send event with message "hello!", id current millis
-		// and set reconnect delay to 1 second
-		client->send("hello!",NULL,millis(),1000);
+		//send event with message "hello!", id current millis and set reconnect delay to 1 second
+		client->send( "hello!", NULL, millis(), 1000);
 	});
 	//HTTP Basic authentication
 	// events.setAuthentication("user", "pass");
@@ -272,6 +271,8 @@ void webServerStartUP(){
 
 
 /*
+// request->send(200, "application/json", webServerMakeJSON());
+
 
 document.documentElement.style.cssText = "--main-background-color: red";
 or
@@ -317,16 +318,5 @@ document.documentElement.setAttribute("style", "--main-background-color: green")
 // 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
 
 // )rawliteral";
-
-
-<div class="lstI btn fxbtn " data-id="46" onclick="setPalette(46)"> 
-   <label class="radio fxchkl"> 
-    <input type="radio" value="46" name="palette"> 
-    <span class="radiomark"></span> 
-   </label> 
-      <span class="lstIname"> April Night</span> 
-    <div class="lstIprev" style="background: linear-gradient(to right, rgb(1, 5, 45) 0%, rgb(1, 5, 45) 3.92157%, rgb(5, 169, 175) 9.80392%, rgb(1, 5, 45) 15.6863%, rgb(1, 5, 45) 23.9216%, rgb(45, 175, 31) 29.8039%, rgb(1, 5, 45) 35.6863%, rgb(1, 5, 45) 43.9216%, rgb(249, 150, 5) 49.8039%, rgb(1, 5, 45) 56.0784%, rgb(1, 5, 45) 63.5294%, rgb(255, 92, 0) 69.8039%, rgb(1, 5, 45) 75.6863%, rgb(1, 5, 45) 83.9216%, rgb(223, 45, 72) 89.8039%, rgb(1, 5, 45) 95.6863%, rgb(1, 5, 45) 100%);">
-	</div> 
-</div>
 
 */

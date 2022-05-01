@@ -5,7 +5,6 @@
 
 
 CRGB leds[NUM_LEDS];            // Массив ленты
-// CHSV *yoPal; 			    	// Активная поллитра из массива поллитр: myPal
 uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
@@ -50,8 +49,8 @@ void powerOFF(){ FastLED.setMaxPowerInMilliWatts(0); 			FastLED.show(); }
 /* Включаем / выключаем питание (!!!) ленты, 
 тормозим анимацию и переходим ждущий режим (delay)  */
 void powerONOFF(){
-	if ( yo.ONOFF == true){ powerOFF(); } 
-	else {					powerON(); 	}
+	if ( yo.ONOFF){ powerOFF(); } 
+	else {			powerON(); 	}
 
 	yo.ONOFF = !yo.ONOFF;
 	Serial.printf( "State: %d\n", yo.ONOFF);  	
@@ -74,7 +73,7 @@ void ledOFF( int resValue){
 
 /* Включаем беленькую */
 void ledUPWhite(){	
-  	if ( yo.ONOFF == true){
+  	if ( yo.ONOFF){
 	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
 		FastLED.show();
 	}
@@ -85,7 +84,7 @@ void ledUPWhite(){
 
 /* Включаем тестовое, сейчас = палитра */
 void ledUP(){  
-	if ( yo.ONOFF == true){
+	if ( yo.ONOFF){
 		for ( int pos = 0; pos < NUM_LEDS; pos++){ 
 			// leds[pos] = pollitrR[pos*255/NUM_LEDS]; 
 			// leds[pos] = ColorFromPalette( targetPalette, colorID, 255, LINEARBLEND);
@@ -199,11 +198,11 @@ void changeSaturation( int delta){
 
 /* Сброс параметров ленты в дефолтное состояние */
 void ledReset(){
-	changeBrightness(128); 
+	setBrightness(128); 
 	// changeSpeed( -90); 
 	setSpeed( 10);
 	changeTemperature( TEMP_IND_MAX); 
-	changeSaturation( 255);
+	changeSaturation( 100);
 }
 
 CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend) {

@@ -14,9 +14,7 @@ int EEPROM_CURRENT_BYTE = EEPROM_ADDR_START;
 int EEPROM_CURRENT_INT  = EEPROM_ADDR_START;
 
 #define INIT_KEY 50     			// ключ первого запуска. 0-254, на выбор
-#define SAVE_DELAY 1000 * 60		// время в миллисекундах на задержку записи в EPPROM
 
-clock_t saveTime = clock();
 extern config yo;
 int readINT;
 byte readBYTE;
@@ -69,12 +67,10 @@ void eepromSave( bool forceSaveEEPROM = false){
 		palIter = currentPal.begin();
 		EEPROM_CURRENT_ADDR = EEPROM_ADDR_PALLET;		
 		for (int i = 0; palIter != currentPal.end(); palIter++, i++) {  
-			fReadINT();
-			fReadBYTE();
 			
 			if ( palIter->first != 0){
-				if ( palIter->first  != readINT){  fWriteDATA( palIter->first); }
-				if ( palIter->second != readBYTE){ fWriteDATA( palIter->second);}
+				tryToSaveEEPROM( palIter->first);
+				tryToSaveEEPROM( palIter->second);
 				ind++;
 				// Serial.printf( "%d Save (NOT) ind = %d, ID = %d ( %d), Pal= %d ( %d).\n", EEPROM_CURRENT_ADDR, ind, palIter->first, readINT, palIter->second, readBYTE);
 			}			
@@ -93,8 +89,7 @@ void eepromSave( bool forceSaveEEPROM = false){
 
 /* Проверяем необходимость сохранения данных в ЕЕПРОМ и таймер > SAVE_DELAY*/
 void eepromSaveHandler(){
-	if ( yo.isNeedSaveEEPROM && yo.now - saveTime > SAVE_DELAY){
-		saveTime = yo.now;
+	if ( yo.isNeedSaveEEPROM && yo.now >= yo.EEPROMsaveTime){
 		yo.isNeedSaveEEPROM = false;
 		eepromSave();		
 		yo.pt2webUnsave();
@@ -135,11 +130,12 @@ void eepromStartUP(){
 	fReadBYTE(); yo.c3.g = readBYTE;
 	fReadBYTE(); yo.c3.b = readBYTE;
 
-	EEPROM.get( EEPROM_ADDR_PALIND, ind);
-	for (int i = EEPROM_ADDR_PALLET; i < EEPROM_ADDR_PALLET + ( ind * 5); i+=5) {  // выводим их
+	EEPROM.get( EEPROM_ADDR_PALIND, ind);				// читаем индекс: количкство сохраненных элементов currentPal
+	EEPROM_CURRENT_ADDR = EEPROM_ADDR_PALLET;			// перекидываем чтение данных на аждрксс с палитрами
+	for (int i = 0; i < ind; i++) { 
 
-		EEPROM.get( i, 		readINT);		// read irdaID
-		EEPROM.get( i + 4,  readBYTE);		// read paletteID
+		fReadINT();		// read irdaID
+		fReadBYTE();	// read paletteID
 		
 		if ( readBYTE != 255 && readINT > 0){
 			currentPal[readINT] = readBYTE;
@@ -153,5 +149,5 @@ void eepromStartUP(){
 
 	if ( yo.ONOFF == true){ powerON();}
 	setBrightness( yo.currentBrightness);
-	irdaServer( yo.lastPressed, 10);
+	irdaServer( yo.lastPressed);
 }

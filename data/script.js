@@ -34,7 +34,7 @@ if (!!window.EventSource) {
 
 	source.addEventListener('open',   function(e) { updateDate( true); console.log("Events Connected"); }, false);
 	source.addEventListener('unsave', function(e) { unsave( e.data);}, false);
-	source.addEventListener('update', function(e) { updateDate(); }, false);
+	source.addEventListener('update', function(e) { reseter( e.data); }, false);
 	source.addEventListener('error',  function(e) { 
 		if (e.target.readyState != EventSource.OPEN) { console.log("Events Disconnected"); } }, false);	
 }
@@ -73,11 +73,12 @@ function rInput( element) {
 	xhr.send();
 }  
 
+//	d.getElementById('buttonPower').className = (isOn) ? "active":"";
 
 const wave = document.querySelectorAll('.wave');
 // обновление данных на странице
-function reseter( xhr){			
-	var json = JSON.parse(xhr.responseText);
+function reseter( data){
+	var json = JSON.parse( data);
 	var item = document.querySelector( ".default"); 		// очищаем класс в списке палитр
 	if ( item){ item.classList.remove( 'default'); }		
 
@@ -141,7 +142,9 @@ function updateDate( fullUpdate){
 	var xhr = new XMLHttpRequest();
 	var fullStr = "";            
 	xhr.onreadystatechange = function() {
-		if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) { reseter( xhr);  }
+		if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) { 
+			reseter( xhr.responseText);  
+		}
 	};
 	if ( fullUpdate){
 		fullStr = "?full=true";

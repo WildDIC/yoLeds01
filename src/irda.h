@@ -18,7 +18,7 @@
 #define IR_FORWARD		1262486014
 #define IR_PAUSE		1262520694
 #define IR_REWIND		1262488054
-#define IR_PLAY			321321321
+#define IR_PLAY			1262530894
 #define IR_STOP			1262514574
 #define IR_FASTFF		1262547214
 
@@ -36,6 +36,7 @@
 #define IR_NUM_CLR		1270266437
 
 IRrecv irrecv(RECV_PIN);
+
 decode_results results;
 
 extern void ledOFF( int resValue);
@@ -85,8 +86,7 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 			yoBugN( mbIter->second.name);			
 
 			if ( mbIter->second.leadOFF){		ledOFF( resValue);}
-			// if ( mbIter->second.pollDefault && webValue == 1){	               // если есть столбец с палитрами и на сервере нажали новую кнопку - меняем палитру.
-			if ( mbIter->second.pollDefault ){	               // если есть столбец с палитрами и на сервере нажали новую кнопку - меняем палитру.
+			if ( mbIter->second.pollDefault ){	               					// если есть столбец с палитрами
 				if ( mbIter->second.pollCurrent < 1) { 							// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
 					mbIter->second.pollCurrent = mbIter->second.pollDefault; 	// если текущая палитра не определена - ставим дефолтную
 				}
@@ -103,6 +103,7 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 			} 
 
 			#ifdef EERPROM_ENABLE
+				yo.EEPROMsaveTime = yo.now + 1000 * 60;
 				yo.isNeedSaveEEPROM = true;
 			#endif
 			

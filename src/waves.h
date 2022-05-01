@@ -167,10 +167,9 @@ void animWave08() {
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//											WAVE09
-//////////////////////////////////////////////////////////////////////////////////////////
-
+/*
+			4 wavwes + 1 beatSin
+*/
 void animWave09pre(){
 	#define NUM_SEGMENTS 3
 	#define SPEED_WAVE 13
@@ -198,20 +197,17 @@ void animWave09() {
 }
 
 
-
-
-#define TS01 255
-#define TS02 TS01 * 0.25
-#define TS03 TS01 * 0.75
-#define TS04 TS01 * 0.5
-
+/*
+		XXX beatSin WAVES
+*/
 void animaWave10(){
 	baza++;
     fadeToBlackBy(leds, NUM_LEDS, 8);
-	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS01)] = ledGCfP( baza);
-	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS02)] = ledGCfP( baza + TS02);
-	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS03)] = ledGCfP( baza + TS03);
-	leds[beatsin8( 10, 0, NUM_LEDS - 1, 0, TS04)] = ledGCfP( baza + TS04);
+
+	for ( uint8_t i = 1; i < 9; i++)	{
+		color = 255 * i / 8;
+		leds[beatsin8( 10 + i, 0, NUM_LEDS - 1, 0, color)] = ledGCfP( baza + color);
+	}	
 
     FastLED.show();
 }
