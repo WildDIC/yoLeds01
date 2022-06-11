@@ -14,6 +14,11 @@
 #else
 #endif
 
+#ifdef FPSCOUNT_ENABLE 
+clock_t startFPS = clock() + 1000;
+int fpsCount = 0;
+#endif
+
 #define IR_DELAY 300
 clock_t startTime = clock();
 clock_t startAnime = clock();
@@ -110,5 +115,19 @@ void loop() {
 
 	#ifdef EERPROM_ENABLE
 		eepromSaveHandler();
+	#endif
+
+	#ifdef WEB_ENABLE		
+		// проверка на подключенный ВФ и переконнект, если надо
+		wifiCheckConnect();
+	#endif
+
+	#ifdef FPSCOUNT_ENABLE
+		fpsCount++;
+		if ( yo.now >= startFPS){
+			// Serial.println( fpsCount);
+			startFPS = yo.now + 1000;
+			fpsCount = 0;
+		}
 	#endif
 }

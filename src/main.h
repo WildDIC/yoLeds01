@@ -4,6 +4,7 @@
 #define WEB_ENABLE 
 #define EERPROM_ENABLE 
 // #define DEBUG_ENABLE 
+// #define FPSCOUNT_ENABLE
 
 #ifdef DEBUG_ENABLE
 #define yoBug(x) Serial.print(x)
