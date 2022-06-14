@@ -1,29 +1,9 @@
-/*
- * Color palettes for FastLED effects (65-73).
- */
+#ifndef __PALETTES_H
+#define __PALETTES_H
 
-CRGBPalette16 activePollitre;
+extern CRGBPalette16 activePollitre;
 
-struct pollitraZ{
-	String name;				// Имя палитры
-	CRGBPalette16 palette;
-};
-pollitraZ myPal[NUM_POLLITR];
 
-CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
-
-// From ColorWavesWithPalettes by Mark Kriegsman: https://gist.github.com/kriegsman/8281905786e8b2632aeb
-// Unfortunaltely, these are stored in RAM!
-
-// Gradient palette "ib_jul01_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/ing/xmas/tn/ib_jul01.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 16 bytes of program space.
-
-// #ifndef PalettesWLED_h
-// #define PalettesWLED_h
-
-#define GRADIENT_PALETTE_COUNT 58
 
 const byte ib_jul01_gp[] PROGMEM = {
 	0, 194,  1,  1,
@@ -839,23 +819,6 @@ const byte red_tide_gp[] PROGMEM = {
   216, 255, 28,  1,
   255,  53,  1,  1};
 
-// Gradient palette "bhw4_017_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_017.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 40 bytes of program space.
-
-const byte candy2_gp[] PROGMEM = {
-	0,  39, 33, 34,
-   25,   4,  6, 15,
-   48,  49, 29, 22,
-   73, 224,173,  1,
-   89, 177, 35,  5,
-  130,   4,  6, 15,
-  163, 255,114,  6,
-  186, 224,173,  1,
-  211,  39, 33, 34,
-  255,   1,  1,  1};
-
 
 
 const byte RainbowStripeColors_my[] PROGMEM = {
@@ -998,6 +961,38 @@ const byte ForestColors_my[] PROGMEM = {
 	255,	34,		139,	34
 };
 
+// Gradient palette "bhw4_017_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_017.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 40 bytes of program space.
+
+const byte candy2_gp[] PROGMEM = {
+	0,  39, 33, 34,
+   25,   4,  6, 15,
+   48,  49, 29, 22,
+   73, 224,173,  1,
+   89, 177, 35,  5,
+  130,   4,  6, 15,
+  163, 255,114,  6,
+  186, 224,173,  1,
+  211,  39, 33, 34,
+  255,   1,  1,  1};
+
+
+
+
+const String palette_names[100] = {
+	// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
+	// "Forest","Rainbow","Rainbow Bands",
+	"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- red green blue", "- deep forest", 
+	"PartyColors", "OceanColors", "ForestColors", "HeatColors", "RainbowStripeColors",
+
+	"Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",
+	"Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
+	"Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
+	"Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
+	"Aurora","Atlantica","C9 2","C9 New","Temperature","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
+	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Yelblu Hot","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2"};
 
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on
@@ -1018,173 +1013,67 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	heatColor_my,
 	RainbowStripeColors_my,
 
-  Sunset_Real_gp,               //13-00 Sunset
-  es_rivendell_15_gp,           //14-01 Rivendell
-  es_ocean_breeze_036_gp,       //15-02 Breeze
-  rgi_15_gp,                    //16-03 Red & Blue
-  retro2_16_gp,                 //17-04 Yellowout
-  Analogous_1_gp,               //18-05 Analogous
-  es_pinksplash_08_gp,          //19-06 Splash
-  Sunset_Yellow_gp,             //20-07 Pastel
-  Another_Sunset_gp,            //21-08 Sunset2
-  Beech_gp,                     //22-09 Beech
-  es_vintage_01_gp,             //23-10 Vintage
-  departure_gp,                 //24-11 Departure
-  es_landscape_64_gp,           //25-12 Landscape
-  es_landscape_33_gp,           //26-13 Beach
-  rainbowsherbet_gp,            //27-14 Sherbet
-  gr65_hult_gp,                 //28-15 Hult
-  gr64_hult_gp,                 //29-16 Hult64
-  GMT_drywet_gp,                //30-17 Drywet
-  ib_jul01_gp,                  //31-18 Jul
-  es_vintage_57_gp,             //32-19 Grintage
-  ib15_gp,                      //33-20 Rewhi
-  Tertiary_01_gp,               //34-21 Tertiary
-  lava_gp,                      //35-22 Fire
-  fierce_ice_gp,                //36-23 Icefire
-  Colorfull_gp,                 //37-24 Cyane
-  Pink_Purple_gp,               //38-25 Light Pink
-  es_autumn_19_gp,              //39-26 Autumn
-  BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
-  BlacK_Magenta_Red_gp,         //41-28 Magred
-  BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
-  Blue_Cyan_Yellow_gp,          //43-30 Yelblu
-  Orange_Teal_gp,               //44-31 Orange & Teal
-  Tiamat_gp,                    //45-32 Tiamat
-  April_Night_gp,               //46-33 April Night
-  Orangery_gp,                  //47-34 Orangery
-  C9_gp,                        //48-35 C9
-  Sakura_gp,                    //49-36 Sakura
-  Aurora_gp,                    //50-37 Aurora
-  Atlantica_gp,                 //51-38 Atlantica
-  C9_2_gp,                      //52-39 C9 2
-  C9_new_gp,                    //53-40 C9 New
-  temperature_gp,               //54-41 Temperature
-  Aurora2_gp,                   //55-42 Aurora 2
-  retro_clown_gp,               //56-43 Retro Clown
-  candy_gp,                     //57-44 Candy
-  toxy_reaf_gp,                 //58-45 Toxy Reaf
-  fairy_reaf_gp,                //59-46 Fairy Reaf
-  semi_blue_gp,                 //60-47 Semi Blue
-  pink_candy_gp,                //61-48 Pink Candy
-  red_reaf_gp,                  //62-49 Red Reaf
-  aqua_flash_gp,                //63-50 Aqua Flash
-  yelblu_hot_gp,                //64-51 Yelblu Hot
-  lite_light_gp,                //65-52 Lite Light
-  red_flash_gp,                 //66-53 Red Flash
-  blink_red_gp,                 //67-54 Blink Red
-  red_shift_gp,                 //68-55 Red Shift
-  red_tide_gp,                  //69-56 Red Tide
-  candy2_gp                     //70-57 Candy2
+	Sunset_Real_gp,               //13-00 Sunset
+	es_rivendell_15_gp,           //14-01 Rivendell
+	es_ocean_breeze_036_gp,       //15-02 Breeze
+	rgi_15_gp,                    //16-03 Red & Blue
+	retro2_16_gp,                 //17-04 Yellowout
+	Analogous_1_gp,               //18-05 Analogous
+	es_pinksplash_08_gp,          //19-06 Splash
+	Sunset_Yellow_gp,             //20-07 Pastel
+	Another_Sunset_gp,            //21-08 Sunset2
+	Beech_gp,                     //22-09 Beech
+	es_vintage_01_gp,             //23-10 Vintage
+	departure_gp,                 //24-11 Departure
+	es_landscape_64_gp,           //25-12 Landscape
+	es_landscape_33_gp,           //26-13 Beach
+	rainbowsherbet_gp,            //27-14 Sherbet
+	gr65_hult_gp,                 //28-15 Hult
+	gr64_hult_gp,                 //29-16 Hult64
+	GMT_drywet_gp,                //30-17 Drywet
+	ib_jul01_gp,                  //31-18 Jul
+	es_vintage_57_gp,             //32-19 Grintage
+	ib15_gp,                      //33-20 Rewhi
+	Tertiary_01_gp,               //34-21 Tertiary
+	lava_gp,                      //35-22 Fire
+	fierce_ice_gp,                //36-23 Icefire
+	Colorfull_gp,                 //37-24 Cyane
+	Pink_Purple_gp,               //38-25 Light Pink
+	es_autumn_19_gp,              //39-26 Autumn
+	BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
+	BlacK_Magenta_Red_gp,         //41-28 Magred
+	BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
+	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
+	Orange_Teal_gp,               //44-31 Orange & Teal
+	Tiamat_gp,                    //45-32 Tiamat
+	April_Night_gp,               //46-33 April Night
+	Orangery_gp,                  //47-34 Orangery
+	C9_gp,                        //48-35 C9
+	Sakura_gp,                    //49-36 Sakura
+	Aurora_gp,                    //50-37 Aurora
+	Atlantica_gp,                 //51-38 Atlantica
+	C9_2_gp,                      //52-39 C9 2
+	C9_new_gp,                    //53-40 C9 New
+	temperature_gp,               //54-41 Temperature
+	Aurora2_gp,                   //55-42 Aurora 2
+	retro_clown_gp,               //56-43 Retro Clown
+	candy_gp,                     //57-44 Candy
+	toxy_reaf_gp,                 //58-45 Toxy Reaf
+	fairy_reaf_gp,                //59-46 Fairy Reaf
+	semi_blue_gp,                 //60-47 Semi Blue
+	pink_candy_gp,                //61-48 Pink Candy
+	red_reaf_gp,                  //62-49 Red Reaf
+	aqua_flash_gp,                //63-50 Aqua Flash
+	yelblu_hot_gp,                //64-51 Yelblu Hot
+	lite_light_gp,                //65-52 Lite Light
+	red_flash_gp,                 //66-53 Red Flash
+	blink_red_gp,                 //67-54 Blink Red
+	red_shift_gp,                 //68-55 Red Shift
+	red_tide_gp,                  //69-56 Red Tide
+	candy2_gp                     //70-57 Candy2
 };
 
-String palette_names[100] = {
-// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
-// "Forest","Rainbow","Rainbow Bands",
-"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- red green blue", "- deep forest", 
-"PartyColors", "OceanColors", "ForestColors", "HeatColors", "RainbowStripeColors",
+void paletteStartUP();
+void paletteSetActive( byte pollitraID);
 
-"Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",
-"Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
-"Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
-"Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
-"Aurora","Atlantica","C9 2","C9 New","Temperature","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
-"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Yelblu Hot","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2"};
-
-/**/
-void paletteStartUP(){
-	byte ind = 0; // -1? Просто, что было красиво в ++
-	myPal[++ind] = { "*solid white color*"};	 myPal[ind].palette = CRGBPalette16( CRGB::White);
-	myPal[++ind] = { "- 1 Random color"};	 
-	myPal[++ind] = { "- 2 Random colors"}; 
-	myPal[++ind] = { "- 3 Random colors"}; 
-	myPal[++ind] = { "- 4 Random colors"}; 
-
-	++ind;
-	for ( int i = 0; i < 58 + 11; i++){
-		byte tcp[72]; //support gradient palettes with up to 18 entries
-		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
-		activePollitre.loadDynamicGradientPalette(tcp);
-		myPal[i+ind].palette = activePollitre;
-		if ( i + ind > 11){
-			myPal[i+ind].name = String( i) + ". " + palette_names[i];
-		} else{
-			myPal[i+ind].name = palette_names[i];
-		}		
-	}
-	
-	// if (!wrap) paletteIndex = scale8(paletteIndex, 240); //cut off blend at palette "end"
-	// fastled_col = ColorFromPalette(currentPalette, paletteIndex, pbri, (paletteBlend == 3)? NOBLEND:LINEARBLEND);
-}
-
-
-String getHEX( CRGB color){
-	// long hex = ( color.r * 65536) + ( color.g * 256) * color.b;
-	// return " #" + String( hex, HEX);
-	// return " #" + String( color.r, HEX) + String( color.g, HEX) +String( color.b, HEX);
-	return " rgb(" + String( color.r) + ","+  String( color.g) +","+String( color.b) + ")";
-}
-
-/* Генерим новый CHSV случайный цвет для "рэндомных" палитр. 
-Если цвет чорный или у веб-клиента повторно нажата активность - создаем новый.
-
-@param color CRGB текущего цвета, возвращаем его, если не требуется обновления.
-@return CRGB из сгенерированного CHSV цвета, потому что, сделать нормальный цвет можно только в HSV...*/
-CRGB getCol( CRGB color){
-	if ( yo.againButton || color.r == 0){
-		return 	CHSV(random8( 1, 255), random8( 200, 255), random8( 200, 255));
-	}
-	return color;	
-}
-
-/* Меням активную палитру и записываем ее в текующую активность ленты
-@param byte pollitraID = Номер паллитры из myPal */
-void paletteSetActive( byte pollitraID){
-	if (  pollitraID == 2){ 
-		c10 = getCol( c10);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr2: "+ getHEX( c10)+ ";\"";
-		#endif
-
-		activePollitre = CRGBPalette16( c10);
-	}
-	else if ( pollitraID == 3){ 
-		c20 = getCol( c20);	c21 = getCol( c21);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr3: linear-gradient( 90deg, "+ getHEX(c20)+", "+ getHEX(c21)+", "+ getHEX(c20)+");\"";
-		#endif
-
-		activePollitre = CRGBPalette16( c20, c21);
-	}
-	else if ( pollitraID == 4){ 
-		c30 = getCol( c30); c31 = getCol( c31); c32 = getCol( c32);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+", "+ getHEX(c30)+");\"";
-		#endif
-
-		activePollitre = CRGBPalette16( c30, c31, c32);	 
-	}
-	else if ( pollitraID == 5){ 
-		c40 = getCol( c40); c41 = getCol( c41);	c42 = getCol( c42);	c43 = getCol( c43);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43)+", "+ getHEX(c40)+");\"";
-		#endif
-		activePollitre = CRGBPalette16( c40, c41, c42, c43);	
-	}
-	else { 
-		yo.rndStyle = "false";
-		activePollitre = myPal[pollitraID].palette;
-	}
-
-	mButtons[yo.lastPressed].pollCurrent = pollitraID;
-	currentPal[yo.lastPressed] = pollitraID;
-
-	#ifdef EERPROM_ENABLE 
-		yo.isNeedSaveEEPROM = true;
-	#endif
-
-	#ifdef DEBUG_ENABLE
-		Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mButtons[yo.lastPressed].name);	
-	#endif
-}
-
+#endif

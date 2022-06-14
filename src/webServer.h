@@ -1,6 +1,7 @@
 // #include <WebServer.h>
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
+#include "config.h"
 
 // need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
 //C:\Users\vanilka\Documents\PlatformIO\Projects\220401-111103-esp32dev\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h

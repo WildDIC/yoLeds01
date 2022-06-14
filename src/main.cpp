@@ -1,7 +1,8 @@
-#include <FastLED.h>
+#include "config.h"
 #include "main.h"
 #include "irda.h"
 #include "leds.h"
+#include "palettes.h"
 #include "waves.h"
 
 #ifdef EERPROM_ENABLE 
@@ -100,7 +101,7 @@ void loop() {
 
 	if ( yo.now - startTime > IR_DELAY){
 		startTime = yo.now;
-		irdaServer();
+		irdaServer( 0, 0);
 	}
 
 	if ( yo.ONOFF && pt2Func){
