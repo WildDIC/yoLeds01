@@ -1,6 +1,8 @@
 #include "config.h"
 #include "palettes.h"
 
+extern void requestSave();
+
 CRGBPalette16 activePollitre;
 pollitraZ myPal[NUM_POLLITR];
 CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
@@ -13,8 +15,11 @@ void paletteStartUP(){
 	myPal[++ind] = { "- 2 Random colors"}; 
 	myPal[++ind] = { "- 3 Random colors"}; 
 	myPal[++ind] = { "- 4 Random colors"}; 
+	myPal[++ind] = { "- c2 to c3 colors"}; 
 
 	++ind;
+	yo.lastCustPal = ind;
+	
 	for ( int i = 0; i < 58 + 11; i++){
 		byte tcp[72]; //support gradient palettes with up to 18 entries
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
@@ -53,7 +58,7 @@ CRGB getCol( CRGB color){
 
 /* Меням активную палитру и записываем ее в текующую активность ленты
 @param byte pollitraID = Номер паллитры из myPal */
-void paletteSetActive( byte pollitraID){
+void paletteSetActive( byte pollitraID, bool force=true){
 	if (  pollitraID == 2){ 
 		c10 = getCol( c10);
 		#ifdef WEB_ENABLE
@@ -85,20 +90,33 @@ void paletteSetActive( byte pollitraID){
 		#endif
 		activePollitre = CRGBPalette16( c40, c41, c42, c43);	
 	}
+	else if ( pollitraID == 6){ 
+		#ifdef WEB_ENABLE
+			yo.rndStyle = "\"--gr6: linear-gradient( 90deg, "+ getHEX( yo.c2)+", "+ getHEX( yo.c3)+", "+ getHEX( yo.c2)+");\"";
+		#endif
+
+		if ( force == true){
+			activePollitre = CRGBPalette16( yo.c2, yo.c3, yo.c2);
+		}	
+		else{
+			return;
+		}	
+	}
 	else { 
 		yo.rndStyle = "false";
 		activePollitre = myPal[pollitraID].palette;
 	}
 
-	mButtons[yo.lastPressed].pollCurrent = pollitraID;
-	currentPal[yo.lastPressed] = pollitraID;
+	mWaves[yo.lastPressed].pollCurrent = pollitraID;
+	yo.pollCurrent = pollitraID;
+	yo.pollDefault = mWaves[yo.lastPressed].pollDefault;
 
 	#ifdef EERPROM_ENABLE 
-		yo.isNeedSaveEEPROM = true;
+		requestSave();
 	#endif
 
 	#ifdef DEBUG_ENABLE
-		Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mButtons[yo.lastPressed].name);	
+		Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
 	#endif
 }
 

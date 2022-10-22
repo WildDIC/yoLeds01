@@ -19,7 +19,7 @@ void ledsStartUP(){
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
@@ -33,7 +33,7 @@ CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true,
 
 /* Забираем цвет colorID из текущей targetPalette палитры.
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
@@ -60,14 +60,16 @@ void ledOFF( int resValue){
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
-	yo.lastPressed = resValue;
+	// yo.lastPressed = resValue;
 
 	// for( uint8_t i = 0; i < 50; i++){
 	// 	fadeToBlackBy( leds, NUM_LEDS, 10);
 	// 	FastLED.show();
 	// 	// delay( 5);
 	// }
-	fill_solid( leds, NUM_LEDS, CRGB::Black); 		
+	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
+	// FastLED.show()	;
+	delay( 150);
 }
 
 /* Включаем беленькую */
@@ -111,23 +113,58 @@ void ledFadeOUT(){
 	}
 }
 
-void setSpeed( int value){ yo.currentSpeed = value; }
+void setSpeed( int value){  yo.currentSpeed = value; mWaves[yo.lastPressed].speed = value;}
+void setAUX010( int value){ yo.AUX010 = value; 		 mWaves[yo.lastPressed].aux010 = value;}
+void setAUX100( int value){ yo.AUX100 = value; 		 mWaves[yo.lastPressed].aux100 = value;}
+void setAUX255( int value){ yo.AUX255 = value; 		 mWaves[yo.lastPressed].aux255 = value;}
+
+void setColors(	CRGB c1, CRGB c2, CRGB c3, bool force){
+	yo.c1 = c1;
+	yo.c2 = c2;
+	yo.c3 = c3;
+
+	if ( force){
+		mWaves[yo.lastPressed].c1 = c1;
+		mWaves[yo.lastPressed].c2 = c2;
+		mWaves[yo.lastPressed].c3 = c3;
+	}
+}
 
 void setSaturation( int value){ 
+	if ( value < 0 ){ 
+		value = 100;
+	}
+	else if (value > 100){
+		value = 100;
+	}
+
 	yo.currentSaturn  = value; 
+	mWaves[yo.lastPressed].saturn = value;
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 }
 
 void setTemperature( int value){ 
+	if ( value < 0 ){ 
+		value = TEMP_IND_MAX;
+	}
+	else if (value > TEMP_IND_MAX){
+		value = TEMP_IND_MAX;
+	}
+	
 	yo.currentTemp = value; 
+	mWaves[yo.lastPressed].temp = value;
 	FastLED.setTemperature( temperList[yo.currentTemp] );
 	FastLED.show();
-	Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
+	// Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
 }
 
 
 void setBrightness( int value){ 
+	if ( value < 5 ){ 
+		value = 5;
+	}
 	yo.currentBrightness = value; 
+	// mWaves[yo.lastPressed].bright = value;
 	FastLED.setBrightness( yo.currentBrightness);
   	FastLED.show();
 }
@@ -175,7 +212,7 @@ void changeBrightness( int delta){
 	    yo.currentBrightness = 5;
 		ledBlink();
   	}  
-  	Serial.printf( "Brightness: %d. \n", yo.currentBrightness);  
+  	Serial.printf( "Brightness: %d. \n", yo.currentBrightness);  	
   	FastLED.setBrightness( yo.currentBrightness);
   	FastLED.show();
 }

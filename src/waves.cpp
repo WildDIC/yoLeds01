@@ -1,14 +1,19 @@
-#ifndef __WAVES_H
-#define __WAVES_H
-
 #include "config.h"
 #include "leds.h"
+#include "waves.h"
+
 
 
 uint8_t baza = 0;     // изменение оттенка LED
 int color = 0;
 uint8_t var00, var01, var02;
 float far00, far01;
+
+#include "waveClass.h"
+// waveClass anima01( 1, 2, 3);
+// void anima01::getDate() override
+// {
+// }
 
 
 /* Бегущая радужная вэйв */
@@ -51,8 +56,8 @@ void animWave03(){
 /* 8 волн с разной скоротью и наложением цвета */
 void animWave04(){
 	fadeToBlackBy(leds, NUM_LEDS, 4);
-    for (int i = 0; i < 8; i++) {
-      	leds[beatsin8( i + 4, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 50);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
+    for (int i = 4; i < 12; i++) {
+      	leds[beatsin8( i, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 0);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
 	FastLED.show();
 }
@@ -149,23 +154,23 @@ void animWave08() {
     for (int pos = 0; pos < NUM_LEDS; pos++){	
         if ( LEDS_HUE[pos] > 1){
 			LEDS_HUE[pos] -= 1;
-            leds[pos] = ledGCfP( LEDS_HUE[pos]*10, true, random8(220, 255));
+            leds[pos] = ledGCfP( LEDS_HUE[pos]*10, false, random8(220, 255));
             if ( LEDS_HUE[pos] <= 1){
                 LEDS_FEDOR[pos] = 255;    
             }
 			delay( 1);
         }
         if ( LEDS_FEDOR[pos] >= 10){
-			leds[pos] = ledGCfP( LEDS_HUE[1], true, LEDS_FEDOR[pos] /= 1.1); 
+			leds[pos] = ledGCfP( LEDS_HUE[1], true, LEDS_FEDOR[pos] /= 1.2); 
         } 
     }	        
-    for ( int pos01 = 0; pos01 < 8; pos01++){
+    for ( int pos01 = 0; pos01 < yo.AUX010; pos01++){
         int pos = random8( NUM_LEDS);
         if ( LEDS_HUE[pos] <= 1 && LEDS_FEDOR[pos] <= 10) {
             LEDS_HUE[pos] = 25;
-			if ( foundNEW += 1 > 3){
-				break;
-			}
+			// if ( foundNEW += 1 > 4){
+			// 	break;
+			// }
         }
     }
     FastLED.show();
@@ -223,15 +228,16 @@ void animaWave10(){
 
 /*
  * Gradient run base function
- 
-  far01 = длина полоски
+   far01, 
+  yo.AUX100 - длина полоски
+  yo.AUX255 - скорость движения палитры
  */
 void animaWave11p1(){ var00 = 1; far01 = 50.0;}
 void animaWave11p2(){ var00 = 2; far01 = 50.0;}
 void animaWave11p3(){ var00 = 3; far01 = 50.0;}
 
 void animaWave11() {
-	uint16_t nc = millis() * NUM_LEDS >> 16;
+	uint16_t nc = millis() * yo.AUX255 >> 16;
 
 	uint16_t counter = millis() * ( yo.currentSpeed << 1);
 	uint16_t pp = counter * NUM_LEDS >> 16;
@@ -241,7 +247,7 @@ void animaWave11() {
 
 	for(uint16_t i = 0; i < NUM_LEDS; i++)	{
 		far00 = MIN( abs(pp-i), MIN( abs(p1-i), abs(p2-i)));
-		far00 = (far01 > far00) ? far00/far01 * 200 : 200;
+		far00 = (yo.AUX100 > far00) ? far00/yo.AUX100 * 200 : 200;
 
 		if ( var00 == 1){ var01 = nc;}
 		else if ( var00 == 2){ var01 = i + nc;}
@@ -385,6 +391,4 @@ void animaWave13() {
 
 //   delay(10);    // run our loop at approx 100Hz; so new LED levels reach every ~100 ms (~10Hz)
 }
-
-#endif
 

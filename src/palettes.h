@@ -3,7 +3,8 @@
 
 extern CRGBPalette16 activePollitre;
 
-
+void paletteStartUP();
+void paletteSetActive( byte pollitraID, bool force);
 
 const byte ib_jul01_gp[] PROGMEM = {
 	0, 194,  1,  1,
@@ -896,6 +897,11 @@ const byte redGreenBlue_my[] PROGMEM = {
 	170, 	0, 		0, 		255,
 	255, 	255,	0, 		0};
 
+const byte blueToViolet_my[] PROGMEM = {
+	0, 		0, 	176, 	179,
+	127, 	89, 0, 		176,
+	255, 	0, 	176, 	179};
+
 const byte deepForest_my[] PROGMEM = {
 	0,		9,		78,		32,
 	18,		10,		126,	76,
@@ -979,15 +985,21 @@ const byte candy2_gp[] PROGMEM = {
   255,   1,  1,  1};
 
 
+const byte lightFie_my[] PROGMEM = {
+	0, 		255, 195, 0,
+	127, 	255, 94, 0,
+	255, 	255, 195, 0};
 
 
-const String palette_names[100] = {
+
+const String palette_names[70] = {
 	// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
 	// "Forest","Rainbow","Rainbow Bands",
-	"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- red green blue", "- deep forest", 
-	"PartyColors", "OceanColors", "ForestColors", "HeatColors", "RainbowStripeColors",
+	"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- blue to violet", 			/// 11 palitres
+	"- deep forest", "PartyColors", "- light my fire", "ForestColors", "HeatColors", 
+	"RainbowStripeColors",
 
-	"Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",
+	"Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",							//   58 palitres
 	"Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
 	"Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
 	"Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
@@ -1004,11 +1016,13 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	orangeFire_my,
 	greenToBlue_my,
 	redToViolet_my,
-	redGreenBlue_my,
+	// redGreenBlue_my,
+	blueToViolet_my,
 	deepForest_my,
 
 	PartyColors_my,
-	OceanColors_my,
+	// OceanColors_my,
+	lightFie_my,
 	ForestColors_my,
 	heatColor_my,
 	RainbowStripeColors_my,
@@ -1072,8 +1086,5 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	red_tide_gp,                  //69-56 Red Tide
 	candy2_gp                     //70-57 Candy2
 };
-
-void paletteStartUP();
-void paletteSetActive( byte pollitraID);
 
 #endif

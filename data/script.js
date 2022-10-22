@@ -1,13 +1,16 @@
 //console.log( [...document.querySelector("#pollitres").options].map( opt => opt.value ) );
 var localSelect = true;
 
+
 $( function() {
 	// $( "#pollitres" ).selectmenu( "instance" )._refreshMenu();
 	$( "#pollitres" ).selectmenu( "open");
 	$( "#pollitres" ).selectmenu( "close");
 } );
 
+
 $( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
+
 
 // эвенты селект-меню
 $( "#pollitres" ).selectmenu({
@@ -28,6 +31,7 @@ $( "#pollitres" ).selectmenu({
 	}
 });
 
+
 // добавляем листенер эвентов от сервера
 if (!!window.EventSource) {
 	var source = new EventSource('/events');
@@ -40,6 +44,19 @@ if (!!window.EventSource) {
 }
 
 
+function raiserFunc(){
+	var x = document.getElementById( "raiser");
+	var h = document.getElementById( 'hiderItem');
+
+	if (x.style.display === "none") {
+		x.style.display = "block";
+		h.innerHTML = "less";
+	} else {
+		x.style.display = "none";
+		h.innerHTML = "more ";
+	}
+}
+
 function unsave( request){
 	if ( request == 1){ 
 		document.querySelector(".unsaver0").classList.add( 'unsave');
@@ -51,6 +68,8 @@ function unsave( request){
 	}
 }
 
+
+
 function buttonClick( element) {
 	var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
 	if ( element.classList.contains("powerbutton")) { element.classList.toggle("active"); };
@@ -60,6 +79,8 @@ function buttonClick( element) {
 	xhr.open("GET", "/update?funcID="+element.id + value, true); 
 	xhr.send();
 }
+
+
 
 // двигалка ранжеров: посылаем на сервер новые данные
 function rInput( element) {
@@ -73,7 +94,7 @@ function rInput( element) {
 	xhr.send();
 }  
 
-//	d.getElementById('buttonPower').className = (isOn) ? "active":"";
+
 
 const wave = document.querySelectorAll('.wave');
 // обновление данных на странице
@@ -85,23 +106,29 @@ function reseter( data){
 	item = document.querySelector( ".opt-active");		// очищаем класс в списке палитр
 	if ( item){ item.classList.remove( 'opt-active'); }			
 
-	document.getElementById( 10000003).value 				= json.vBrightness;
-	document.getElementById( 10000004).value 				= json.vSaturn;
+	document.getElementById( 10000003).value 				= json.vBri;
+	document.getElementById( 10000004).value 				= json.vSpeed;
 	document.getElementById( 10000005).value 				= json.vTemp;
-	document.getElementById( 10000006).value 				= json.vSpeed;
+	document.getElementById( 10000006).value 				= json.vSat;	
+	document.getElementById( 10000007).value 				= json.vAUX010;
+	document.getElementById( 10000008).value 				= json.vAUX100;
+	document.getElementById( 10000009).value 				= json.vAUX255;
 	// document.querySelector( ".upser").innerHTML 			= json.vPressed;
-	document.querySelector( ".Brightness-value").innerHTML 	= json.vBrightness;
-	document.querySelector( ".Saturations-value").innerHTML = json.vSaturn;
+	document.querySelector( ".Brightness-value").innerHTML 	= json.vBri;
+	document.querySelector( ".Saturations-value").innerHTML = json.vSat;
 	document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
 	document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;	
+	document.querySelector( ".AUX010-value").innerHTML 		= json.vAUX010;	
+	document.querySelector( ".AUX100-value").innerHTML	 	= json.vAUX100;	
+	document.querySelector( ".AUX255-value").innerHTML	 	= json.vAUX255;	
 	unsave( json.vUnsave);
 
-	if ( json.vRndStyle){  document.documentElement.setAttribute("style", json.vRndStyle); 	} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
+	if ( json.vStyle){  document.documentElement.setAttribute("style", json.vStyle); 	} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
 	
 
 	item = document.getElementById( "pollitres-button"); 							// обновляем стиля для кнопки выбора палитр
-	if ( json.vPollCurrent > 1) {			
-		item.style.background = "var(--gr"+json.vPollCurrent+")";
+	if ( json.vPCur > 1) {			
+		item.style.background = "var(--gr"+json.vPCur+")";
 	} else {
 		item.style.background = "var(--gr0)";
 	}
@@ -109,15 +136,15 @@ function reseter( data){
 	var menu = $( "#pollitres" ).selectmenu( "instance" ); 								// ссылка на обьект джиквери-меню
 	if ( document.querySelector( ".ui-menu-item")) {		
 		if ( menu.isOpen == false){ 
-			if ( $('#pollitres option:selected').val() != json.vPollCurrent){			// текущий елемент меню не равен серверному
+			if ( $('#pollitres option:selected').val() != json.vPCur){			// текущий елемент меню не равен серверному
 				localSelect = false;													// фэлсим, что бы при выполнении селекта оно не выслалось обратно на сервер
-				item = menu.menuItems.eq( json.vPollCurrent-1 ).parent( "li" );			// пытаемся установить выбранный елемент меню с сервера активным на странице
+				item = menu.menuItems.eq( json.vPCur-1 ).parent( "li" );			// пытаемся установить выбранный елемент меню с сервера активным на странице
 				menu._select( item.data( "ui-selectmenu-item" ))						// и обновить его в меню
 			}					
 		} 
-		var sItem = document.getElementById( "ui-id-" + json.vPollDefault); 			// устанавливаем класс в списке палитр
+		var sItem = document.getElementById( "ui-id-" + json.vPDef); 			// устанавливаем класс в списке палитр
 		if ( sItem){ sItem.classList.add( 'default');  }
-		var aItem = document.getElementById( "ui-id-" + json.vPollCurrent); 			// устанавливаем класс в списке палитр
+		var aItem = document.getElementById( "ui-id-" + json.vPCur); 			// устанавливаем класс в списке палитр
 		if ( aItem){ aItem.classList.add( 'opt-active');}
 	}
 
@@ -137,6 +164,8 @@ function reseter( data){
 	if ( json.vC3){ var c3 = new iro.Color( json.vC3); colorPicker.colors[2].set(c3);}
 }
 
+
+
 // запрашиваем обновление данных с сервера и устанавливаем листенер = reseter()
 function updateDate( fullUpdate){
 	var xhr = new XMLHttpRequest();
@@ -154,6 +183,7 @@ function updateDate( fullUpdate){
 }
 
 
+
 ///////////////////////////////////////////////////////////
 //
 //				COLORPICKER
@@ -161,6 +191,8 @@ function updateDate( fullUpdate){
 
 const colorList = document.getElementById("colorList");
 const activeColor = document.getElementById("activeColor");
+
+
 
 var colorPicker = new iro.ColorPicker("#picker", {
 	width: 220,
@@ -177,9 +209,13 @@ var colorPicker = new iro.ColorPicker("#picker", {
 	borderColor: "#fff",
 });
 
+
+
 function setColor(colorIndex) {
   colorPicker.setActiveColor(colorIndex);
 }
+
+
 
 // https://iro.js.org/guide.html#color-picker-events
 colorPicker.on(["input:end"], function(){
@@ -206,65 +242,3 @@ colorPicker.on(["mount", "color:change"], function(){
     `;
   });
 });
-
-// updateDate();
-
-
-//обработка эвента сервера на обновление цвета кнопки комбобокса с палитрами и подменой градиентов
-// function randomUpdate( request){
-// 	var json = JSON.parse( request);
-// 	if ( json.p01){  document.documentElement.setAttribute("style", json.p01); 	}
-// }
-
-// $( "#pollitres" ).selectmenu( "instance" )._renderButtonItem = function( item ) {
-// 	var buttonItem = $( "<span>", { "class": "ui-selectmenu-text" })
-// 	this._setText( buttonItem, item.label );
-
-// 	var value = $('#pollitres option:selected').val();
-// 	var button = document.getElementById( "pollitres-button");
-// 	if ( value > 1) {			
-// 		button.style.background = "var(--gr"+value+")";
-// 	} else {
-// 		button.style.background = "var(--gr0)";
-// 	}
-// 	return buttonItem;
-// }
-
-
-
-  	// <script>
-  	// 	$( function() {
-    // 		$( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
-  	// 	} );
-  	// </script>
-
-			// $( "#pollitres option[value="+ json.vPollCurrent +"]" ).prop('selected', 'selected');
-			// $( "#pollitres" ).trigger( "change" );
-			// $( "#pollitres" ).selectmenu( "instance" )._renderButtonItem( );
-			// $('#pollitres').selectmenu('refresh', true);
-
-	// $( "#pollitres option[value="+ json.vPollCurrent +"]" ).attr('selected', 'selected');
-	// $("#pollitres").val( json.vPollCurrent).change();
-	// $("#pollitres").trigger("change");
-	// $( "#pollitres" ).selectmenu( "option", "selected",  json.vPollCurrent ).trigger( "change" );
-	//.prop('selected', true);;
-
-	// var value = $('#pollitres option:selected').val();
-	// document.querySelector( ".upser").innerHTML 			= "new value: " + oldValue + " -=- " + json.vPollCurrent + " -=- " + value;
-	// console.log( "new value: " + json.vPollDefault + " -=- " + json.vPollCurrent + " -=- " + value);
-
-
-
-// function changeOption(){     			
-// 	wave.forEach((element) => {
-// 		if ( element.classList.contains("active") == true) {
-// 			var value = document.getElementById( "pollitre-select").selectedOptions[0].value;
-// 			var xhr = new XMLHttpRequest();
-// 			xhr.open("GET", "/select?funcID="+value+"&value="+value, true); 
-// 			xhr.send();	  
-// 		};
-// 	});
-// } 
-// document.getElementById( "pollitre-select").addEventListener("change", changeOption);
-
-//(function updateSelfDate(){ updateDate(); setTimeout(updateSelfDate, 3000);})();

@@ -48,9 +48,13 @@ void ledBlink();
 /* Затухаем лентой вниз до нулевого состояния 10-го диода */
 void ledFadeOUT();
 void setSpeed( int value);
+void setAUX010( int value);
+void setAUX100( int value);
+void setAUX255( int value);
 void setSaturation( int value);
 void setTemperature( int value);
 void setBrightness( int value);
+void setColors(	CRGB c1, CRGB c2, CRGB c3, bool force);
 
 /* Меняем общуу срость анимации (0-...)
 * @param delta +/- yo.currentSpeed.*/

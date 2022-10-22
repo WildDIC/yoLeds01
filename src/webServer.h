@@ -41,8 +41,8 @@ void makeColorString(){
 }
 
 void collectData(){	
-	mbIter = mButtons.begin();
-	for (int i = 0; mbIter != mButtons.end(); mbIter++, i++) {		
+	mbIter = mWaves.begin();
+	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) {		
 		mbIter->second.code = mbIter->first;
 		if ( mbIter->second.indForWeb){
 			if ( mbIter->second.typeWeb == 1){
@@ -64,16 +64,17 @@ void collectData(){
 	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
 	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
 	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	ROOT_HOLDER += "\t\t--gr6: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
 	
+
 	// собираем css градиенты для выбора палитр
 	String coma = "%,";
-	const byte shift = 6;
 	byte tcp[72]; //support gradient palettes with up to 18 entries
 	for ( int i = 0; i < 58 + 11; i++){
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
 
-		CSS_HOLDER +=  "\t#ui-id-"+ String( i+ shift) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + shift)+")}\n";
-		ROOT_HOLDER += "\t\t--gr"+ String( i+ shift) +": linear-gradient( 90deg, ";
+		CSS_HOLDER +=  "\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
+		ROOT_HOLDER += "\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
 
 		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
 			if ( tcp[ind] == 255){ coma = "%";}
@@ -85,11 +86,22 @@ void collectData(){
 	}
 	ROOT_HOLDER += "}";
 
-	// собираем полоски-двигалки 
+
+	// RANGERS собираем полоски-двигалки 
 	for(int i = 1; i < NUM_RANGES; i++){
 		int rValue = rState(i);
-		RANGE_HOLDER += "<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
-		RANGE_HOLDER += "<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+		// уменьшалка
+		if ( i == 3) {
+			RANGE_HOLDER += "\t<div class='hider' id='hider'><span class='hiderItem' id='hiderItem' onclick='raiserFunc()'>more</span></div>\n";
+			RANGE_HOLDER += "\t<div class='raiser' id='raiser' style='display: none;'>\n";
+		}
+
+		RANGE_HOLDER += "\t<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+		
+		if ( i == NUM_RANGES - 1){
+			RANGE_HOLDER += "\t</div>\n\n";  // close 'raiser' div
+		}
 	}
 }
 
@@ -99,29 +111,34 @@ String processor(const String& var){
 
 	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
 	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
+	
+	
+	// SELECT replacer
 	if(var == "SELECTHOLDER"){
 		String buttons = "";
 		String active = "";			
-		buttons += "\n<div class=\"selectZ\">\n\t<select name=\"pollitres\" id=\"pollitres\">\n";
+		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
 		for (size_t i = 0; i < NUM_POLLITR; i++){
 			if ( myPal[i].name.length() > 0){				
-				if ( i == mButtons[yo.lastPressed].min){ active = "selected = \"selected\"";} 
+				if ( i == mWaves[yo.lastPressed].min){ active = "selected = \"selected\"";} 
 				else{	active = ""; }
 				if ( i == 17){
-					buttons += "\t<optgroup label=\"WLEDs Pollitres(c)\">\n";
+					buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n";
 				}
 				
-				if ( i == mButtons[yo.lastPressed].min){ active = " selected = 'selected'";} 
+				if ( i == mWaves[yo.lastPressed].min){ active = " selected = 'selected'";} 
 				else{	active = ""; }
 
-				buttons += "\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
+				buttons += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
 			}
 		}
-		buttons += "\t</optgroup>\n</select></div>\n\n";
+		buttons += "\t\t</optgroup>\n\t</select></div>\n\n";
 
 		return buttons;
 	}
 
+
+	// BUTTONRS replacer
 	if(var == "BUTTONPLACEHOLDER"){
 		String buttons = "";
 		String active = "";			
@@ -131,7 +148,7 @@ String processor(const String& var){
 
 		for ( int i = 2; i < NUM_BUTTONS; i++ ){ active = "";			
 			if ( yo.lastPressed == bList[i].code){ active = " active"; }
-			buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
+			buttons += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
 		}
 		return buttons;
 	}
@@ -143,17 +160,20 @@ String webServerMakeJSON(){
 	makeColorString();
 
 	String out = "{";
-	out += "\"vBrightness\": "	+ String(yo.currentBrightness)					+", ";
-	out += "\"vSaturn\": "		+ String(yo.currentSaturn)						+", ";
-	out += "\"vTemp\": "		+ String(yo.currentTemp)						+", ";
-	out += "\"vSpeed\": "		+ String(yo.currentSpeed)						+", ";
-	out += "\"vPressed\": "		+ String(yo.lastPressed)						+", ";
-	out += "\"vONOFF\": "		+ String(yo.ONOFF)								+", ";
-	out += "\"vUnsave\": "		+ String(yo.isNeedSaveEEPROM)					+", ";
-	out += "\"vPollCurrent\": "	+ String(mButtons[yo.lastPressed].pollCurrent)	+", ";
-	out += "\"vRndStyle\": "	+ yo.rndStyle 									+", ";
+	out += "\"vBri\": "		+ String(yo.currentBrightness)	+", ";
+	out += "\"vSat\": "		+ String(yo.currentSaturn)		+", ";
+	out += "\"vTemp\": "	+ String(yo.currentTemp)		+", ";
+	out += "\"vSpeed\": "	+ String(yo.currentSpeed)		+", ";
+	out += "\"vPressed\": "	+ String(yo.lastPressed)		+", ";
+	out += "\"vONOFF\": "	+ String(yo.ONOFF)				+", ";
+	out += "\"vUnsave\": "	+ String(yo.isNeedSaveEEPROM)	+", ";
+	out += "\"vPCur\": "	+ String(yo.pollCurrent)		+", ";
+	out += "\"vStyle\": "	+ yo.rndStyle 					+", ";
+	out += "\"vAUX010\": "	+ String( yo.AUX010) 			+", ";
+	out += "\"vAUX100\": "	+ String( yo.AUX100)			+", ";
+	out += "\"vAUX255\": "	+ String( yo.AUX255)			+", ";
 	out += colorString;
-	out += "\"vPollDefault\": "	+ String(mButtons[yo.lastPressed].pollDefault)	+" ";
+	out += "\"vPDef\": "	+ String(yo.pollDefault)		+" ";
 	out += "}";      // 	ЗАПЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
 	
 	colorString = "";
@@ -165,9 +185,10 @@ String webServerMakeJSON(){
 // запуск эвента, который сообщает клиенту, что что-то изменались и ему надо запросить данные с сервера.
 void webServerUpdate(){
 	String out 	 = webServerMakeJSON();
+	// Serial.println( out);
+
 	char * chOut = new char [out.length()+1];
 	strcpy ( chOut, out.c_str());
-
 	events.send( chOut,"update", millis());
 }
 
@@ -213,8 +234,8 @@ void webServerStartUP(){
 			yo.againButton = atoi( inputMessage02.c_str());
 		}	
 		if (request->hasParam( PARAM_INPUT_1)) {			
-			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();				
-			paletteSetActive( atoi( inputMessage01.c_str()));
+			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();	
+			paletteSetActive( atoi( inputMessage01.c_str()), true);
 			webServerUpdate();
 		}
 		request->send(200, "text/plain", "OK");
@@ -237,13 +258,9 @@ void webServerStartUP(){
 				pch = strtok (NULL, "-");	
 			}
 
-			yo.c1 = CRGB( colors[0], colors[1], colors[2]);
-			yo.c2 = CRGB( colors[3], colors[4], colors[5]);
-			yo.c3 = CRGB( colors[6], colors[7], colors[8]);
-			// makeColorString();
+			setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]), true);
+			paletteSetActive( 6, false);
 			webServerUpdate();
-			// Serial.printf( "%d.%d.%d\n", yo.c1.r, yo.c1.g, yo.c1.b);
-			// Serial.printf( "%d.%d.%d\n", colors[0], colors[1], colors[2]);
 		}
 		request->send(200, "text/plain", "OK");
 	});

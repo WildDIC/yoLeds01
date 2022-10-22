@@ -106,3 +106,12 @@ background-color: red;
 .half01 { width: 150px;	padding: 10px; font-size: 0.75em; text-align: center; }
 .onecolor{ margin-bottom: 0px; }
 .swatch {	height: 30px; width: 30px; margin: 4px auto; border-radius: 50%; border: 3px solid #bbb; outline: 3px solid #181E28;}
+
+.raiser {
+	display:block;
+	transition: all .5s ease-out;
+}
+
+.hidden {
+ display:none;
+}
