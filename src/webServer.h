@@ -70,7 +70,9 @@ void collectData(){
 	// собираем css градиенты для выбора палитр
 	String coma = "%,";
 	byte tcp[72]; //support gradient palettes with up to 18 entries
-	for ( int i = 0; i < 58 + 11; i++){
+	
+	for ( int i = 0; i < 58 + 11; i++){   // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ПАЛЛЕТЕ++ ( 23)
+
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
 
 		CSS_HOLDER +=  "\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";

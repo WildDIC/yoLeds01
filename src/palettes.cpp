@@ -18,9 +18,9 @@ void paletteStartUP(){
 	myPal[++ind] = { "- c2 to c3 colors"}; 
 
 	++ind;
-	yo.lastCustPal = ind;
+	yo.lastCustPal = ind;		// для вебсервера
 	
-	for ( int i = 0; i < 58 + 11; i++){
+	for ( int i = 0; i < 58 + 11; i++){  // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ВЕБСЕРВЕРЕ++ ( 74)
 		byte tcp[72]; //support gradient palettes with up to 18 entries
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
 		activePollitre.loadDynamicGradientPalette(tcp);
@@ -116,7 +116,7 @@ void paletteSetActive( byte pollitraID, bool force=true){
 	#endif
 
 	#ifdef DEBUG_ENABLE
-		Serial.printf( "Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
+		Serial.printf( "-=> Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
 	#endif
 }
 

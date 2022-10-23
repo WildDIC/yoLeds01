@@ -6,9 +6,9 @@
 
 #define WEB_ENABLE 
 #define EERPROM_ENABLE 
-// #define DEBUG_ENABLE 
 // #define FPSCOUNT_ENABLE
 
+// #define DEBUG_ENABLE 
 #ifdef DEBUG_ENABLE
 #define yoBug(x) Serial.print(x)
 #define yoBugN(x) Serial.println(x)
@@ -69,7 +69,7 @@ extern config yo;						// конфиг, самое главное здесь
 extern void (*pt2Func)();				// ссылка на анима-функция
 
 
-
+// новое дописываем строго вниз ( ниже aux255), ибо собьем таблицу с определениями в main
 struct waveItem{
     int code;							// IR code
     String name;						// Web button name
@@ -95,6 +95,7 @@ struct waveItem{
 	CRGB c2;
 	CRGB c3;
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
+	bool needSave; 						// флаг необходимости что-то засейвить в этой конструкции
 };										// list for: IRDA - function - WEB
 
 typedef std::map<int, waveItem> mapWAVES;

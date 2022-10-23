@@ -82,22 +82,27 @@ void eepromSave( bool forceSaveEEPROM = false){
 		mbIter = mWaves.begin();
 		for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) {  
 			
-			if ( mbIter->second.typeWeb == 1){
-				
-				EEPROM_CURRENT_ADDR = EEPROM_ADDR_PALLET + ( EEPROM_WAVE_SIZE * ind);		
+			if ( mbIter->second.typeWeb == 1){					// если ваве-кнопка
 
-				saveEEPROM( mbIter->first);
-				saveEEPROM( mbIter->second.pollCurrent);
-				saveEEPROM( mbIter->second.bright);				
-				saveEEPROM( mbIter->second.speed);
-				saveEEPROM( mbIter->second.aux010);
-				saveEEPROM( mbIter->second.aux100);
-				saveEEPROM( mbIter->second.aux255);
-				saveEEPROM( mbIter->second.temp);
-				saveEEPROM( mbIter->second.saturn);
-				saveEEPROM( mbIter->second.c1.r);		saveEEPROM( mbIter->second.c1.g);		saveEEPROM( mbIter->second.c1.b);
-				saveEEPROM( mbIter->second.c2.r);		saveEEPROM( mbIter->second.c2.g);		saveEEPROM( mbIter->second.c2.b);
-				saveEEPROM( mbIter->second.c3.r);		saveEEPROM( mbIter->second.c3.g);		saveEEPROM( mbIter->second.c3.b);
+				if ( mbIter->second.needSave == true){			// если надо сохранить там что-то, отдельно из-за ind++ 
+					
+					EEPROM_CURRENT_ADDR = EEPROM_ADDR_PALLET + ( EEPROM_WAVE_SIZE * ind);		
+
+					saveEEPROM( mbIter->first);
+					saveEEPROM( mbIter->second.pollCurrent);
+					saveEEPROM( mbIter->second.bright);				
+					saveEEPROM( mbIter->second.speed);
+					saveEEPROM( mbIter->second.aux010);
+					saveEEPROM( mbIter->second.aux100);
+					saveEEPROM( mbIter->second.aux255);
+					saveEEPROM( mbIter->second.temp);
+					saveEEPROM( mbIter->second.saturn);
+					saveEEPROM( mbIter->second.c1.r);		saveEEPROM( mbIter->second.c1.g);		saveEEPROM( mbIter->second.c1.b);
+					saveEEPROM( mbIter->second.c2.r);		saveEEPROM( mbIter->second.c2.g);		saveEEPROM( mbIter->second.c2.b);
+					saveEEPROM( mbIter->second.c3.r);		saveEEPROM( mbIter->second.c3.g);		saveEEPROM( mbIter->second.c3.b);
+
+					mbIter->second.needSave = false;
+				}			
 				
 				ind++;
 		// 		// Serial.printf( "%d Save (NOT) ind = %d, ID = %d ( %d), Pal= %d ( %d).\n", EEPROM_CURRENT_ADDR, ind, palIter->first, readINT, palIter->second, readBYTE);
@@ -128,10 +133,15 @@ void eepromSaveHandler(){
 }
 
 /*Принимаем запрос на сохранение yo.isNeedSaveEEPROM.
-Откладываем таймер SAVE_DELAY секунд при каждом запросе*/
+Откладываем таймер SAVE_DELAY секунд при каждом запросе
+Выставляем флаг необходимости что-то сохранить, в цикле при сохранени обнуляется*/
 void requestSave(){
 	yo.EEPROMsaveTime = yo.now + EEPROM_SAVE_TIME;
 	yo.isNeedSaveEEPROM = true;
+	mWaves[yo.lastPressed].needSave = true;
+
+	yoBug( "-=> need save: ");
+	yoBugN( mWaves[yo.lastPressed].name);
 }
 
 

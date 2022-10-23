@@ -9,7 +9,7 @@ int color = 0;
 uint8_t var00, var01, var02;
 float far00, far01;
 
-#include "waveClass.h"
+// #include "waveClass.h"
 // waveClass anima01( 1, 2, 3);
 // void anima01::getDate() override
 // {
@@ -149,7 +149,7 @@ void animWave07(){
 
 /* Костерок №02 */
 void animWave08() {
-	uint8_t foundNEW = 0;
+	// uint8_t foundNEW = 0;
 
     for (int pos = 0; pos < NUM_LEDS; pos++){	
         if ( LEDS_HUE[pos] > 1){
