@@ -19,10 +19,11 @@ const byte ib_jul01_gp[] PROGMEM = {
 
 const byte es_vintage_57_gp[] PROGMEM = {
 	0,   2,  1,  1,
-   53,  18,  1,  0,
-  104,  69, 29,  1,
+   23,  18,  1,  0,
+   84,  69, 29,  1,
   153, 167,135, 10,
-  255,  46, 56,  4};
+  255, 200, 190, 25};
+//   255,  46, 56,  4};
 
 
 // Gradient palette "es_vintage_01_gp", originally from
@@ -78,8 +79,8 @@ const byte rgi_15_gp[] PROGMEM = {
 // Size: 8 bytes of program space.
 
 const byte retro2_16_gp[] PROGMEM = {
-	0, 188,135,  1,
-  255,  46,  7,  1};
+  	  0,  46,   7, 0,
+	255, 188, 135, 0};
 
 
 // Gradient palette "Analogous_1_gp", originally from
@@ -265,18 +266,19 @@ const byte Tertiary_01_gp[] PROGMEM = {
 
 const byte lava_gp[] PROGMEM = {
 	0,   0,  0,  0,
-   46,  18,  0,  0,
-   96, 113,  0,  0,
-  108, 142,  3,  1,
-  119, 175, 17,  1,
-  146, 213, 44,  2,
-  174, 255, 82,  4,
-  188, 255,115,  4,
-  202, 255,156,  4,
-  218, 255,203,  4,
-  234, 255,255,  4,
-  244, 255,255, 71,
-  255, 255,255,255};
+   10,  38,  0,  0,
+   46, 113,  0,  0,
+   78, 142,  3,  1,
+  109, 175, 17,  1,
+  126, 213, 44,  2,
+  154, 255, 82,  4,
+  178, 255,115,  4,
+  192, 255,156,  4,
+  208, 255,203,  4,
+  230, 255,255,  4,
+  244, 255,255, 31,
+  255, 255,255, 50};
+//   255, 255,255,255};
 
 
 // Gradient palette "fierce_ice_gp", originally from
@@ -286,12 +288,12 @@ const byte lava_gp[] PROGMEM = {
 
 const byte fierce_ice_gp[] PROGMEM = {
 	0,   0,  0,  0,
-   59,   0,  9, 45,
-  119,   0, 38,255,
+   19,   0,  9, 45,
+   89,   0, 38,255,
   149,   3,100,255,
   180,  23,199,255,
-  227, 100,235,255,
-  255, 150,255,255};
+  227,  90,235,255,
+  255, 130,255,255};
 
 
 // Gradient palette "Colorfull_gp", originally from
@@ -530,15 +532,18 @@ const byte April_Night_gp[] PROGMEM = {
   255,   1,  5, 45};
 
 const byte Orangery_gp[] PROGMEM = {
-	0, 255, 95, 23,
-   30, 255, 82,  0,
-   60, 223, 13,  8,
-   90, 144, 44,  2,
-  120, 255,110, 17,
-  150, 255, 69,  0,
-  180, 158, 13, 11,
-  210, 241, 82, 17,
-  255, 213, 37,  4};
+// 	0, 255, 95, 23,
+//    30, 255, 82,  0,
+//    60, 223, 13,  8,
+//    90, 144, 44,  2,
+//   120, 255,110, 17,
+//   150, 255, 69,  0,
+//   180, 158, 13, 11,
+//   210, 241, 82, 17,
+//   255, 213, 37,  4};
+  0, 	54,   11, 0,
+  128, 	255, 120, 0,
+  255, 	255, 170, 0};
 
 //inspired by Mark Kriegsman https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
 const byte C9_gp[] PROGMEM = {
@@ -986,25 +991,30 @@ const byte candy2_gp[] PROGMEM = {
 
 
 const byte lightFie_my[] PROGMEM = {
-	0, 		255, 195, 0,
-	127, 	255, 94, 0,
-	255, 	255, 195, 0};
+	0, 			255, 95, 0,
+	// 127, 	255, 94, 0,
+	// 255, 	255, 195, 0};
+	255, 		255, 195, 0};
 
 
 
 const String palette_names[70] = {
 	// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
 	// "Forest","Rainbow","Rainbow Bands",
-	"RainbowColors", "- orange fire", "- green to blue", "- red to violet", "- blue to violet", 			/// 11 palitres
-	"- deep forest", "PartyColors", "- light my fire", "ForestColors", "HeatColors", 
-	"RainbowStripeColors",
+	"RainbowColors", "Temperature", "PartyColors", "- green to blue", "- red to violet", "- blue to violet", 			/// 11 palitres
+	"Light of my fire", "Swamp fire",  "Orangery fire", "Hell fire", "Sakura",
+	
+	"Pastel", 	
+	"Fire", "HeatColors", "Icefire", "Grintage", "Yelblu Hot", "Magred", 
+	 "Analogous", "Orange & Teal",
 
-	"Sunset","Rivendell","Breeze","Red & Blue","Yellowout","Analogous","Splash",							//   58 palitres
-	"Pastel","Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
-	"Drywet","Jul","Grintage","Rewhi","Tertiary","Fire","Icefire","Cyane","Light Pink","Autumn",
-	"Magenta","Magred","Yelmag","Yelblu","Orange & Teal","Tiamat","April Night","Orangery","C9","Sakura",
-	"Aurora","Atlantica","C9 2","C9 New","Temperature","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
-	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Yelblu Hot","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2"};
+	"Sunset","Rivendell","Breeze","Red & Blue","Splash",							//   58 palitres
+	"Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
+	"Drywet","Jul","Rewhi","Tertiary","Cyane","Light Pink","Autumn",
+	"Magenta","Yelmag","Yelblu","Tiamat","April Night", "C9",
+	"Aurora","Atlantica","C9 2","C9 New","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
+	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2", 
+	"RainbowStripeColors", "Deep forest", "ForestColors"};
 
 // Single array of defined cpt-city color palettes.
 // This will let us programmatically choose one based on
@@ -1013,28 +1023,35 @@ const String palette_names[70] = {
 const byte* const gGradientPalettes[] PROGMEM = {
 	// + 11
   	RainbowColors_my,			// 05 - 
-	orangeFire_my,
+	temperature_gp,               //54-41 Temperature
+	PartyColors_my,
+
 	greenToBlue_my,
 	redToViolet_my,
-	// redGreenBlue_my,
 	blueToViolet_my,
-	deepForest_my,
 
-	PartyColors_my,
-	// OceanColors_my,
-	lightFie_my,
-	ForestColors_my,
+	lightFie_my,				  // Light of my fire
+	retro2_16_gp,                 //17-04 Swamp fire
+	Orangery_gp,                  //47-34 Orangery
+	orangeFire_my,				  // Hell fire
+	Sakura_gp,                    //49-36 Sakura
+
+	Sunset_Yellow_gp,             //20-07 Pastel
+	lava_gp,                      //35-22 Fire
 	heatColor_my,
-	RainbowStripeColors_my,
+	fierce_ice_gp,                //36-23 Icefire
+	es_vintage_57_gp,             //32-19 Grintage
+	yelblu_hot_gp,                //64-51 Yelblu Hot
+	BlacK_Magenta_Red_gp,         //41-28 Magred
+	
+	Analogous_1_gp,               //18-05 Analogous
+	Orange_Teal_gp,               //44-31 Orange & Teal	
 
 	Sunset_Real_gp,               //13-00 Sunset
 	es_rivendell_15_gp,           //14-01 Rivendell
 	es_ocean_breeze_036_gp,       //15-02 Breeze
 	rgi_15_gp,                    //16-03 Red & Blue
-	retro2_16_gp,                 //17-04 Yellowout
-	Analogous_1_gp,               //18-05 Analogous
 	es_pinksplash_08_gp,          //19-06 Splash
-	Sunset_Yellow_gp,             //20-07 Pastel
 	Another_Sunset_gp,            //21-08 Sunset2
 	Beech_gp,                     //22-09 Beech
 	es_vintage_01_gp,             //23-10 Vintage
@@ -1046,29 +1063,21 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	gr64_hult_gp,                 //29-16 Hult64
 	GMT_drywet_gp,                //30-17 Drywet
 	ib_jul01_gp,                  //31-18 Jul
-	es_vintage_57_gp,             //32-19 Grintage
 	ib15_gp,                      //33-20 Rewhi
 	Tertiary_01_gp,               //34-21 Tertiary
-	lava_gp,                      //35-22 Fire
-	fierce_ice_gp,                //36-23 Icefire
 	Colorfull_gp,                 //37-24 Cyane
 	Pink_Purple_gp,               //38-25 Light Pink
 	es_autumn_19_gp,              //39-26 Autumn
 	BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
-	BlacK_Magenta_Red_gp,         //41-28 Magred
 	BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
 	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
-	Orange_Teal_gp,               //44-31 Orange & Teal
 	Tiamat_gp,                    //45-32 Tiamat
 	April_Night_gp,               //46-33 April Night
-	Orangery_gp,                  //47-34 Orangery
 	C9_gp,                        //48-35 C9
-	Sakura_gp,                    //49-36 Sakura
 	Aurora_gp,                    //50-37 Aurora
 	Atlantica_gp,                 //51-38 Atlantica
 	C9_2_gp,                      //52-39 C9 2
 	C9_new_gp,                    //53-40 C9 New
-	temperature_gp,               //54-41 Temperature
 	Aurora2_gp,                   //55-42 Aurora 2
 	retro_clown_gp,               //56-43 Retro Clown
 	candy_gp,                     //57-44 Candy
@@ -1078,13 +1087,15 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	pink_candy_gp,                //61-48 Pink Candy
 	red_reaf_gp,                  //62-49 Red Reaf
 	aqua_flash_gp,                //63-50 Aqua Flash
-	yelblu_hot_gp,                //64-51 Yelblu Hot
 	lite_light_gp,                //65-52 Lite Light
 	red_flash_gp,                 //66-53 Red Flash
 	blink_red_gp,                 //67-54 Blink Red
 	red_shift_gp,                 //68-55 Red Shift
 	red_tide_gp,                  //69-56 Red Tide
-	candy2_gp                     //70-57 Candy2
+	candy2_gp,                     //70-57 Candy2
+	RainbowStripeColors_my,
+	deepForest_my,
+	ForestColors_my
 };
 
 #endif

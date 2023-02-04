@@ -10,7 +10,7 @@
 #define EEPROM_ADDR_CONFIG 	EEPROM_ADDR_START  + 10
 #define EEPROM_ADDR_PALLET 	EEPROM_ADDR_CONFIG + 50 	// начальная запись массива палитр ( резерв под конфиг)
 
-#define EEPROM_SAVE_TIME 10 * 1000						// задержка на сохранение после изменения данных
+#define EEPROM_SAVE_TIME 60 * 1000						// задержка на сохранение после изменения данных
 #define EEPROM_WAVE_SIZE 30								// предположительный размер/резерв сохранения настроек Вавы 
 #define EEPROM_SIZE EEPROM_ADDR_PALLET + ( EEPROM_WAVE_SIZE * 25)
 
@@ -127,8 +127,8 @@ void eepromSaveHandler(){
 	if ( yo.isNeedSaveEEPROM == true && yo.now >= yo.EEPROMsaveTime){
 		yoBugN( "-=> SaveHandles");
 		eepromSave();		
-		yo.pt2webUnsave();
 		yo.isNeedSaveEEPROM = false;
+		yo.pt2webUnsave();
 	}
 }
 
@@ -181,10 +181,8 @@ void eepromStartUP(){
 
 		EEPROM_CURRENT_ADDR = EEPROM_ADDR_PALLET + ( EEPROM_WAVE_SIZE * i);			// перекидываем чтение данных на аждрксс с палитрами
 
-		fReadINT();		// read irdaID
-		fReadBYTE();	// read paletteID
-		
-		int waveID = readINT;
+		int waveID = fReadINT();		// read irdaID
+		fReadBYTE();					// read paletteID
 		
 		if ( readBYTE != 255 && waveID > 0){
 
@@ -204,13 +202,17 @@ void eepromStartUP(){
 		}	
 		else{
 			mWaves[waveID].pollCurrent = mWaves[waveID].pollDefault; 		// default vars
-			mWaves[waveID].bright = 125;
-			mWaves[waveID].temp = TEMP_IND_MAX;
-			mWaves[waveID].saturn = 100;
-			mWaves[waveID].speed = 10;
-			mWaves[waveID].aux010 = 5;
-			mWaves[waveID].aux100 = 50;
-			mWaves[waveID].aux255 = 128;
+			mWaves[waveID].bright 	= 125;
+			mWaves[waveID].temp 	= TEMP_IND_MAX;
+			mWaves[waveID].saturn 	= 100;
+			mWaves[waveID].speed 	= 10;
+			mWaves[waveID].aux010 	= 5;
+			mWaves[waveID].aux100 	= 50;
+			mWaves[waveID].aux255 	= 128;
+			
+			mWaves[waveID].c1.r 	= 0; 		mWaves[waveID].c1.g = 0; 		mWaves[waveID].c1.b = 255;
+			mWaves[waveID].c2.r 	= 0;		mWaves[waveID].c2.g = 255;		mWaves[waveID].c2.b = 0;
+			mWaves[waveID].c3.r 	= 255;		mWaves[waveID].c3.g = 0;		mWaves[waveID].c3.b = 0;
 		}
 		// Serial.printf( "id=%d, aux010=%d, speed=%d, bri=%d, polcur=%d\n", waveID, mWaves[waveID].aux010, mWaves[waveID].speed, mWaves[waveID].bright, mWaves[waveID].pollCurrent);
     }

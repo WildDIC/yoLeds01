@@ -9,6 +9,8 @@ void animWave02();
 
 /* Моргающий градиент радуги = хуета */
 void animWave03();
+void animWave03mordor();
+void animWave03fires();
 
 /* 8 волн с разной скоротью и наложением цвета */
 void animWave04();
@@ -23,6 +25,7 @@ void animWave06();
 void animWave07();
 
 /* Костерок №02 */
+void animWave08pre();
 void animWave08();
 
 /*	4 wavwes + 1 beatSin*/
@@ -46,6 +49,7 @@ void animaWave12();
 void animaWave13pre();
 void animaWave13();
 
+void animaWave14();
 #endif
 
     // fadeToBlackBy(leds, NUM_LEDS, 8);

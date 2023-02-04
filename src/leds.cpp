@@ -6,6 +6,8 @@
 
 CRGB leds[NUM_LEDS];            // Массив ленты
 uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
+uint8_t LEDS_STATUS[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
+uint8_t LEDS_VALUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
@@ -42,8 +44,17 @@ CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, u
 	return color;
 }
 
-void powerON(){  FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	FastLED.show(); }
-void powerOFF(){ FastLED.setMaxPowerInMilliWatts(0); 			FastLED.show(); }
+void powerON(){  
+	// FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	
+	FastLED.setBrightness( yo.currentBrightness);
+	FastLED.show(); 
+}
+
+void powerOFF(){ 
+	// FastLED.setMaxPowerInMilliWatts(0); 			
+	FastLED.setBrightness( 0);
+	FastLED.show(); 
+}
 
 /* Включаем / выключаем питание (!!!) ленты, 
 тормозим анимацию и переходим ждущий режим (delay)  */
@@ -56,20 +67,21 @@ void powerONOFF(){
 }
 
 /* Сброс ленты в черное и обнуление LEDS_массивов диодов */
-void ledOFF( int resValue){ 
+void ledOFF(){ 
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
 	// yo.lastPressed = resValue;
 
 	// for( uint8_t i = 0; i < 50; i++){
-	// 	fadeToBlackBy( leds, NUM_LEDS, 10);
+	// 	fadeToBlackBy( leds, NUM_LEDS, 2);
 	// 	FastLED.show();
-	// 	// delay( 5);
+	// 	delay( 50);
 	// }
+
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
-	// FastLED.show()	;
-	delay( 150);
+	FastLED.show();
+	// delay( 150);
 }
 
 /* Включаем беленькую */
@@ -113,17 +125,18 @@ void ledFadeOUT(){
 	}
 }
 
-void setSpeed( int value){  yo.currentSpeed = value; mWaves[yo.lastPressed].speed = value;}
-void setAUX010( int value){ yo.AUX010 = value; 		 mWaves[yo.lastPressed].aux010 = value;}
-void setAUX100( int value){ yo.AUX100 = value; 		 mWaves[yo.lastPressed].aux100 = value;}
-void setAUX255( int value){ yo.AUX255 = value; 		 mWaves[yo.lastPressed].aux255 = value;}
+void setSpeed(  int value){ yo.currentSpeed = value; if ( yo.loadOutside){ mWaves[yo.lastPressed].speed  = value;}}
+void setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux010 = value;}}
+void setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux100 = value;}}
+void setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux255 = value;}}
 
-void setColors(	CRGB c1, CRGB c2, CRGB c3, bool force){
+/*@param force не пишем, так как закинули цвет в мапу с веб-сервера уже*/
+void setColors(	CRGB c1, CRGB c2, CRGB c3){
 	yo.c1 = c1;
 	yo.c2 = c2;
 	yo.c3 = c3;
 
-	if ( force){
+	if ( yo.loadOutside){
 		mWaves[yo.lastPressed].c1 = c1;
 		mWaves[yo.lastPressed].c2 = c2;
 		mWaves[yo.lastPressed].c3 = c3;
@@ -139,8 +152,11 @@ void setSaturation( int value){
 	}
 
 	yo.currentSaturn  = value; 
-	mWaves[yo.lastPressed].saturn = value;
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
+	
+	if ( yo.loadOutside){
+		mWaves[yo.lastPressed].saturn = value;
+	}	
 }
 
 void setTemperature( int value){ 
@@ -152,8 +168,12 @@ void setTemperature( int value){
 	}
 	
 	yo.currentTemp = value; 
-	mWaves[yo.lastPressed].temp = value;
-	FastLED.setTemperature( temperList[yo.currentTemp] );
+	
+	if ( yo.loadOutside){
+		mWaves[yo.lastPressed].temp = value;
+	}
+	
+	FastLED.setTemperature( temperList[yo.currentTemp] );	
 	FastLED.show();
 	// Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
 }
@@ -164,7 +184,9 @@ void setBrightness( int value){
 		value = 5;
 	}
 	yo.currentBrightness = value; 
-	// mWaves[yo.lastPressed].bright = value;
+	// if ( yo.loadOutside){
+		// mWaves[yo.lastPressed].bright = value;
+	// }
 	FastLED.setBrightness( yo.currentBrightness);
   	FastLED.show();
 }

@@ -80,23 +80,25 @@ void setup() {
 	mWaves[IR_PLAY] 		=  { 0, "White Color", 			1, 	++ind,  	true, 	true, 		NULL, 			&ledUPWhite, 	NULL, 			NULL, 				0, 		0,			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_FASTFF] 		=  { 0, "Pallette test", 		1, 	++ind,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL,				0, 		0, 			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_1] 		=  { 0, "Костерок 01", 			1, 	++ind,  	true, 	true, 		&animWave02, 	NULL, 			NULL, 			NULL,				0, 		0, 			8, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_2] 		=  { 0, "Костерок 02", 			1, 	++ind,  	true, 	true, 		&animWave08, 	NULL, 			NULL, 			NULL,				0, 		0, 			14,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
+	mWaves[IR_NUM_2] 		=  { 0, "Костерок 02", 			1, 	++ind,  	true, 	true, 		&animWave08, 	NULL, 			animWave08pre,	NULL,				0, 		0, 			14,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
 	mWaves[IR_NUM_3] 		=  { 0, "Костерок 03", 			1, 	++ind,  	true, 	true, 		&animaWave13, 	NULL, 			animaWave13pre,	NULL, 				0, 		0,			8, 			125, 	50, 	10, 	100, 	5, 		50, 	125};	
 	mWaves[IR_NUM_4] 		=  { 0, "8 waves", 				1, 	++ind,  	true, 	true, 		&animWave04, 	NULL, 			NULL, 			NULL, 				0, 		0,			5, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_5] 		=  { 0, "8 waves сново", 		1, 	++ind,   	true, 	true, 		&animWave09, 	NULL, 			animWave09pre, 	NULL,				0, 		0, 			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_6] 		=  { 0, "4 beatSins waves",		1, 	++ind,  	true, 	true, 		&animaWave10, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000002] 		=  { 0, "inoise8 test",			1, 	++ind,  	true, 	true, 		&animWave03, 	NULL, 			animWave03fires,NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000011] 		=  { 0, "Огни Мордора ©",		1, 	++ind,  	true, 	true, 		&animWave03, 	NULL, 			animWave03mordor,NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_7] 		=  { 0, "Gradient (wled) 1",	1, 	++ind,  	true, 	true, 		&animaWave11, 	NULL, 			animaWave11p1,  NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_8] 		=  { 0, "Gradient (wled) 2",	1, 	++ind,  	true, 	true, 		&animaWave11, 	NULL, 			animaWave11p2, 	NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_9] 		=  { 0, "Gradient (wled) 3",	1, 	++ind,  	true, 	true, 		&animaWave11, 	NULL, 			animaWave11p3, 	NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000010] 		=  { 0, "Моргалочка",			1, 	++ind,  	true, 	true, 		&animaWave14, 	NULL, 			NULL,			NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_0] 		=  { 0, "Fire 2012", 			1, 	++ind,  	true, 	true, 		&animWave07, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_CLR] 		=  { 0, "Android (wled)",		1, 	++ind,  	true, 	true, 		&animaWave12, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	// mWaves[IR_NUM_CLR] 		=  { 0, "Android (wled)",		1, 	++ind,  	true, 	true, 		&animaWave12, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_10] 		=  { 0, "Rainbow Wave", 		1, 	++ind,   	true, 	true, 		&animWave01, 	NULL, 			NULL, 			NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[10000000] 		=  { 0, "Ползучая rainbow", 	1, 	++ind,  	true, 	true, 		&animWave05, 	NULL, 			NULL, 			NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[10000001] 		=  { 0, "Musix echo", 			1, 	++ind,  	true, 	true, 		&animWave06, 	NULL, 			NULL, 			NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000002] 		=  { 0, "Flasher", 				1, 	++ind,  	true, 	true, 		&animWave03, 	NULL, 			NULL, 			NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	ind = 0;
 	mWaves[10000003] 		=  { 0, "Brightness",	 		2, 	++ind,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&setBrightness,		5,		255};		
-	mWaves[10000004] 		=  { 0, "Speed", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			2,		40};
+	mWaves[10000004] 		=  { 0, "Speed", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			1,		10};
 	mWaves[10000005] 		=  { 0, "Temperature", 			2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setTemperature,	1,		TEMP_IND_MAX};
 	mWaves[10000006] 		=  { 0, "Saturations", 			2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSaturation, 	0,		100};
 	mWaves[10000007] 		=  { 0, "AUX010", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setAUX010,			0,		10};
@@ -166,9 +168,12 @@ void loop() {
 	#ifdef FPSCOUNT_ENABLE
 		fpsCount++;
 		if ( yo.now >= startFPS){
-			// Serial.println( fpsCount);
+			Serial.println( fpsCount);
 			startFPS = yo.now + 1000;
 			fpsCount = 0;
 		}
 	#endif
+
+	// EVERY_N_MILLISECONDS( <mseconds> ) {}
+   	// EVERY_N_SECONDS( <seconds> ) {}
 }

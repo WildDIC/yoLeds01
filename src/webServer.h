@@ -64,7 +64,9 @@ void collectData(){
 	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
 	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
 	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
-	ROOT_HOLDER += "\t\t--gr6: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	ROOT_HOLDER += "\t\t--gr6: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
 	
 
 	// собираем css градиенты для выбора палитр
@@ -121,10 +123,12 @@ String processor(const String& var){
 		String active = "";			
 		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
 		for (size_t i = 0; i < NUM_POLLITR; i++){
-			if ( myPal[i].name.length() > 0){				
+			if ( myPal[i].name.length() > 0){		
+
 				if ( i == mWaves[yo.lastPressed].min){ active = "selected = \"selected\"";} 
 				else{	active = ""; }
-				if ( i == 17){
+
+				if ( i == yo.lastCustPal + 11){
 					buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n";
 				}
 				
@@ -260,8 +264,8 @@ void webServerStartUP(){
 				pch = strtok (NULL, "-");	
 			}
 
-			setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]), true);
-			paletteSetActive( 6, false);
+			setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]));
+			paletteSetActive( yo.pollCurrent, false);
 			webServerUpdate();
 		}
 		request->send(200, "text/plain", "OK");

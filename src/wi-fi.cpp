@@ -10,7 +10,7 @@
 #define WIFI_CONNECT_TRY 5
 
 clock_t startTimeWF = clock();
-clock_t startLastDot = clock();
+clock_t startLastDot = 0; //clock();
 clock_t startCheck = 0; // - WIFI_CHECK_DELAY;
 byte wifiChecks = 1;
 bool wifiConnecting = false;
@@ -61,12 +61,12 @@ void wifiCheckConnect(){
 
 	if ( wifiConnecting){
 		
-		if ( yo.now > startLastDot + WIFI_CONNECT_PRINT){
+		if ( yo.now > startLastDot){   // + WIFI_CONNECT_PRINT){
 			Serial.print( '.');
 			startLastDot = yo.now + WIFI_CONNECT_PRINT;
 		}
 
-		if ( yo.now > startTimeWF + WIFI_CONNECT_TIME){
+		if ( yo.now > startTimeWF){
 			WiFi.disconnect();
 			Serial.println( "\nConnection time out error.");
 			wifiConnecting = false;
@@ -88,8 +88,8 @@ void wifiCheckConnect(){
 			Serial.printf( "\n[%d] Connecting to: %s ", wifiChecks, WIFI_SSID);
     		WiFi.begin(WIFI_SSID, WIFI_PASS);	
 			
-			startCheck = yo.now;
-			startTimeWF = yo.now;
+			// startCheck = yo.now;
+			startTimeWF = yo.now + WIFI_CONNECT_TIME;
 			wifiChecks++;
 			wifiConnecting = true;
 		// }		

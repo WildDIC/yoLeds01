@@ -64,6 +64,7 @@ struct config{
 	byte AUX255;
 	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
+	bool loadOutside = false;
 };
 extern config yo;						// конфиг, самое главное здесь
 extern void (*pt2Func)();				// ссылка на анима-функция

@@ -15,7 +15,9 @@ void paletteStartUP(){
 	myPal[++ind] = { "- 2 Random colors"}; 
 	myPal[++ind] = { "- 3 Random colors"}; 
 	myPal[++ind] = { "- 4 Random colors"}; 
+	myPal[++ind] = { "- c2 color"}; 
 	myPal[++ind] = { "- c2 to c3 colors"}; 
+	myPal[++ind] = { "- c1 to c2 to c3 colors"}; 
 
 	++ind;
 	yo.lastCustPal = ind;		// для вебсервера
@@ -25,10 +27,11 @@ void paletteStartUP(){
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
 		activePollitre.loadDynamicGradientPalette(tcp);
 		myPal[i+ind].palette = activePollitre;
-		if ( i + ind > 11){
-			myPal[i+ind].name = String( i) + ". " + palette_names[i];
+		
+		if ( i > 11 - 1){
+			myPal[i+ind].name = String( i - 10) + ". " + palette_names[i];
 		} else{
-			myPal[i+ind].name = palette_names[i];
+			myPal[i+ind].name = String( i + 1) + ". " + palette_names[i];
 		}		
 	}
 	
@@ -51,7 +54,7 @@ String getHEX( CRGB color){
 @return CRGB из сгенерированного CHSV цвета, потому что, сделать нормальный цвет можно только в HSV...*/
 CRGB getCol( CRGB color){
 	if ( yo.againButton || color.r == 0){
-		return 	CHSV( random( 1, 255), 255, random( 200, 255));
+		return CHSV( random8( 1, 255), 255, random8( 200, 255));
 	}
 	return color;	
 }
@@ -59,52 +62,55 @@ CRGB getCol( CRGB color){
 /* Меням активную палитру и записываем ее в текующую активность ленты
 @param byte pollitraID = Номер паллитры из myPal */
 void paletteSetActive( byte pollitraID, bool force=true){
-	if (  pollitraID == 2){ 
+	switch ( pollitraID ) {
+
+  	case 2:
 		c10 = getCol( c10);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr2: "+ getHEX( c10)+ ";\"";
-		#endif
+		yo.rndStyle = "\"--gr2: "+ getHEX( c10)+ ";\"";
+		
+		activePollitre = CRGBPalette16( c10);		
+		break;
 
-		activePollitre = CRGBPalette16( c10);
-	}
-	else if ( pollitraID == 3){ 
+  	case 3:
 		c20 = getCol( c20);	c21 = getCol( c21);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr3: linear-gradient( 90deg, "+ getHEX(c20)+", "+ getHEX(c21)+", "+ getHEX(c20)+");\"";
-		#endif
+		yo.rndStyle = "\"--gr3: linear-gradient( 90deg, "+ getHEX(c20)+", "+ getHEX(c21)+", "+ getHEX(c20)+");\"";
 
-		activePollitre = CRGBPalette16( c20, c21);
-	}
-	else if ( pollitraID == 4){ 
+		activePollitre = CRGBPalette16( c20, c21, c20);		
+		break;
+  	
+	case 4:
 		c30 = getCol( c30); c31 = getCol( c31); c32 = getCol( c32);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+", "+ getHEX(c30)+");\"";
-		#endif
+		yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+", "+ getHEX(c30)+");\"";
 
-		activePollitre = CRGBPalette16( c30, c31, c32);	 
-	}
-	else if ( pollitraID == 5){ 
+		activePollitre = CRGBPalette16( c30, c31, c32, c30);	 		
+		break;
+
+  	case 5:
 		c40 = getCol( c40); c41 = getCol( c41);	c42 = getCol( c42);	c43 = getCol( c43);
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43)+", "+ getHEX(c40)+");\"";
-		#endif
-		activePollitre = CRGBPalette16( c40, c41, c42, c43);	
-	}
-	else if ( pollitraID == 6){ 
-		#ifdef WEB_ENABLE
-			yo.rndStyle = "\"--gr6: linear-gradient( 90deg, "+ getHEX( yo.c2)+", "+ getHEX( yo.c3)+", "+ getHEX( yo.c2)+");\"";
-		#endif
+		yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43) + ");\"";
+		
+		activePollitre = CRGBPalette16( c40, c41, c42, c43);			
+		break;
 
-		if ( force == true){
-			activePollitre = CRGBPalette16( yo.c2, yo.c3, yo.c2);
-		}	
-		else{
-			return;
-		}	
-	}
-	else { 
+  	case 6:
+		yo.rndStyle = "\"--gr6: "+ getHEX( yo.c2) + ";\"";
+		activePollitre = CRGBPalette16( yo.c2);
+		break;
+
+  	case 7:
+		yo.rndStyle = "\"--gr7: linear-gradient( 90deg, "+ getHEX( yo.c2)+", "+ getHEX( yo.c3)+", "+ getHEX( yo.c2)+");\"";
+		activePollitre = CRGBPalette16( yo.c2, yo.c3, yo.c2);
+		break;
+
+  	case 8:
+		yo.rndStyle = "\"--gr8: linear-gradient( 90deg, "+ getHEX( yo.c1)+", "+ getHEX( yo.c2)+", "+ getHEX( yo.c3)+");\"";
+		activePollitre = CRGBPalette16(  yo.c1, yo.c2, yo.c3);
+		break;
+
+  	default:
 		yo.rndStyle = "false";
-		activePollitre = myPal[pollitraID].palette;
+		activePollitre = myPal[pollitraID].palette;		
+		break;
 	}
 
 	mWaves[yo.lastPressed].pollCurrent = pollitraID;

@@ -53,28 +53,25 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 			yoBug( "-=>> Наш выбор: ");			
 			yoBugN( mbIter->second.name);			
 
-
-			if ( mbIter->second.leadOFF){ 		
-				yo.lastPressed	= resValue;
-				ledOFF( resValue);			
-			}
-
-
 			if ( mbIter->second.pt2setter){ 									// сэттер или чэнджер пришел
+				// yo.loadOutside = true;
+
 				if ( mbIter->second.typeWeb == 0){								// changer
 					mbIter->second.pt2setter( mbIter->second.min);
-				}else if ( webValue){											// setter
+				}
+				else if ( webValue){											// setter
 					mbIter->second.pt2setter( webValue);
 				}
 			} 
 
-
-			if ( mbIter->second.typeWeb == 1){	               					// если есть столбец с палитрами
+			if ( mbIter->second.isEffect){	               						// если это эффект и надо применить цвета, палитры и прочее
 				if ( mbIter->second.pollCurrent < 1) { 							// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
 					mbIter->second.pollCurrent = mbIter->second.pollDefault; 	// если текущая палитра не определена - ставим дефолтную
 				}
 				
-				paletteSetActive( mbIter->second.pollCurrent, true);
+				yo.loadOutside = false;
+				yo.lastPressed = resValue;
+				setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3);
 				// setBrightness( 	mbIter->second.bright);
 				setSpeed( 		mbIter->second.speed);
 				setSaturation( 	mbIter->second.saturn);
@@ -82,10 +79,13 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 				setAUX010( 		mbIter->second.aux010);
 				setAUX100( 		mbIter->second.aux100);
 				setAUX255( 		mbIter->second.aux255);
-				setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3, false);
+				paletteSetActive( mbIter->second.pollCurrent, true);
+				ledOFF();
+				// if ( mbIter->second.leadOFF){ 		ledOFF();}
 				// Serial.println( "-==> Vars applied.");
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", resValue, mbIter->second.pollCurrent,	mbIter->second.bright, mbIter->second.speed, mbIter->second.saturn, mbIter->second.temp, mbIter->second.aux010, mbIter->second.aux100, mbIter->second.aux255);
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", yo.lastPressed, mbIter->second.pollCurrent,	yo.currentBrightness, yo.currentSpeed, yo.currentSaturn, yo.currentTemp, yo.AUX010, yo.AUX100, yo.AUX255);
+				yo.loadOutside = true;
 			}
 
 			if ( mbIter->second.pt2prewave){ 	mbIter->second.pt2prewave();}			
@@ -94,9 +94,6 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
             
 			#ifdef EERPROM_ENABLE
 				requestSave();
-				// Serial.printf( "\n -=> clock=%d, now=%d, save=%d, bool=%d\n", clock(), yo.now, yo.now + EEPROM_SAVE_TIME, yo.isNeedSaveEEPROM);
-				// yo.EEPROMsaveTime = yo.now + EEPROM_SAVE_TIME;
-				// yo.isNeedSaveEEPROM = true;
 			#endif
 			
 			yo.pt2webUpdate();

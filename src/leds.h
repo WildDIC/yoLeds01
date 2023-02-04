@@ -4,6 +4,8 @@
 extern CRGB leds[NUM_LEDS];            // Массив ленты
 extern uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
 extern uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
+extern uint8_t LEDS_STATUS[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
+extern uint8_t LEDS_VALUE[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
@@ -34,7 +36,7 @@ void powerOFF();
 void powerONOFF();
 
 /* Сброс ленты в черное и обнуление LEDS_массивов диодов */
-void ledOFF( int resValue);
+void ledOFF();
 
 /* Включаем беленькую */
 void ledUPWhite();
@@ -47,14 +49,15 @@ void ledBlink();
 
 /* Затухаем лентой вниз до нулевого состояния 10-го диода */
 void ledFadeOUT();
-void setSpeed( int value);
-void setAUX010( int value);
-void setAUX100( int value);
-void setAUX255( int value);
+
+void setSpeed( 		int value);
+void setAUX010(	 	int value);
+void setAUX100( 	int value);
+void setAUX255( 	int value);
 void setSaturation( int value);
-void setTemperature( int value);
+void setTemperature(int value);
 void setBrightness( int value);
-void setColors(	CRGB c1, CRGB c2, CRGB c3, bool force);
+void setColors(	CRGB c1, CRGB c2, CRGB c3);
 
 /* Меняем общуу срость анимации (0-...)
 * @param delta +/- yo.currentSpeed.*/
