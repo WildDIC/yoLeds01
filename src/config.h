@@ -6,9 +6,10 @@
 
 #define WEB_ENABLE 
 #define EERPROM_ENABLE 
+// #define JSON_ENABLE
 // #define FPSCOUNT_ENABLE
-
 // #define DEBUG_ENABLE 
+
 #ifdef DEBUG_ENABLE
 #define yoBug(x) Serial.print(x)
 #define yoBugN(x) Serial.println(x)
@@ -64,7 +65,11 @@ struct config{
 	byte AUX255;
 	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
-	bool loadOutside = false;
+	bool loadOutside = false;			// устанавливаем данные (через сеттер) при их чтении в irda ( false) или оно пришло для устеновки извне ( true) и их надо будет сохранить 
+	String name010 = "AUX010";			// AUX010 name string for web range
+	String name100 = "AUX100";			// AUX100 name string for web range
+	String name255 = "AUX255";			// AUX255 name string for web range
+	String nameSpeed = "Speed";			// Speed name string for web range
 };
 extern config yo;						// конфиг, самое главное здесь
 extern void (*pt2Func)();				// ссылка на анима-функция
@@ -96,7 +101,8 @@ struct waveItem{
 	CRGB c2;
 	CRGB c3;
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
-	bool needSave; 						// флаг необходимости что-то засейвить в этой конструкции
+	bool needSave; 						// флаг необходимости что-то засейвить в этой конструкции в еепром
+	bool needSaveJSON; 						// флаг необходимости что-то засейвить в этой конструкции в жосоне
 };										// list for: IRDA - function - WEB
 
 typedef std::map<int, waveItem> mapWAVES;
@@ -120,6 +126,7 @@ extern sPol savePollitre[NUM_POLLITR]; 	// сохранялка палитров
 struct pollitraZ{
 	String name;						// Имя палитры
 	CRGBPalette16 palette;				// паллитра
+	// CHSVPalette16 paletteHSV;
 };
 
 extern pollitraZ myPal[NUM_POLLITR];	// хранилище всех палитров
@@ -144,5 +151,8 @@ int powInt(int x, int y);
 int parseInt(char* chars);
 
 extern int intConfig;
+
+// extern uint8_t base00;     // изменение оттенка LED
+
 
 #endif

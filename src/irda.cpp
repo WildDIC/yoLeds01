@@ -12,8 +12,52 @@ extern void ledOFF( int resValue);
 extern void paletteSetActive( byte pollitraID, bool force);
 extern void requestSave();
 
+/*мапа нескольких кодов пультов на один код действия
+	int codeNew = int codeOld*/ 
+keyMaps keyCodes;
+
 /* Поднимаем ИР-сервер*/
-void irdaStartUP(){
+void irdaStartUP(){	
+	
+	keyCodes = {
+		// {127026699, IR_TV_ON},	
+		// {127026699, IR_TVVOL_UP	},
+		// {127026699, IR_TVVOL_DN},	
+		// {127026699, IR_TVCHANL_UP},	
+		// {127026699, IR_TVCHANL_DN},	
+		// {127026699, IR_VOLUME_UP},
+		// {127026699, IR_VOLUME_DN},	
+		{551485695, IR_MENU_UP},	
+		{551518335, IR_MENU_DN},	
+		// {127026699, IR_MENU_DN},	
+		// {127026699, IR_MENU_LEFT},	
+		// {127026699, IR_MENU_RIGHT},	
+		// {127026699, IR_MENU_OK},
+
+		// {127026699, IR_BACK},	
+		// {127026699, IR_FORWARD},
+		// {127026699, IR_PAUSE},	
+		// {127026699, IR_REWIND},		
+		// {127026699, IR_PLAY},	
+		// {127026699, IR_STOP},		
+		// {127026699, IR_FASTFF},		
+
+		// {127026699, IR_NUM_0},	
+		// {127026699, IR_NUM_1},		
+		// {127026699, IR_NUM_2},		
+		// {127026699, IR_NUM_3},		
+		// {127026699, IR_NUM_4},		
+		// {127026699, IR_NUM_5},		
+		// {127026699, IR_NUM_6},		
+		// {127026699, IR_NUM_7},		
+		// {127026699, IR_NUM_8},		
+		// {127026699, IR_NUM_9},		
+		// {127026699, IR_NUM_10},		
+		// {127026699, IR_NUM_CLR},	
+	};
+
+	// keyCodes[551485695] = IR_MENU_UP;
+
     irrecv.enableIRIn();
 }
 
@@ -42,7 +86,9 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 			yo.lastReceive = resValue;			
 		}
 		irdaNext();		
-	}	
+	}		
+
+	if ( keyCodes[resValue]){	resValue = keyCodes[resValue]; }
 	
 	if ( resValue){		
 		yoBugF( "-=>> IR receive: %d\n", resValue);
@@ -69,8 +115,12 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 					mbIter->second.pollCurrent = mbIter->second.pollDefault; 	// если текущая палитра не определена - ставим дефолтную
 				}
 				
-				yo.loadOutside = false;
-				yo.lastPressed = resValue;
+				yo.loadOutside 	= false;
+				yo.lastPressed 	= resValue;
+				yo.name010 		= "AUX010";
+				yo.name100 		= "AUX100";
+				yo.name255 		= "AUX255";
+				yo.nameSpeed	= "Speed";
 				setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3);
 				// setBrightness( 	mbIter->second.bright);
 				setSpeed( 		mbIter->second.speed);

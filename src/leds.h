@@ -14,7 +14,7 @@ void ledsStartUP();
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
@@ -22,7 +22,7 @@ CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true,
 
 /* Забираем цвет colorID из текущей targetPalette палитры.
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (true) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */

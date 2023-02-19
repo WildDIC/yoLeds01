@@ -24,9 +24,9 @@ void ledsStartUP(){
 @param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param blenType размытие переходов между цветами ( 0-1) */
-CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND){
-	if ( isMapped){ colorID *= REVERS_NUM_LEDS; }	
+@param blenType размытие переходов между цветами ( 0-1) NOBLEND / LINEARBLEND */
+CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = NOBLEND){
+	if ( isMapped == true){ colorID *= REVERS_NUM_LEDS; }	
 	// if ( isMapped){ colorID = ( colorID * 255) / ( NUM_LEDS -1); }	
 	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, blenType); 
 	if ( addToColor || yo.antiSaturn){ color.addToRGB( addToColor + yo.antiSaturn);}
@@ -39,8 +39,8 @@ CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true,
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param blenType размытие переходов между цветами ( 0-1) */
-CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND){
-	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, LINEARBLEND);
+CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = NOBLEND){
+	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, blenType);
 	return color;
 }
 
@@ -101,7 +101,8 @@ void ledUP(){
 		for ( int pos = 0; pos < NUM_LEDS; pos++){ 
 			// leds[pos] = pollitrR[pos*255/NUM_LEDS]; 
 			// leds[pos] = ColorFromPalette( targetPalette, colorID, 255, LINEARBLEND);
-			leds[pos] = ledGCfP( pos);
+			// leds[pos] = ledGCfP( pos);
+			leds[pos] = ledGCfP( pos, true);
 
 			#ifdef DEBUG_ENABLE
 				Serial.printf( "pos [%d], (%d.%d.%d)\n", pos, leds[pos].r, leds[pos].g, leds[pos].b);
@@ -154,9 +155,7 @@ void setSaturation( int value){
 	yo.currentSaturn  = value; 
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 	
-	if ( yo.loadOutside){
-		mWaves[yo.lastPressed].saturn = value;
-	}	
+	if ( yo.loadOutside){ mWaves[yo.lastPressed].saturn = value; }	
 }
 
 void setTemperature( int value){ 
@@ -169,9 +168,7 @@ void setTemperature( int value){
 	
 	yo.currentTemp = value; 
 	
-	if ( yo.loadOutside){
-		mWaves[yo.lastPressed].temp = value;
-	}
+	if ( yo.loadOutside){ mWaves[yo.lastPressed].temp = value;}
 	
 	FastLED.setTemperature( temperList[yo.currentTemp] );	
 	FastLED.show();
@@ -195,8 +192,8 @@ void setBrightness( int value){
 * @param delta +/- yo.currentSpeed.*/
 void changeSpeed( int delta){
 	yo.currentSpeed += delta;
-	if ( yo.currentSpeed > 100){ 
-		yo.currentSpeed = 100; 
+	if ( yo.currentSpeed > 50){ 
+		yo.currentSpeed = 50; 
 		ledBlink();
 	} else if ( yo.currentSpeed < 2){ 
 		yo.currentSpeed = 2;

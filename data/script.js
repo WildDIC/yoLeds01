@@ -121,6 +121,11 @@ function reseter( data){
 	document.querySelector( ".AUX010-value").innerHTML 		= json.vAUX010;	
 	document.querySelector( ".AUX100-value").innerHTML	 	= json.vAUX100;	
 	document.querySelector( ".AUX255-value").innerHTML	 	= json.vAUX255;	
+	document.querySelector( ".AUX010-name").innerHTML 		= json.nAUX010 + ": ";
+	document.querySelector( ".AUX100-name").innerHTML	 	= json.nAUX100 + ": ";
+	document.querySelector( ".AUX255-name").innerHTML	 	= json.nAUX255 + ": ";
+	document.querySelector( ".Speed-name").innerHTML	 	= json.nSpeed  + ": ";
+
 	unsave( json.vUnsave);
 
 	if ( json.vStyle){  document.documentElement.setAttribute("style", json.vStyle); 	} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр

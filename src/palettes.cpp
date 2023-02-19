@@ -4,6 +4,7 @@
 extern void requestSave();
 
 CRGBPalette16 activePollitre;
+CHSVPalette16 activePollitreHSV;
 pollitraZ myPal[NUM_POLLITR];
 CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
 
@@ -14,9 +15,10 @@ void paletteStartUP(){
 	myPal[++ind] = { "- 1 Random color"};	 
 	myPal[++ind] = { "- 2 Random colors"}; 
 	myPal[++ind] = { "- 3 Random colors"}; 
-	myPal[++ind] = { "- 4 Random colors"}; 
+	// myPal[++ind] = { "- 4 Random colors"}; 
 	myPal[++ind] = { "- c2 color"}; 
 	myPal[++ind] = { "- c2 to c3 colors"}; 
+	myPal[++ind] = { "- c2 to c3 to c2 colors"}; 
 	myPal[++ind] = { "- c1 to c2 to c3 colors"}; 
 
 	++ind;
@@ -24,7 +26,7 @@ void paletteStartUP(){
 	
 	for ( int i = 0; i < 58 + 11; i++){  // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ВЕБСЕРВЕРЕ++ ( 74)
 		byte tcp[72]; //support gradient palettes with up to 18 entries
-		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
+		memcpy_P( tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
 		activePollitre.loadDynamicGradientPalette(tcp);
 		myPal[i+ind].palette = activePollitre;
 		
@@ -80,21 +82,26 @@ void paletteSetActive( byte pollitraID, bool force=true){
   	
 	case 4:
 		c30 = getCol( c30); c31 = getCol( c31); c32 = getCol( c32);
-		yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+", "+ getHEX(c30)+");\"";
+		yo.rndStyle = "\"--gr4: linear-gradient( 90deg, "+ getHEX(c30)+", "+ getHEX(c31)+", "+ getHEX(c32)+");\"";
 
-		activePollitre = CRGBPalette16( c30, c31, c32, c30);	 		
+		activePollitre = CRGBPalette16( c30, c31, c32);	 		
 		break;
 
-  	case 5:
-		c40 = getCol( c40); c41 = getCol( c41);	c42 = getCol( c42);	c43 = getCol( c43);
-		yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43) + ");\"";
+  	// case 5:
+	// 	c40 = getCol( c40); c41 = getCol( c41);	c42 = getCol( c42);	c43 = getCol( c43);
+	// 	yo.rndStyle = "\"--gr5: linear-gradient( 90deg, "+ getHEX(c40)+", "+ getHEX(c41)+", "+ getHEX(c42)+", "+ getHEX(c43) + ");\"";
 		
-		activePollitre = CRGBPalette16( c40, c41, c42, c43);			
+	// 	activePollitre = CRGBPalette16( c40, c41, c42, c43);			
+	// 	break;
+
+  	case 5:
+		yo.rndStyle = "\"--gr5: "+ getHEX( yo.c2) + ";\"";
+		activePollitre = CRGBPalette16( yo.c2);
 		break;
 
   	case 6:
-		yo.rndStyle = "\"--gr6: "+ getHEX( yo.c2) + ";\"";
-		activePollitre = CRGBPalette16( yo.c2);
+		yo.rndStyle = "\"--gr6: linear-gradient( 90deg, "+ getHEX( yo.c2)+", "+ getHEX( yo.c3)+");\"";
+		activePollitre = CRGBPalette16( yo.c2, yo.c3);
 		break;
 
   	case 7:

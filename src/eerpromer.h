@@ -3,6 +3,7 @@
 // #include <EEPROM.h>
 // #include "config.h"
 
+
 /* Сохраняем тупо конфиг yo в ЕЕПРОМ, но не чаще, чем SAVE_DELAY
 @param forceSaveEEPROM флаг того, что надо что-то срочно сохранить в ЕЕПРОМ*/
 void eepromSave( bool forceSaveEEPROM);

@@ -3,7 +3,7 @@
 
 #define ZERO_DATA 		0xFFFFFFFF
 
-#define IR_TV_ON		551489775
+#define IR_TV_ON		1261884204
 #define IR_TVVOL_UP		551502015
 #define IR_TVVOL_DN		551534655
 #define IR_TVCHANL_UP	1270219007
@@ -37,9 +37,8 @@
 #define IR_NUM_10		1270262102
 #define IR_NUM_CLR		1270266437
 
-// extern void ledOFF( int resValue);
-// extern void webServerUpdate();
-// extern void paletteSetActive( byte pollitraID);
+// мапа нескольких кодов пультов на один код действия
+using keyMaps = std::map<unsigned int, int>;
 
 /* Поднимаем ИР-сервер*/
 void irdaStartUP();

@@ -4,8 +4,8 @@
 #include "config.h"
 
 // need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
-//C:\Users\vanilka\Documents\PlatformIO\Projects\220401-111103-esp32dev\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
-// #define TEMPLATE_PLACEHOLDER '`'
+//C:\Users\vanilka\Documents\PlatformIO\Projects\-=>YOUR_PROJECT_NAME<=-\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
+// #define TEMPLATE_PLACEHOLDER '`'  - from '%'
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
 
@@ -100,23 +100,21 @@ void collectData(){
 			RANGE_HOLDER += "\t<div class='raiser' id='raiser' style='display: none;'>\n";
 		}
 
-		RANGE_HOLDER += "\t<div><span class='textLabel'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
 		RANGE_HOLDER += "\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
 		
 		if ( i == NUM_RANGES - 1){
 			RANGE_HOLDER += "\t</div>\n\n";  // close 'raiser' div
 		}
-	}
+	}	
 }
 
 // Replaces placeholder with button section in your web page
 String processor(const String& var){
 	//Serial.println(var);
-
 	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
 	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
-	
-	
+
 	// SELECT replacer
 	if(var == "SELECTHOLDER"){
 		String buttons = "";
@@ -178,6 +176,10 @@ String webServerMakeJSON(){
 	out += "\"vAUX010\": "	+ String( yo.AUX010) 			+", ";
 	out += "\"vAUX100\": "	+ String( yo.AUX100)			+", ";
 	out += "\"vAUX255\": "	+ String( yo.AUX255)			+", ";
+	out += "\"nAUX010\": \""+ String( yo.name010)			+"\", ";
+	out += "\"nAUX100\": \""+ String( yo.name100)			+"\", ";
+	out += "\"nAUX255\": \""+ String( yo.name255)			+"\", ";
+	out += "\"nSpeed\":  \""+ String( yo.nameSpeed) 		+"\", ";
 	out += colorString;
 	out += "\"vPDef\": "	+ String(yo.pollDefault)		+" ";
 	out += "}";      // 	ЗАПЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
@@ -213,12 +215,12 @@ void webServerStartUP(){
  	 	Serial.println("An Error has occurred while mounting SPIFFS");
   		return;
 	}
-
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    	request->send( SPIFFS, "/index.htm", String(), false, processor);
-    	// request->send_P(200, "text/html", index_html, processor);
-        }
-    );
+	
+	server.on("/", 			HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/index.htm", String(), false, processor); });
+  	server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/style.css", "text/css"); });
+  	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
+	server.on("/reset", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSON());});
+	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
 
 	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
 		if (request->hasParam( PARAM_INPUT_1)) {  
@@ -270,13 +272,6 @@ void webServerStartUP(){
 		}
 		request->send(200, "text/plain", "OK");
 	});
-
-	server.on("/reset", HTTP_GET, [] (AsyncWebServerRequest *request) {		
-		request->send(200, "application/json", webServerMakeJSON());		
-	});
-
-  	server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/style.css", "text/css"); });
-  	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(SPIFFS, "/script.js", "text/css"); });
 
 
 	events.onConnect([](AsyncEventSourceClient *client){

@@ -31,3 +31,5 @@ int parseInt(char* chars){
     }
     return sum;
 }
+
+// uint8_t base00 = 0;     // изменение оттенка LED

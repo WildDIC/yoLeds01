@@ -2,54 +2,59 @@
 #define __WAVES_H
 
 /* Бегущая радужная вэйв */
-void animWave01();
+void aRainbow();
 
 /* Костерок №01 */
-void animWave02();
+void aFire01();
 
 /* Моргающий градиент радуги = хуета */
-void animWave03();
-void animWave03mordor();
-void animWave03fires();
+void aNoise();
+void aNoiseMordor();
+void aNoiseFires();
 
 /* 8 волн с разной скоротью и наложением цвета */
-void animWave04();
+void aBeatSINAgain();
 
+void aCreepingPre();
 /* Ползущая радуга с проблесками беленьких диодов */
-void animWave05();
+void aCreeping();
 
 /* Вжух-вжух радуга из цента типа странной цветомузыки */
-void animWave06();
+void aSoundCheck();
 
 /* Fire 2012 */
-void animWave07();
+void aFire2012();
 
 /* Костерок №02 */
-void animWave08pre();
-void animWave08();
+void aFire02pre();
+void aFire02();
 
 /*	4 wavwes + 1 beatSin*/
-void animWave09pre();
+void aWavesBeatPre();
 
 /* 4 симметричные волны навстречу с наложением цвета */
-void animWave09();
+void aWavesBeat();
 
 /*	XXX beatSin WAVES*/
-void animaWave10();
+void aBeatSIN8();
 
 /** Gradient run base function	far01 = длина полоски */
-void animaWave11p1();
-void animaWave11p2();
-void animaWave11p3();
-void animaWave11();
+void aGradient01pre();
+void aGradient02pre();
+void aGradient03pre();
+void aGradient();
 
 /** Android loading circle  */
-void animaWave12();
+void aAndroid();
 
-void animaWave13pre();
-void animaWave13();
+void aFire03pre();
+void aFire03();
 
-void animaWave14();
+void aBlinkenPre();
+void aBlinken();
+
+void aBlinken02Pre();
+void aBlinken02();
 #endif
 
     // fadeToBlackBy(leds, NUM_LEDS, 8);

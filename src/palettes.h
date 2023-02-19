@@ -2,6 +2,7 @@
 #define __PALETTES_H
 
 extern CRGBPalette16 activePollitre;
+extern CHSVPalette16 activePollitreHSV;
 
 void paletteStartUP();
 void paletteSetActive( byte pollitraID, bool force);
@@ -1006,12 +1007,11 @@ const String palette_names[70] = {
 	
 	"Pastel", 	
 	"Fire", "HeatColors", "Icefire", "Grintage", "Yelblu Hot", "Magred", 
-	 "Analogous", "Orange & Teal",
+	 "Analogous", "Orange & Teal", "Drywet", "Yelblu", "Tertiary",
 
 	"Sunset","Rivendell","Breeze","Red & Blue","Splash",							//   58 palitres
 	"Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
-	"Drywet","Jul","Rewhi","Tertiary","Cyane","Light Pink","Autumn",
-	"Magenta","Yelmag","Yelblu","Tiamat","April Night", "C9",
+	"Jul","Rewhi","Cyane","Light Pink","Autumn", "Magenta","Yelmag","Tiamat","April Night", "C9",
 	"Aurora","Atlantica","C9 2","C9 New","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
 	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2", 
 	"RainbowStripeColors", "Deep forest", "ForestColors"};
@@ -1046,6 +1046,9 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	
 	Analogous_1_gp,               //18-05 Analogous
 	Orange_Teal_gp,               //44-31 Orange & Teal	
+	GMT_drywet_gp,                //30-17 Drywet
+	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
+	Tertiary_01_gp,               //34-21 Tertiary
 
 	Sunset_Real_gp,               //13-00 Sunset
 	es_rivendell_15_gp,           //14-01 Rivendell
@@ -1061,16 +1064,13 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	rainbowsherbet_gp,            //27-14 Sherbet
 	gr65_hult_gp,                 //28-15 Hult
 	gr64_hult_gp,                 //29-16 Hult64
-	GMT_drywet_gp,                //30-17 Drywet
 	ib_jul01_gp,                  //31-18 Jul
 	ib15_gp,                      //33-20 Rewhi
-	Tertiary_01_gp,               //34-21 Tertiary
 	Colorfull_gp,                 //37-24 Cyane
 	Pink_Purple_gp,               //38-25 Light Pink
 	es_autumn_19_gp,              //39-26 Autumn
 	BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
 	BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
-	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
 	Tiamat_gp,                    //45-32 Tiamat
 	April_Night_gp,               //46-33 April Night
 	C9_gp,                        //48-35 C9
