@@ -17,9 +17,6 @@
 #else
 #endif
 
-
-// #include "waveClass.h"
-
 #ifdef FPSCOUNT_ENABLE 
 clock_t startFPS = clock() + 1000;
 int fpsCount = 0;
@@ -29,36 +26,12 @@ int fpsCount = 0;
 clock_t startTime = clock();
 clock_t startAnime = clock();
 
-// arcsin(sin(x)).
-// void loop()
-// {
-//     uint32_t curTime = millis();
-//     uint32_t curSin = ( curTime * curSpeed * 280) / 65536; // >> 16;
-//     uint8_t beatsin = (sin8( curSin)); // + 32768);
-//     uint8_t scaledbeat = scale8( beatsin, 100);
-
-//     Serial.print( curTime);
-//     Serial.print( " - ");
-//     Serial.print( curSin);
-//     Serial.print( " - ");
-//     Serial.print( beatsin);
-//     Serial.print( " - ");
-//     Serial.println( scaledbeat);
-//     // Serial.print( " - ");
-//     //Serial.println( curTime * curSpeed / 60000);
-
-//     delay( 100);
-// }
 // заглушка на пустую функцию, если/пока нет вебсервеа.
 void fooFunc(){}
 
 //********************************************************************
 // 						SETUP
 //*********************************************************************
-
-// void method_plus(int _arg) {
-// 	Serial.printf( "From class: %d\n", minute);
-// }
 
 void setup() {
 	yo.now = clock();
@@ -70,35 +43,29 @@ void setup() {
 	yo.pt2webUpdate = &fooFunc;  
 	yo.pt2webUnsave = &fooFunc;  
 
-	// waveClass objCppstudio(11,11,2011); // объявление объекта и инициализвция элементов данных
-    // objCppstudio.message(); // вызов функции message
-    // objCppstudio.getDate(); // отобразить дату
-	// objCppstudio.method = method_plus;
-
-
 	byte ind = 0;
 	/* struct irdaItems{     code;	  name; 			typeWeb	indForWeb; leadOFF; isEffect; 	pt2Funca 		pt2static		pt2prewave 		pt2setter			min		max		pollDefault	bright	temp	speed	saturn	aux010	aux100	aux255 */
 	mWaves[IR_TV_ON] 		=  { 0, "Power ON/OFF",			1, 	++ind, 		false, 	false,		NULL, 			&powerONOFF, 	NULL, 			NULL};
 	mWaves[IR_PLAY] 		=  { 0, "White Color", 			1, 	++ind,  	true, 	true, 		NULL, 			&ledUPWhite, 	NULL, 			NULL, 				0, 		0,			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_FASTFF] 		=  { 0, "Pallette test", 		1, 	++ind,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL,				0, 		0, 			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_1] 		=  { 0, "Костерок 01", 			1, 	++ind,  	true, 	true, 		&aFire01, 		NULL, 			NULL, 			NULL,				0, 		0, 			8, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_2] 		=  { 0, "Костерок 02", 			1, 	++ind,  	true, 	true, 		&aFire02, 		NULL, 			aFire02pre,		NULL,				0, 		0, 			14,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
-	mWaves[IR_NUM_3] 		=  { 0, "Костерок 03", 			1, 	++ind,  	true, 	true, 		&aFire03, 		NULL, 			aFire03pre,		NULL, 				0, 		0,			8, 			125, 	50, 	10, 	100, 	5, 		50, 	125};	
-	mWaves[IR_NUM_4] 		=  { 0, "8 waves", 				1, 	++ind,  	true, 	true, 		&aBeatSINAgain,	NULL, 			NULL, 			NULL, 				0, 		0,			5, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_5] 		=  { 0, "8 waves сново", 		1, 	++ind,   	true, 	true, 		&aWavesBeat, 	NULL, 			aWavesBeatPre, 	NULL,				0, 		0, 			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_6] 		=  { 0, "4 beatSins waves",		1, 	++ind,  	true, 	true, 		&aBeatSIN8, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000002] 		=  { 0, "inoise8 palette",		1, 	++ind,  	true, 	true, 		&aNoise, 		NULL, 			aNoiseFires,	NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000000] 		=  { 0, "inoise8 hue",		 	1, 	++ind,  	true, 	true, 		&aCreeping, 	NULL, 			aCreepingPre,	NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000011] 		=  { 0, "Огни Мордора ©",		1, 	++ind,  	true, 	true, 		&aNoise,	 	NULL, 			aNoiseMordor,	NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000012] 		=  { 0, "Моргалочка v2.0",		1, 	++ind,  	true, 	true, 		&aBlinken02, 	NULL, 			aBlinken02Pre,	NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_FASTFF] 		=  { 0, "Pallette test", 		1, 	++ind,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_1] 		=  { 0, "Костерок 01", 			1, 	++ind,  	true, 	true, 		&aFire01, 		NULL, 			NULL, 			NULL,				0, 		0, 			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_2] 		=  { 0, "Костерок 02", 			1, 	++ind,  	true, 	true, 		&aFire02, 		NULL, 			aFire02pre,		NULL,				0, 		0, 			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
+	mWaves[IR_NUM_3] 		=  { 0, "Костерок 03", 			1, 	++ind,  	true, 	true, 		&aFire03, 		NULL, 			aFire03pre,		NULL, 				0, 		0,			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
+	mWaves[IR_NUM_4] 		=  { 0, "8 waves", 				1, 	++ind,  	true, 	true, 		&aBeatSINAgain,	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_5] 		=  { 0, "8 waves сново", 		1, 	++ind,   	true, 	true, 		&aWavesBeat, 	NULL, 			aWavesBeatPre, 	NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_6] 		=  { 0, "4 beatSins waves",		1, 	++ind,  	true, 	true, 		&aBeatSIN8, 	NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000002] 		=  { 0, "inoise8 palette",		1, 	++ind,  	true, 	true, 		&aNoise, 		NULL, 			aNoiseFires,	NULL, 				0, 		0,			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000000] 		=  { 0, "inoise8 hue",		 	1, 	++ind,  	true, 	true, 		&aCreeping, 	NULL, 			aCreepingPre,	NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000011] 		=  { 0, "Огни Мордора ©",		1, 	++ind,  	true, 	true, 		&aNoise,	 	NULL, 			aNoiseMordor,	NULL, 				0, 		0,			21,			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000012] 		=  { 0, "Моргалочка v2.0",		1, 	++ind,  	true, 	true, 		&aBlinken02, 	NULL, 			aBlinken02Pre,	NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_7] 		=  { 0, "Gradient (wled) 1",	1, 	++ind,  	true, 	true, 		&aGradient, 	NULL, 			aGradient01pre, NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_8] 		=  { 0, "Gradient (wled) 2",	1, 	++ind,  	true, 	true, 		&aGradient, 	NULL, 			aGradient02pre, NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[IR_NUM_9] 		=  { 0, "Gradient (wled) 3",	1, 	++ind,  	true, 	true, 		&aGradient, 	NULL, 			aGradient03pre, NULL, 				0, 		0,			24, 		125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_0] 		=  { 0, "Fire 2012", 			1, 	++ind,  	true, 	true, 		&aFire2012, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_10] 		=  { 0, "Rainbow Wave", 		1, 	++ind,   	true, 	true, 		&aRainbow, 		NULL, 			NULL, 			NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[10000001] 		=  { 0, "Musix echo", 			1, 	++ind,  	true, 	true, 		&aSoundCheck, 	NULL, 			NULL, 			NULL, 				0, 		0,			7, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	// mWaves[10000010] 		=  { 0, "Моргалочка",			1, 	++ind,  	true, 	true, 		&aBlinken,	 	NULL, 			aBlinkenPre,	NULL, 				0, 		0,			3, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	// mWaves[IR_NUM_CLR] 		=  { 0, "Android (wled)",		1, 	++ind,  	true, 	true, 		&aAndroid, 	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_0] 		=  { 0, "Fire 2012", 			1, 	++ind,  	true, 	true, 		&aFire2012, 	NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_10] 		=  { 0, "Rainbow Wave", 		1, 	++ind,   	true, 	true, 		&aRainbow, 		NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000001] 		=  { 0, "Musix echo", 			1, 	++ind,  	true, 	true, 		&aSoundCheck, 	NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[10000010] 		=  { 0, "Моргалочка",			1, 	++ind,  	true, 	true, 		&aBlinken02,	NULL, 			aBlinken02Pre,	NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_CLR] 		=  { 0, "Android (wled)",		1, 	++ind,  	true, 	true, 		&aAndroid, 		NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	ind = 0;
 	mWaves[10000003] 		=  { 0, "Brightness",	 		2, 	++ind,   	false, 	false, 		NULL, 			NULL, 			NULL, 			&setBrightness,		5,		255};		
 	mWaves[10000004] 		=  { 0, "Speed", 				2, 	++ind,  	false, 	false, 		NULL, 			NULL, 			NULL, 			&setSpeed, 			1,		10};
@@ -186,9 +153,26 @@ void loop() {
 			fpsCount = 0;
 		}
 	#endif
-
-	// EVERY_N_MILLISECONDS( <mseconds> ) {}
-   	// EVERY_N_SECONDS( <seconds> ) {}
-	//  *  Executing task in folder 220401-111103-esp32dev: C:\Users\vanilka\.platformio\penv\Scripts\platformio.exe run 
-	// --target upload --target monitor --environment yoLeds --upload-port COM3 --monitor-port COM3 
 }
+
+
+// arcsin(sin(x)).
+// void loop()
+// {
+//     uint32_t curTime = millis();
+//     uint32_t curSin = ( curTime * curSpeed * 280) / 65536; // >> 16;
+//     uint8_t beatsin = (sin8( curSin)); // + 32768);
+//     uint8_t scaledbeat = scale8( beatsin, 100);
+
+//     Serial.print( curTime);
+//     Serial.print( " - ");
+//     Serial.print( curSin);
+//     Serial.print( " - ");
+//     Serial.print( beatsin);
+//     Serial.print( " - ");
+//     Serial.println( scaledbeat);
+//     // Serial.print( " - ");
+//     //Serial.println( curTime * curSpeed / 60000);
+
+//     delay( 100);
+// }

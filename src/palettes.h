@@ -1007,12 +1007,12 @@ const String palette_names[70] = {
 	
 	"Pastel", 	
 	"Fire", "HeatColors", "Icefire", "Grintage", "Yelblu Hot", "Magred", 
-	 "Analogous", "Orange & Teal", "Drywet", "Yelblu", "Tertiary",
+	 "Analogous", "Orange & Teal", "Toxy Reaf", "Drywet", "Yelblu", "Tertiary", "Atlantica", "Retro Clown",
 
 	"Sunset","Rivendell","Breeze","Red & Blue","Splash",							//   58 palitres
 	"Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
 	"Jul","Rewhi","Cyane","Light Pink","Autumn", "Magenta","Yelmag","Tiamat","April Night", "C9",
-	"Aurora","Atlantica","C9 2","C9 New","Aurora 2","Retro Clown","Candy","Toxy Reaf","Fairy Reaf",
+	"Aurora","C9 2","C9 New","Aurora 2","Candy","Fairy Reaf",
 	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2", 
 	"RainbowStripeColors", "Deep forest", "ForestColors"};
 
@@ -1046,9 +1046,12 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	
 	Analogous_1_gp,               //18-05 Analogous
 	Orange_Teal_gp,               //44-31 Orange & Teal	
+	toxy_reaf_gp,                 //58-45 Toxy Reaf
 	GMT_drywet_gp,                //30-17 Drywet
 	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
 	Tertiary_01_gp,               //34-21 Tertiary
+	Atlantica_gp,                 //51-38 Atlantica
+	retro_clown_gp,               //56-43 Retro Clown
 
 	Sunset_Real_gp,               //13-00 Sunset
 	es_rivendell_15_gp,           //14-01 Rivendell
@@ -1075,13 +1078,10 @@ const byte* const gGradientPalettes[] PROGMEM = {
 	April_Night_gp,               //46-33 April Night
 	C9_gp,                        //48-35 C9
 	Aurora_gp,                    //50-37 Aurora
-	Atlantica_gp,                 //51-38 Atlantica
 	C9_2_gp,                      //52-39 C9 2
 	C9_new_gp,                    //53-40 C9 New
 	Aurora2_gp,                   //55-42 Aurora 2
-	retro_clown_gp,               //56-43 Retro Clown
 	candy_gp,                     //57-44 Candy
-	toxy_reaf_gp,                 //58-45 Toxy Reaf
 	fairy_reaf_gp,                //59-46 Fairy Reaf
 	semi_blue_gp,                 //60-47 Semi Blue
 	pink_candy_gp,                //61-48 Pink Candy

@@ -13,24 +13,38 @@
 	<script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 </head>
 <body>
-	<div><button onclick='buttonClick(this)' id='551489775' class='powerbutton'>
-		<span class="unsaver0">x </span>Power ON/OFF<span class="unsaver1"> x</span>
-	</button></div>
+	<div class="styck_root">
+		<div class='stycks' id='stycks'>
+			<div class="footer">
+				<div class="footerbox">
+					<ul>
+						<li><a><ion-icon name="power" class= "ipower" onclick="pButtonClick( this)"; id='551489775'></ion-icon></a></li>
+						<li><a><ion-icon name="save"  class="isave"   onclick="sButtonClick( this)"; id='551489776'></ion-icon></a></li>
+						<li><a><ion-icon name="chevron-down-circle-outline" class="ihider" onclick="raiserFunc( this)"; id="ihider"></ion-icon></a></li>
+						<li><a href="#"><ion-icon name="skull"></ion-icon></a></li>
+						<li><a href="#"><ion-icon name="rainy"></ion-icon></a></li>
+					</ul>
+				</div>
+			</div>
+		</div> 
 
-	<!-- <div class="upser">upser</div> -->
+		`RANGEPLACEHOLDER`
 
-	`RANGEPLACEHOLDER`
-	<div class="wrap">
-		<div class="half">
-			<div id="picker"></div>
+		<div class="wrap">
+			<div class="half">
+				<div id="picker"></div>
+			</div>
+			<div class="half01">
+				<div id="colorList"></div>
+			</div>	
 		</div>
-		<div class="half01">
-			<div id="colorList"></div>
-		</div>	
 	</div>
+
 	`SELECTHOLDER`
 	`BUTTONPLACEHOLDER`   		
 
 	<script src="script.js"></script>
+	<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

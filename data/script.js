@@ -44,35 +44,49 @@ if (!!window.EventSource) {
 }
 
 
-function raiserFunc(){
+function raiserFunc( elemnt){
 	var x = document.getElementById( "raiser");
-	var h = document.getElementById( 'hiderItem');
 
 	if (x.style.display === "none") {
 		x.style.display = "block";
-		h.innerHTML = "less";
+		elemnt.classList.add( 'unrise');
 	} else {
 		x.style.display = "none";
-		h.innerHTML = "more ";
+		elemnt.classList.remove( 'unrise');
 	}
 }
 
 function unsave( request){
 	if ( request == 1){ 
-		document.querySelector(".unsaver0").classList.add( 'unsave');
-		document.querySelector(".unsaver1").classList.add( 'unsave');
+		document.querySelector(".isave").classList.add( 'unsave');
 	}
 	else{ 			    
-		document.querySelector(".unsaver0").classList.remove('unsave'); 
-		document.querySelector(".unsaver1").classList.remove('unsave'); 
+		document.querySelector(".isave").classList.remove('unsave'); 
 	}
+}
+
+function pButtonClick( element) {
+	// var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
+	element.classList.toggle("active");
+	// if ( element.classList.contains("active")) { value = "&value=1"; };			// 1 - нажал нопку опять ты для цветов обновления случайных
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/power", true); 
+	xhr.send();
+}
+
+
+function sButtonClick( element) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/save", true); 
+	xhr.send();
 }
 
 
 
 function buttonClick( element) {
 	var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
-	if ( element.classList.contains("powerbutton")) { element.classList.toggle("active"); };
+	// if ( element.classList.contains("powerbutton")) { element.classList.toggle("active"); };
 	if ( element.classList.contains("active")) { value = "&value=1"; };			// 1 - нажал нопку опять ты для цветов обновления случайных
 	
 	var xhr = new XMLHttpRequest();

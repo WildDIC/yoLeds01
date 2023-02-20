@@ -231,9 +231,10 @@ void aFire02pre(){
 	yo.name255 = "Cooldown ticks";
 	yo.nameSpeed = "Active phase ticks x20";
 
-	for ( int ind = 0; ind < NUM_LEDS; ind++){
-		LEDS_STATUS[ind] = random8( 5);
-		LEDS_VALUE[ind] = random8( 30);
+	for ( int ind = 0; ind < NUM_LEDS; ind++)
+	{
+		LEDS_STATUS[ind] = random8( 6);
+		LEDS_VALUE[ind] = random8( 60);
 	}
 }
 

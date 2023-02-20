@@ -3,6 +3,8 @@
 #include "SPIFFS.h"
 #include "config.h"
 
+extern void powerONOFF();
+
 // need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
 //C:\Users\vanilka\Documents\PlatformIO\Projects\-=>YOUR_PROJECT_NAME<=-\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
 // #define TEMPLATE_PLACEHOLDER '`'  - from '%'
@@ -15,12 +17,11 @@ byte NUM_BUTTONS = 1;
 String CSS_HOLDER = "\n";		// css градиенты для select палитров
 String RANGE_HOLDER = "\n";		// полоски-двигалки
 String ROOT_HOLDER = ":root{\n" ;
-String colorString = "";
 
 #define PARAM_INPUT_1 "funcID"
 #define PARAM_INPUT_2  "value"
 
-button bList[20];
+button bList[25];
 range rList[10];
 
 // возможно не стоит это выносить сыда, а вернуть в процессорку 200
@@ -34,135 +35,17 @@ int rState(int numValue){
 	return numValue;
 }
 
-void makeColorString(){
-	colorString  = "\"vC1\": \"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\", ";
-	colorString += "\"vC2\": \"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\", ";
-	colorString += "\"vC3\": \"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\", ";
-}
-
-void collectData(){	
-	mbIter = mWaves.begin();
-	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) {		
-		mbIter->second.code = mbIter->first;
-		if ( mbIter->second.indForWeb){
-			if ( mbIter->second.typeWeb == 1){
-				NUM_BUTTONS++;
-				bList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.name };		
-			}
-			else if ( mbIter->second.typeWeb == 2){
-				NUM_RANGES++;
-				rList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.min, mbIter->second.max, mbIter->second.name};
-			}			
-		} 
-		// if ( mbIter->second.pollitra > 0){
-			// yo.savePollitre[i] = { mbIter->first, mbIter->second.pollitra};
-		// }
-    }	
-	
-	ROOT_HOLDER += "\t\t--gr0: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr2: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
-	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
-	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
-	ROOT_HOLDER += "\t\t--gr6: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
-	ROOT_HOLDER += "\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
-	
-
-	// собираем css градиенты для выбора палитр
-	String coma = "%,";
-	byte tcp[72]; //support gradient palettes with up to 18 entries
-	
-	for ( int i = 0; i < 58 + 11; i++){   // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ПАЛЛЕТЕ++ ( 23)
-
-		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
-
-		CSS_HOLDER +=  "\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
-		ROOT_HOLDER += "\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
-
-		for ( byte ind = 0; ind < sizeof(tcp); ind+=4){			
-			if ( tcp[ind] == 255){ coma = "%";}
-			else{ coma = "%,";}			
-			ROOT_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
-			if ( tcp[ind]== 255){ break;}
-		}
-		ROOT_HOLDER += ");\n";
-	}
-	ROOT_HOLDER += "}";
-
-
-	// RANGERS собираем полоски-двигалки 
-	for(int i = 1; i < NUM_RANGES; i++){
-		int rValue = rState(i);
-		// уменьшалка
-		if ( i == 3) {
-			RANGE_HOLDER += "\t<div class='hider' id='hider'><span class='hiderItem' id='hiderItem' onclick='raiserFunc()'>more</span></div>\n";
-			RANGE_HOLDER += "\t<div class='raiser' id='raiser' style='display: none;'>\n";
-		}
-
-		RANGE_HOLDER += "\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
-		RANGE_HOLDER += "\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
-		
-		if ( i == NUM_RANGES - 1){
-			RANGE_HOLDER += "\t</div>\n\n";  // close 'raiser' div
-		}
-	}	
-}
-
-// Replaces placeholder with button section in your web page
-String processor(const String& var){
-	//Serial.println(var);
-	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
-	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
-
-	// SELECT replacer
-	if(var == "SELECTHOLDER"){
-		String buttons = "";
-		String active = "";			
-		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
-		for (size_t i = 0; i < NUM_POLLITR; i++){
-			if ( myPal[i].name.length() > 0){		
-
-				if ( i == mWaves[yo.lastPressed].min){ active = "selected = \"selected\"";} 
-				else{	active = ""; }
-
-				if ( i == yo.lastCustPal + 11){
-					buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n";
-				}
-				
-				if ( i == mWaves[yo.lastPressed].min){ active = " selected = 'selected'";} 
-				else{	active = ""; }
-
-				buttons += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
-			}
-		}
-		buttons += "\t\t</optgroup>\n\t</select></div>\n\n";
-
-		return buttons;
-	}
-
-
-	// BUTTONRS replacer
-	if(var == "BUTTONPLACEHOLDER"){
-		String buttons = "";
-		String active = "";			
-		if ( yo.ONOFF == true){ active = " active"; }
-		buttons += "\n";
-		// buttons += "<div><button onclick='buttonClick(this)' id='"+ String( bList[1].code) +"' class='power"+ active +"'>"+ bList[1].name +"</button></div>\n";
-
-		for ( int i = 2; i < NUM_BUTTONS; i++ ){ active = "";			
-			if ( yo.lastPressed == bList[i].code){ active = " active"; }
-			buttons += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
-		}
-		return buttons;
-	}
-	return String();
+/*Собираем здесь, отдельно, а в джонсоне*/
+String makeColorString(){
+	String colorString   = "\"vC1\": \"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\", ";
+	colorString 		+= "\"vC2\": \"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\", ";
+	colorString 		+= "\"vC3\": \"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\", ";
+	return colorString;
 }
 
 
+/*Делаем псевдо джонсон с текущими оперативными данными*/
 String webServerMakeJSON(){
-	makeColorString();
-
 	String out = "{";
 	out += "\"vBri\": "		+ String(yo.currentBrightness)	+", ";
 	out += "\"vSat\": "		+ String(yo.currentSaturn)		+", ";
@@ -180,27 +63,127 @@ String webServerMakeJSON(){
 	out += "\"nAUX100\": \""+ String( yo.name100)			+"\", ";
 	out += "\"nAUX255\": \""+ String( yo.name255)			+"\", ";
 	out += "\"nSpeed\":  \""+ String( yo.nameSpeed) 		+"\", ";
-	out += colorString;
+	out += makeColorString();
 	out += "\"vPDef\": "	+ String(yo.pollDefault)		+" ";
 	out += "}";      // 	ЗАПЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
-	
-	colorString = "";
-	
 	return out;
 }
 
 
-// запуск эвента, который сообщает клиенту, что что-то изменались и ему надо запросить данные с сервера.
+void collectData(){	
+	mbIter = mWaves.begin();
+	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) {		
+		mbIter->second.code = mbIter->first;
+		if ( mbIter->second.indForWeb){
+			if ( mbIter->second.typeWeb == 1){
+				NUM_BUTTONS++;
+				bList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.name };		
+			}
+			else if ( mbIter->second.typeWeb == 2){
+				NUM_RANGES++;
+				rList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.min, mbIter->second.max, mbIter->second.name};
+			}			
+		} 
+    }	
+	
+	ROOT_HOLDER += "\t\t--gr0: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr2: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
+	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	ROOT_HOLDER += "\t\t--gr6: #181E28;\n";
+	ROOT_HOLDER += "\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
+	
+
+	// собираем css градиенты для выбора палитр
+	byte tcp[72]; //support gradient palettes with up to 18 entries
+	
+	for ( int i = 0; i < 58 + 11; i++){   // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ПАЛЛЕТЕ++ ( 23)
+
+		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
+
+		CSS_HOLDER +=  "\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
+		ROOT_HOLDER += "\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
+
+		for ( byte ind = 0; ind < sizeof( tcp); ind += 4){
+			String coma = ( tcp[ind] == 255) ? "%" : "%,";
+			ROOT_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
+			if ( tcp[ind]== 255){ break;}
+		}
+		ROOT_HOLDER += ");\n";
+	}
+	ROOT_HOLDER += "}";
+
+
+	// RANGERS собираем полоски-двигалки 
+	for(int i = 1; i < NUM_RANGES; i++){
+		int rValue = rState(i);
+		// уменьшалка
+		if ( i == 3) {
+		// 	RANGE_HOLDER += "\t<div class='hider' id='hider'><span class='hiderItem' id='hiderItem' onclick='raiserFunc()'>more</span></div>\n";
+			RANGE_HOLDER += "\t<div class='raiser' id='raiser' style='display: none;'>\n";
+		}
+
+		RANGE_HOLDER += "\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+		
+		if ( i == NUM_RANGES - 1){
+			RANGE_HOLDER += "\t</div>\n\n";  // close 'raiser' div
+		}
+	}	
+}
+
+
+// Replaces placeholder with button section in your web page
+String processor(const String& var){
+	//Serial.println(var);
+	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
+	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
+
+	// SELECT replacer
+	if(var == "SELECTHOLDER"){
+		String buttons = "";
+		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
+		for (size_t i = 0; i < NUM_POLLITR; i++){
+			if ( myPal[i].name.length() > 0){		
+
+				if ( i == yo.lastCustPal + 11){ buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n"; }				
+				String active = ( i == mWaves[yo.lastPressed].min) ?" selected = 'selected'" : "";
+				buttons += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
+			}
+		}
+		buttons += "\t\t</optgroup>\n\t</select></div>\n\n";
+		return buttons;
+	}
+
+
+	// BUTTONRS replacer
+	if(var == "BUTTONPLACEHOLDER"){
+		String buttons = "\n";
+
+		for ( int i = 2; i < NUM_BUTTONS; i++ ){ 
+			String active = ( yo.lastPressed == bList[i].code) ? " active" : "";
+			buttons += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
+		}
+		return buttons;
+	}
+	return String();
+}
+
+
+/* запуск эвента, который сообщает клиенту, что что-то изменались и пихаем в тексте псевдо-джсон с данными для разбора в скрипте.
+Так делать плохо, надо как-то по нормаольному, с запросом данных, а не через текст слать...*/
 void webServerUpdate(){
 	String out 	 = webServerMakeJSON();
 	// Serial.println( out);
 
 	char * chOut = new char [out.length()+1];
 	strcpy ( chOut, out.c_str());
-	events.send( chOut,"update", millis());
+	events.send( chOut, "update", millis());
 }
 
-//передаем через эвет "рэндомные" палитры для подмены фона кнопки селектора
+//передаем через эвет состояние сохранености в еепром изменений
 void webServerUnsave(){
 	events.send( yo.isNeedSaveEEPROM ? "1" : "0", "unsave", millis());
 }
@@ -221,6 +204,8 @@ void webServerStartUP(){
   	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
 	server.on("/reset", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSON());});
 	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
+	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; request->send(200, "text/plain", "Saved.");});
+	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ powerONOFF();	webServerUpdate(); request->send(200, "text/plain", "Powered.");});
 
 	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
 		if (request->hasParam( PARAM_INPUT_1)) {  
@@ -279,7 +264,7 @@ void webServerStartUP(){
 			Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
 		}
 		//send event with message "hello!", id current millis and set reconnect delay to 1 second
-		client->send( "hello!", NULL, millis(), 1000);
+		client->send( "Цarь vo dvorцa!!", NULL, millis(), 1000);
 	});
 	//HTTP Basic authentication
 	// events.setAuthentication("user", "pass");
