@@ -102,7 +102,8 @@ struct waveItem{
 	CRGB c3;
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
 	bool needSave; 						// флаг необходимости что-то засейвить в этой конструкции в еепром
-	bool needSaveJSON; 						// флаг необходимости что-то засейвить в этой конструкции в жосоне
+	bool needSaveJSON; 					// флаг необходимости что-то засейвить в этой конструкции в жосоне
+	uint16_t savno; 					// количество записей вавы в память [Save No]
 };										// list for: IRDA - function - WEB
 
 typedef std::map<int, waveItem> mapWAVES;

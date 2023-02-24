@@ -44,8 +44,8 @@ if (!!window.EventSource) {
 }
 
 
-function raiserFunc( elemnt){
-	var x = document.getElementById( "raiser");
+function raiserFunc( elemnt, raiser){
+	var x = document.getElementById( raiser);
 
 	if (x.style.display === "none") {
 		x.style.display = "block";

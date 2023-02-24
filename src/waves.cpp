@@ -60,7 +60,8 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 	
 	// base = 5;
 
-	switch ( base){
+	switch ( base)
+	{
 		case 1:
 			for ( int i = 0; i < var01; i++) {	
 				*( ptLEDS + i) = ledGCfP( color, false, beatsin8( yo.AUX100, 0, 255, 0, LEDS_FEDOR[i])); 
@@ -77,7 +78,8 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 			}
 			break;
 		case 4:
-			for ( int i = 0; i < var01; i++) {	
+			for ( int i = 0; i < var01; i++) 
+			{	
 				uint8_t noise = inoise8( i * 150, millis() / 5);
 				noise = constrain( noise, 65, 200);
 				noise = map( noise, 65, 200, 0, 255);
@@ -90,7 +92,8 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 				int wave2 = beatsin8(sp +1, -64,64);
 				uint8_t wave3 = beatsin8(sp +2,   0,80);
 
-				for (int i = 0; i < var01; i++){
+				for (int i = 0; i < var01; i++)
+				{
 					int index = cos8(( i * 30) + wave1) /  2 + cubicwave8(( i * 50) + wave2) / 2;
 					uint8_t lum = (index > wave3) ? index - wave3 : 0;
 					*( ptLEDS + i) = ledGCfP(  color, false, lum); 
@@ -112,7 +115,8 @@ void aBlinken02(){
 	far00 += 0.003 * yo.AUX010;
 	color = far00;
 
-	EVERY_N_SECONDS( 35) {	
+	EVERY_N_SECONDS( 35) 
+	{	
 		count = random8( 1, 6);  // +1 becoz THIS IS RANDOM!!!
 
 		if ( count != baza)	{
@@ -121,12 +125,14 @@ void aBlinken02(){
 	} 
 
 	//перерасчет при смене настроек с сайта
-	if ( var00 != yo.AUX255 || var02 != yo.AUX100){
+	if ( var00 != yo.AUX255 || var02 != yo.AUX100)
+	{
 		var00 = yo.AUX255;
 		var02 = yo.AUX100;
 		var01 = NUM_LEDS / yo.AUX255 + 1; 			 	// колличество рабочих диодов
 
-		for ( int i = 0; i < var01; i++) {
+		for ( int i = 0; i < var01; i++) 
+		{
 			LEDS_STATUS[i] = random8();
 			LEDS_VALUE[i]  = yo.AUX100 + random8( 5);
 			LEDS_FEDOR[i]  = ( 255 * i) / var01;		// предрасчет таймшифта для битсина для бегущих полосок. просто, потому, что могу это сделать здесь, а не в цикле.
@@ -137,14 +143,16 @@ void aBlinken02(){
 	}
 
 	// фиксики	
-	if ( yo.currentSpeed < 4){
+	if ( yo.currentSpeed < 4)
+	{
 		fadeToBlackBy(leds, NUM_LEDS, 1); 
 
 		uint8_t pos = inoise8( color * 10, millis() / 5); // * 100);
 		pos = map(pos, 30, 225, 0, NUM_LEDS - 1);  	
 		leds[pos] = CRGB( yo.c1);	
 	
-		if ( yo.currentSpeed < 3){
+		if ( yo.currentSpeed < 3)
+		{
 			pos = inoise8( color * 10, millis() / 4); // * 100);
 			pos = map(pos, 30, 225, 0, NUM_LEDS - 1);  	
 			leds[pos] = CRGB( yo.c2);
@@ -152,12 +160,15 @@ void aBlinken02(){
 	}
 
 	// Fade IN/OUT
-	if ( status != 0){
-		if ( status >= 255){
+	if ( status != 0)
+	{
+		if ( status >= 255)
+		{
 			status = 0;
 			baza = count;
 		}
-		else if ( status >= 1) { 		/// 1 - IN, 0 - OUT
+		else if ( status >= 1) 
+		{ 		/// 1 - IN, 0 - OUT
 			status++;
 			aBllinker02anime( baza, 0);
 			aBllinker02anime( count, 1);			
@@ -189,11 +200,12 @@ void aBlinken02(){
 /* 
 		Бегущая радужная вэйв 
 */
-void aRainbow(){
+void aRainbow()
+{
 	fadeToBlackBy(leds, NUM_LEDS, 4);
-	leds[beatsin8(13, 0, NUM_LEDS - 1)] = ledGCfP( baza++, false);
+	leds[beatsin8( yo.currentSpeed + 5, 0, NUM_LEDS - 1)] = ledGCfP( baza++, false);
 	FastLED.show();
-	delay(yo.currentSpeed * 2);
+	delay( 2);
 }
 
 
@@ -203,11 +215,14 @@ void aRainbow(){
 /* 
 		Костерок №01 
 */
-void aFire01(){    
+void aFire01()
+{    
 	leds[random8(NUM_LEDS)] = ledGCfP( random8( 255));  
 	// leds[random8(NUM_LEDS)] = CHSV( yoPal[random8( 255)].h, yo.currentSaturn, random8( 200, 255)); 
 	leds[random8(NUM_LEDS)].nscale8( random8(100));
-	if ( random8() < 35){
+
+	if ( random8() < 35)
+	{
 		fadeToBlackBy(leds, NUM_LEDS, 10);	
 	}
     FastLED.show();
@@ -227,50 +242,51 @@ void aFire01(){
 */
 void aFire02pre(){
 	yo.name010 = "Density";
-	yo.name100 = "In/Out ticks";
+	yo.name100 = "In/Out ticks x2";
 	yo.name255 = "Cooldown ticks";
-	yo.nameSpeed = "Active phase ticks x20";
+	yo.nameSpeed = "Active phase ticks x30";
 
 	for ( int ind = 0; ind < NUM_LEDS; ind++)
 	{
 		LEDS_STATUS[ind] = random8( 6);
-		LEDS_VALUE[ind] = random8( 60);
+		LEDS_VALUE[ind] = random8( 100);
 	}
 }
 
-void aFire02() {
-	far00 = 255. / ( yo.currentSpeed * 20);
-	far01 = 255. / yo.AUX100;
+void aFire02() 
+{
+	far00 = 255. / ( yo.currentSpeed * 30);
+	far01 = 255. / ( yo.AUX100 * 2);
 
-    for (int pos = 0; pos < NUM_LEDS; pos++){	
-
-		if ( LEDS_VALUE[pos] <= 0){
+    for (int pos = 0; pos < NUM_LEDS; pos++)
+	{	
+		if ( LEDS_VALUE[pos] <= 0)
+		{
 			LEDS_STATUS[pos] +=1;
 
-			switch (LEDS_STATUS[pos]){
-				case 2:
-					// LEDS_VALUE[pos] = beatsin88( 14, 20, 50);
-					LEDS_VALUE[pos] = yo.currentSpeed * 20;					
-					break;			
-				case 3:
-					LEDS_VALUE[pos] = yo.AUX100;
-					break;
-				case 4:
+			switch (LEDS_STATUS[pos])
+			{
+				case 2:{
+					LEDS_VALUE[pos] = yo.currentSpeed * 30;					
+					break;}				
+				case 3:{
+					LEDS_VALUE[pos] = yo.AUX100 * 2;
+					break;}
+				case 4:{
 					LEDS_VALUE[pos] = yo.AUX255;
 					leds[pos] = CRGB::Black;
-					break;						
-				case 6:
+					break;}					
+				default:{
 					LEDS_VALUE[pos] = 255;
 					LEDS_STATUS[pos] = 5;
-					break;
-				default:
-					break;
+					break;}
 			}
 		}
 		else{
 			LEDS_VALUE[pos] -= 1;
 
-			switch (LEDS_STATUS[pos]){
+			switch (LEDS_STATUS[pos])
+			{
 				case 1:
 					leds[pos] = ledGCfP( 1, false, 255 - far01 * LEDS_VALUE[pos]); 
 					break;			
@@ -280,30 +296,24 @@ void aFire02() {
 				case 3:
 					leds[pos] = ledGCfP( 255, false, far01 * LEDS_VALUE[pos]); //LEDS_VALUE[pos] /= 1.2); 
 					break;
-
 				default:
 					break;
 			}
 		}
 	}	        
 
-	// if ( LEDS_STATUS[100] == 2){
-	// 	int c = 255 - far00 * LEDS_VALUE[100];
-	// 	CRGB l = ledGCfP( c, false);
+    for ( int pos01 = 0; pos01 < yo.AUX010; pos01++)
+	{
+        uint8_t pos = random8( NUM_LEDS);
 
-	// 	Serial.printf( "[%d * %f = %d] = [%d:%d:%d]\n", LEDS_VALUE[100], far00, c, l.r, l.g, l.b);
-	// }
-
-    for ( int pos01 = 0; pos01 < yo.AUX010; pos01++){
-        int pos = random8( NUM_LEDS);
-
-		if ( LEDS_STATUS[pos] > 4 || LEDS_STATUS[pos] < 1){
+		if ( LEDS_STATUS[pos] > 4)
+		{
 			LEDS_STATUS[pos] = 1;
-			LEDS_VALUE[pos]  = yo.AUX100;
+			LEDS_VALUE[pos]  = yo.AUX100 * 2;
 		}
     }
     FastLED.show();
-	delay( 5);
+	delay( 1);
 }
 
 
@@ -313,7 +323,7 @@ void aFire02() {
 	var00  - color index
 	var01  - background value
 	var02  - background lowest value
-	color  - speed randomizer ( +-2)
+	color  - color lowest value from palette
 
 	AUX010 - speed
 	AUX100 - background scale
@@ -321,30 +331,31 @@ void aFire02() {
  */
 
 void aNoiseMordor(){ 
-	var02 	   = 50;
-	yo.name010 = "Background speed";
-	yo.name100 = "Background scale";
-	yo.name255 = "Palette scale";
+	var02 	   	= 50;
+	color 	   	= 20;
+	yo.name010 	= "Background speed";
+	yo.name100 	= "Background scale";
+	yo.name255 	= "Palette scale";
 	yo.nameSpeed = "Anime speed";
 }
 void aNoiseFires(){  
-	var02 	   = 0;
-	yo.name010 = "Background speed";
-	yo.name100 = "Background scale";
-	yo.name255 = "Palette scale";
+	var02 	   	= 0;
+	color 		= 0;
+	yo.name010 	= "Background speed";
+	yo.name100 	= "Background scale";
+	yo.name255 	= "Palette scale";
 	yo.nameSpeed = "Anime speed";
 }
 
-void aNoise(){
-
-    for (int i = 0; i < NUM_LEDS; i++) {
-		
-		// var00 = ( inoise8( i * ( yo.AUX255 / 4), millis() / yo.AUX010) - 20) * 1.2;
+void aNoise()
+{
+    for (int i = 0; i < NUM_LEDS; i++) 
+	{		
 		var00 = inoise8(    i * ( yo.AUX255 >> 1), millis() / yo.currentSpeed);
-		var01 = inoise8( 0, i * ( yo.AUX100     ), millis() / yo.AUX010);
+		var01 = inoise8(    i * ( yo.AUX100     ), millis() / yo.AUX010);
 		
 		var00 = constrain( var00, 65, 200);
-		var00 = map( var00, 65, 200, 0, 245);
+		var00 = map( var00, 65, 200, color, 255);
 
 		var01 = constrain( var01, 65, 200);
 		var01 = map( var01, 65, 200, var02, 255);
@@ -361,9 +372,11 @@ void aNoise(){
 
 
 /* 8 волн с разной скоротью и наложением цвета */
-void aBeatSINAgain(){
+void aBeatSINAgain()
+{
 	fadeToBlackBy(leds, NUM_LEDS, 4);
-    for (int i = 4; i < 12; i++) {
+    for (int i = 4; i < 12; i++) 
+	{
       	leds[beatsin8( i, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 0);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
 	FastLED.show();
@@ -377,16 +390,19 @@ void aBeatSINAgain(){
 			4 wavwes + 1 beatSin
 */
 void aWavesBeatPre(){
-	for ( int ind = 0; ind < 3; ind++){
+	for ( int ind = 0; ind < 3; ind++)
+	{
 		LEDS_HUE[ind] = random8( 255);
 	}
 }
 /* 4 симметричные волны навстречу с наложением цвета */
-void aWavesBeat() {
+void aWavesBeat() 
+{
  	if ( ++baza > NUM_LEDS) { baza = 0; }
     fadeToBlackBy(leds, NUM_LEDS, 6);
 
-    for ( int ind = 0; ind < 3; ind++){
+    for ( int ind = 0; ind < 3; ind++)
+	{
         int pos = (baza + ind * NUM_LEDS / 3) % NUM_LEDS;
 
         leds[pos] 			  |= ledGCfP( LEDS_HUE[ind]++, false, 200, 20);
@@ -402,11 +418,13 @@ void aWavesBeat() {
 /*
 		XXX beatSin WAVES
 */
-void aBeatSIN8(){
+void aBeatSIN8()
+{
 	baza++;
     fadeToBlackBy(leds, NUM_LEDS, 8);
 
-	for ( uint8_t i = 1; i < 9; i++)	{
+	for ( uint8_t i = 1; i < 9; i++)	
+	{
 		color = 255 * i / 8;
 		leds[beatsin8( 10 + i, 0, NUM_LEDS - 1, 0, color)] = ledGCfP( baza + color);
 	}	
@@ -427,7 +445,8 @@ void aGradient01pre(){ var00 = 1; far01 = 50.0;}
 void aGradient02pre(){ var00 = 2; far01 = 50.0;}
 void aGradient03pre(){ var00 = 3; far01 = 50.0;}
 
-void aGradient() {
+void aGradient() 
+{
 	uint16_t nc = millis() * yo.AUX255 >> 16;
 
 	uint16_t counter = millis() * ( yo.currentSpeed << 1);
@@ -436,7 +455,8 @@ void aGradient() {
 	int p1 = pp-NUM_LEDS;
 	int p2 = pp+NUM_LEDS;
 
-	for(uint16_t i = 0; i < NUM_LEDS; i++)	{
+	for(uint16_t i = 0; i < NUM_LEDS; i++)	
+	{
 		far00 = MIN( abs(pp-i), MIN( abs(p1-i), abs(p2-i)));
 		far00 = (yo.AUX100 > far00) ? far00/yo.AUX100 * 200 : 200;
 
@@ -457,15 +477,19 @@ void aGradient() {
 
 
 /* Вжух-вжух радуга из цента типа странной цветомузыки */
-void aSoundCheck(){
+void aSoundCheck()
+{
 	uint8_t rand = random8( 1, TOP_INDEX);
-    for (int i = 0; i < rand; i++ ) {
+    for (int i = 0; i < rand; i++ ) 
+	{
 		leds[TOP_INDEX + i] = ledGCfP( i*3);
 		leds[TOP_INDEX - i] = ledGCfP( i*3);
         delay( 100 / rand);
         FastLED.show();
 	}
-	for (int i = rand; i > 0; i-- ) {
+	
+	for (int i = rand; i > 0; i-- ) 
+	{
 		leds[TOP_INDEX + i] = CRGB::Black;
 		leds[TOP_INDEX - i] = CRGB::Black;
 		FastLED.show();
@@ -616,9 +640,10 @@ void aCreepingPre(){
 	yo.name255		= "Color Begin";
 }
 
-void aCreeping(){
-  	for (int i = 0; i < NUM_LEDS; i++) { 
-	    
+void aCreeping()
+{
+  	for (int i = 0; i < NUM_LEDS; i++) 
+	{ 	    
 		uint8_t noise = inoise8( 0, i * ( yo.AUX010 << 2), millis() / yo.currentSpeed); 
         noise = constrain( noise, 50, 200);
         noise = map( noise, 50, 200, 0, 255);
@@ -627,8 +652,7 @@ void aCreeping(){
         uint8_t saturn = map( noise, 0, 255, 255, 220);
 
         leds[i] = CHSV( color, saturn, noise);
-	}
-	
+	}	
   	FastLED.show();
   	delay(yo.currentSpeed);
 }

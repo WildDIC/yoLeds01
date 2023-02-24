@@ -25,8 +25,10 @@ button bList[25];
 range rList[10];
 
 // возможно не стоит это выносить сыда, а вернуть в процессорку 200
-int rState(int numValue){
-	switch (numValue){		
+int rState(int numValue)
+{
+	switch (numValue)
+	{		
 		case 0: numValue = yo.currentBrightness; break;
 		case 1: numValue = yo.currentSaturn; break;
 		case 2: numValue = yo.currentTemp; break;		
@@ -36,7 +38,8 @@ int rState(int numValue){
 }
 
 /*Собираем здесь, отдельно, а в джонсоне*/
-String makeColorString(){
+String makeColorString()
+{
 	String colorString   = "\"vC1\": \"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\", ";
 	colorString 		+= "\"vC2\": \"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\", ";
 	colorString 		+= "\"vC3\": \"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\", ";
@@ -45,7 +48,8 @@ String makeColorString(){
 
 
 /*Делаем псевдо джонсон с текущими оперативными данными*/
-String webServerMakeJSON(){
+String webServerMakeJSON()
+{
 	String out = "{";
 	out += "\"vBri\": "		+ String(yo.currentBrightness)	+", ";
 	out += "\"vSat\": "		+ String(yo.currentSaturn)		+", ";
@@ -70,30 +74,35 @@ String webServerMakeJSON(){
 }
 
 
-void collectData(){	
+void collectData()
+{	
 	mbIter = mWaves.begin();
-	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) {		
+	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) 
+	{		
 		mbIter->second.code = mbIter->first;
-		if ( mbIter->second.indForWeb){
-			if ( mbIter->second.typeWeb == 1){
+		if ( mbIter->second.indForWeb)
+		{
+			if ( mbIter->second.typeWeb == 1)
+			{
 				NUM_BUTTONS++;
 				bList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.name };		
 			}
-			else if ( mbIter->second.typeWeb == 2){
+			else if ( mbIter->second.typeWeb == 2)
+			{
 				NUM_RANGES++;
 				rList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.min, mbIter->second.max, mbIter->second.name};
 			}			
 		} 
     }	
 	
-	ROOT_HOLDER += "\t\t--gr0: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr2: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
-	ROOT_HOLDER += "\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
-	ROOT_HOLDER += "\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
-	ROOT_HOLDER += "\t\t--gr6: #181E28;\n";
-	ROOT_HOLDER += "\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
-	ROOT_HOLDER += "\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
+	ROOT_HOLDER += "\t\t\t--gr0: #181E28;\n";
+	ROOT_HOLDER += "\t\t\t--gr2: #181E28;\n";
+	ROOT_HOLDER += "\t\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
+	ROOT_HOLDER += "\t\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	ROOT_HOLDER += "\t\t\t--gr6: #181E28;\n";
+	ROOT_HOLDER += "\t\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	ROOT_HOLDER += "\t\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
 	
 
 	// собираем css градиенты для выбора палитр
@@ -103,51 +112,52 @@ void collectData(){
 
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
 
-		CSS_HOLDER +=  "\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
-		ROOT_HOLDER += "\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
+		CSS_HOLDER +=  "\t\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
+		ROOT_HOLDER += "\t\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
 
-		for ( byte ind = 0; ind < sizeof( tcp); ind += 4){
+		for ( byte ind = 0; ind < sizeof( tcp); ind += 4)
+		{
 			String coma = ( tcp[ind] == 255) ? "%" : "%,";
 			ROOT_HOLDER += "rgb("+ String( tcp[ind+1]) +","+ String( tcp[ind+2]) +","+ String( tcp[ind+3]) +") "+ String( (tcp[ind]*100/255)) + coma;
 			if ( tcp[ind]== 255){ break;}
 		}
 		ROOT_HOLDER += ");\n";
 	}
-	ROOT_HOLDER += "}";
+	ROOT_HOLDER += "\t\t}";
 
 
 	// RANGERS собираем полоски-двигалки 
-	for(int i = 1; i < NUM_RANGES; i++){
+	for(int i = 1; i < NUM_RANGES; i++)
+	{
 		int rValue = rState(i);
 		// уменьшалка
-		if ( i == 3) {
-		// 	RANGE_HOLDER += "\t<div class='hider' id='hider'><span class='hiderItem' id='hiderItem' onclick='raiserFunc()'>more</span></div>\n";
-			RANGE_HOLDER += "\t<div class='raiser' id='raiser' style='display: none;'>\n";
+		if ( i == 2) 
+		{
+			RANGE_HOLDER += "\t\t<div class='raiser' id='raiser' style='display: none;'>\n\n";
 		}
-
-		RANGE_HOLDER += "\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
-		RANGE_HOLDER += "\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
-		
-		if ( i == NUM_RANGES - 1){
-			RANGE_HOLDER += "\t</div>\n\n";  // close 'raiser' div
-		}
+		RANGE_HOLDER += "\t\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "\t\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+		// if ( i == NUM_RANGES - 1){ RANGE_HOLDER += "\t\t</div>\n\n";  // close 'raiser' div	}
 	}	
 }
 
 
 // Replaces placeholder with button section in your web page
-String processor(const String& var){
+String processor(const String& var)
+{
 	//Serial.println(var);
 	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
 	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
 
 	// SELECT replacer
-	if(var == "SELECTHOLDER"){
+	if(var == "SELECTHOLDER")
+	{
 		String buttons = "";
 		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
-		for (size_t i = 0; i < NUM_POLLITR; i++){
-			if ( myPal[i].name.length() > 0){		
-
+		for (size_t i = 0; i < NUM_POLLITR; i++)
+		{
+			if ( myPal[i].name.length() > 0)
+			{		
 				if ( i == yo.lastCustPal + 11){ buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n"; }				
 				String active = ( i == mWaves[yo.lastPressed].min) ?" selected = 'selected'" : "";
 				buttons += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
@@ -159,10 +169,12 @@ String processor(const String& var){
 
 
 	// BUTTONRS replacer
-	if(var == "BUTTONPLACEHOLDER"){
+	if(var == "BUTTONPLACEHOLDER")
+	{
 		String buttons = "\n";
 
-		for ( int i = 2; i < NUM_BUTTONS; i++ ){ 
+		for ( int i = 2; i < NUM_BUTTONS; i++ )
+		{ 
 			String active = ( yo.lastPressed == bList[i].code) ? " active" : "";
 			buttons += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
 		}
@@ -174,7 +186,8 @@ String processor(const String& var){
 
 /* запуск эвента, который сообщает клиенту, что что-то изменались и пихаем в тексте псевдо-джсон с данными для разбора в скрипте.
 Так делать плохо, надо как-то по нормаольному, с запросом данных, а не через текст слать...*/
-void webServerUpdate(){
+void webServerUpdate()
+{
 	String out 	 = webServerMakeJSON();
 	// Serial.println( out);
 
@@ -184,17 +197,20 @@ void webServerUpdate(){
 }
 
 //передаем через эвет состояние сохранености в еепром изменений
-void webServerUnsave(){
+void webServerUnsave()
+{
 	events.send( yo.isNeedSaveEEPROM ? "1" : "0", "unsave", millis());
 }
 
 /*Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer*/
-void webServerStartUP(){
+void webServerStartUP()
+{
 	collectData();
 	yo.pt2webUpdate = &webServerUpdate;
 	yo.pt2webUnsave = &webServerUnsave;
 
-	if(!SPIFFS.begin(true)){
+	if(!SPIFFS.begin(true))
+	{
  	 	Serial.println("An Error has occurred while mounting SPIFFS");
   		return;
 	}
@@ -207,12 +223,15 @@ void webServerStartUP(){
 	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; request->send(200, "text/plain", "Saved.");});
 	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ powerONOFF();	webServerUpdate(); request->send(200, "text/plain", "Powered.");});
 
-	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		if (request->hasParam( PARAM_INPUT_1)) {  
+	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) 
+	{
+		if (request->hasParam( PARAM_INPUT_1)) 
+		{  
 			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();
 			String inputMessage02 = "0";
 
-			if (request->hasParam( PARAM_INPUT_2)) { 
+			if (request->hasParam( PARAM_INPUT_2)) 
+			{ 
 				inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
 				yo.againButton = atoi( inputMessage02.c_str());
 			}			
@@ -221,12 +240,15 @@ void webServerStartUP(){
 		request->send(200, "text/plain", "OK");
 	});
 
-	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		if (request->hasParam( PARAM_INPUT_2)) { 
+	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) 
+	{
+		if (request->hasParam( PARAM_INPUT_2)) 
+		{ 
 			String inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
 			yo.againButton = atoi( inputMessage02.c_str());
 		}	
-		if (request->hasParam( PARAM_INPUT_1)) {			
+		if (request->hasParam( PARAM_INPUT_1)) 
+		{			
 			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();	
 			paletteSetActive( atoi( inputMessage01.c_str()), true);
 			webServerUpdate();
@@ -234,8 +256,10 @@ void webServerStartUP(){
 		request->send(200, "text/plain", "OK");
 	});
 
-	server.on("/colorset", HTTP_GET, [] (AsyncWebServerRequest *request) {
-		if (request->hasParam( PARAM_INPUT_1)) {
+	server.on("/colorset", HTTP_GET, [] (AsyncWebServerRequest *request) 
+	{
+		if (request->hasParam( PARAM_INPUT_1)) 
+		{
 			String inputMessage01 = request->getParam( PARAM_INPUT_1)->value();	
 			
 			uint8_t colors[9];
@@ -245,7 +269,8 @@ void webServerStartUP(){
 
 			char * pch;
 			pch = strtok ( cstr, "-");
-			while (pch != NULL)	{				
+			while (pch != NULL)	
+			{				
 				colors[ind] = parseInt( pch);
 				ind++;
 				pch = strtok (NULL, "-");	
@@ -259,8 +284,10 @@ void webServerStartUP(){
 	});
 
 
-	events.onConnect([](AsyncEventSourceClient *client){
-		if(client->lastId()){
+	events.onConnect([](AsyncEventSourceClient *client)
+	{
+		if(client->lastId())
+		{
 			Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
 		}
 		//send event with message "hello!", id current millis and set reconnect delay to 1 second

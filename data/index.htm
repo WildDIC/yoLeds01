@@ -1,7 +1,6 @@
 <!DOCTYPE HTML><html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-	<link rel="icon" href="data:;base64,=">
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<style>
@@ -18,25 +17,28 @@
 			<div class="footer">
 				<div class="footerbox">
 					<ul>
-						<li><a><ion-icon name="power" class= "ipower" onclick="pButtonClick( this)"; id='551489775'></ion-icon></a></li>
-						<li><a><ion-icon name="save"  class="isave"   onclick="sButtonClick( this)"; id='551489776'></ion-icon></a></li>
-						<li><a><ion-icon name="chevron-down-circle-outline" class="ihider" onclick="raiserFunc( this)"; id="ihider"></ion-icon></a></li>
-						<li><a href="#"><ion-icon name="skull"></ion-icon></a></li>
-						<li><a href="#"><ion-icon name="rainy"></ion-icon></a></li>
+						<li><a><ion-icon name="power" 					class="ipower" onclick="pButtonClick( this)"; id='551489775'></ion-icon></a></li>
+						<li><a><ion-icon name="save-outline"  			class="isave"  onclick="sButtonClick( this)"; id='551489776'></ion-icon></a></li>
+						<li><a><ion-icon name="options-outline" 		class="ihider" onclick="raiserFunc( this, 'raiser')"; id="ihider"></ion-icon></a></li>
+						<li><a><ion-icon name="color-palette-outline" 	class="chider" onclick="raiserFunc( this, 'caiser')"; id="chider"></ion-icon></ion-icon></a></li>
+						<li><a><ion-icon name="rainy-outline"></ion-icon></a></li>
 					</ul>
 				</div>
 			</div>
 		</div> 
 
 		`RANGEPLACEHOLDER`
-
-		<div class="wrap">
-			<div class="half">
-				<div id="picker"></div>
+		
+		</div>
+		<div class='caiser' id='caiser' style='display: none;'>
+			<div class="wrap">
+				<div class="half">
+					<div id="picker"></div>
+				</div>
+				<div class="half01">
+					<div id="colorList"></div>
+				</div>	
 			</div>
-			<div class="half01">
-				<div id="colorList"></div>
-			</div>	
 		</div>
 	</div>
 

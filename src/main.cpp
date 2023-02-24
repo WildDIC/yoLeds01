@@ -108,50 +108,47 @@ void setup() {
 //********************************************************************
 // 						LOOP 		( millis())
 //*********************************************************************
-void loop() {
+void loop() 
+{
 	yo.now = clock();
 
-	if ( yo.now > startTime){
+	if ( yo.now > startTime)
+	{
 		startTime = yo.now + IR_DELAY;
 		irdaServer( 0, 0);
 	}
 
-	if ( yo.ONOFF && pt2Func){
-		
+	if ( yo.ONOFF && pt2Func)
+	{
 		pt2Func();
-		// if ( yo.now > startAnime){
-		// 	startAnime = yo.now + yo.currentSpeed;
-		// } 
 	}	
-	else { 
+	else 
+	{ 
 		delay( 500); 
 	}  	
 
 
+	EVERY_N_MILLISECONDS( 250)
+	{
 	#ifdef EERPROM_ENABLE
-		EVERY_N_MILLISECONDS( 250){
-			eepromSaveHandler();
-		}
+		eepromSaveHandler();
 	#endif
-
 
 	#ifdef WEB_ENABLE		
-		// проверка на подключенный ВФ и переконнект, если надо	
-		EVERY_N_MILLISECONDS( 250){
-			wifiCheckConnect();	
-			// Serial.println( animeFire.nSpeed);
-			// Serial.println( animeFire.anime);
-		}
-	#endif
-
+		wifiCheckConnect();	
+		// Serial.println( animeFire.nSpeed);
+		// Serial.println( animeFire.anime);
+	#endif	
+	}
 
 	#ifdef FPSCOUNT_ENABLE
-		fpsCount++;
-		if ( yo.now >= startFPS){
-			Serial.println( fpsCount);
-			startFPS = yo.now + 1000;
-			fpsCount = 0;
-		}
+	fpsCount++;
+	if ( yo.now >= startFPS)
+	{
+		Serial.println( fpsCount);
+		startFPS = yo.now + 1000;
+		fpsCount = 0;
+	}
 	#endif
 }
 

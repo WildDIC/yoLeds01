@@ -47,12 +47,14 @@ CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, u
 void powerON(){  
 	// FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	
 	FastLED.setBrightness( yo.currentBrightness);
+	FastLED.delay( 5);
 	FastLED.show(); 
 }
 
 void powerOFF(){ 
 	// FastLED.setMaxPowerInMilliWatts(0); 			
 	FastLED.setBrightness( 0);
+	FastLED.delay( 5);
 	FastLED.show(); 
 }
 
@@ -80,6 +82,7 @@ void ledOFF(){
 	// }
 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
+	FastLED.delay( 5);
 	FastLED.show();
 	// delay( 150);
 }
@@ -88,6 +91,7 @@ void ledOFF(){
 void ledUPWhite(){	
   	if ( yo.ONOFF){
 	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
+		FastLED.delay( 5);
 		FastLED.show();
 	}
 	#ifdef DEBUG_ENABLE
@@ -110,6 +114,7 @@ void ledUP(){
 		}	
 		// for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPal[pos]); }	
 		FastLED.show();
+		FastLED.delay( 5);
 	}
 }
 
@@ -255,7 +260,7 @@ void changeSaturation( int delta){
 void ledReset(){
 	setBrightness(128); 
 	// changeSpeed( -90); 
-	setSpeed( 10);
+	setSpeed( 5);
 	changeTemperature( TEMP_IND_MAX); 
 	changeSaturation( 100);
 }
