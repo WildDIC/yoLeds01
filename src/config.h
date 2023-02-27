@@ -60,15 +60,21 @@ struct config{
 	CRGB c2 = CRGB( 0,  255, 0);
 	CRGB c3 = CRGB( 0, 0, 255);
 	byte lastCustPal = 0;
+	uint8_t candle = 0;
+	bool iscandle = false;
 	byte AUX010;
 	byte AUX100;
 	byte AUX255;
+	byte AUX355;
+	byte AUX455;
 	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
 	bool loadOutside = false;			// устанавливаем данные (через сеттер) при их чтении в irda ( false) или оно пришло для устеновки извне ( true) и их надо будет сохранить 
 	String name010 = "AUX010";			// AUX010 name string for web range
 	String name100 = "AUX100";			// AUX100 name string for web range
 	String name255 = "AUX255";			// AUX255 name string for web range
+	String name355 = "AUX355";			// AUX255 name string for web range
+	String name455 = "AUX455";			// AUX255 name string for web range
 	String nameSpeed = "Speed";			// Speed name string for web range
 };
 extern config yo;						// конфиг, самое главное здесь
@@ -97,6 +103,8 @@ struct waveItem{
 	byte aux010;
 	byte aux100;
 	byte aux255;
+	byte aux355;
+	byte aux455;
 	CRGB c1;
 	CRGB c2;
 	CRGB c3;

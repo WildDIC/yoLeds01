@@ -17,8 +17,8 @@ extern void requestSave();
 keyMaps keyCodes;
 
 /* Поднимаем ИР-сервер*/
-void irdaStartUP(){	
-	
+void irdaStartUP()
+{	
 	keyCodes = {
 		// {127026699, IR_TV_ON},	
 		// {127026699, IR_TVVOL_UP	},
@@ -62,7 +62,8 @@ void irdaStartUP(){
 }
 
 /* Скипаем до следующих данных с приемника*/
-void irdaNext(){
+void irdaNext()
+{
 	irrecv.resume();  // Receive the next value		
 }
 
@@ -71,18 +72,23 @@ void irdaNext(){
 Принимает входные параметры с вебсерра
 @param codeFromWeb свой ИК-код, приходит от веб-кдента
 @param webValue значение для установки параметров, приходит от веб-клиента*/
-void irdaServer( int codeFromWeb = 0, int webValue = 0){
+void irdaServer( int codeFromWeb = 0, int webValue = 0)
+{
     uint32_t resValue = 0;
 
 	if ( codeFromWeb){ 					// пришли данные с веб-сервера
 		resValue = codeFromWeb; 		
 	} 
-	else if ( irrecv.decode( &results)) {
+	else if ( irrecv.decode( &results)) 
+	{
 		resValue = results.value;   	// получаем значение ИР-приеника
 		
-		if ( resValue == ZERO_DATA){
+		if ( resValue == ZERO_DATA)
+		{
 			resValue = yo.lastReceive;
-		} else {
+		} 
+		else 
+		{
 			yo.lastReceive = resValue;			
 		}
 		irdaNext();		
@@ -90,12 +96,14 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 
 	if ( keyCodes[resValue]){	resValue = keyCodes[resValue]; }
 	
-	if ( resValue){		
+	if ( resValue)
+	{		
 		yoBugF( "-=>> IR receive: %d\n", resValue);
 		// Serial.printf( "Code from web: %d = (%d) - [%d]\n", codeFromWeb, webValue, resValue);
 		
 		mbIter = mWaves.find( resValue);
-		if ( mbIter != mWaves.end()){
+		if ( mbIter != mWaves.end())
+		{
 			yoBug( "-=>> Наш выбор: ");			
 			yoBugN( mbIter->second.name);			
 
@@ -131,7 +139,6 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0){
 				setAUX255( 		mbIter->second.aux255);
 				paletteSetActive( mbIter->second.pollCurrent, true);
 				ledOFF();
-				// if ( mbIter->second.leadOFF){ 		ledOFF();}
 				// Serial.println( "-==> Vars applied.");
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", resValue, mbIter->second.pollCurrent,	mbIter->second.bright, mbIter->second.speed, mbIter->second.saturn, mbIter->second.temp, mbIter->second.aux010, mbIter->second.aux100, mbIter->second.aux255);
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", yo.lastPressed, mbIter->second.pollCurrent,	yo.currentBrightness, yo.currentSpeed, yo.currentSaturn, yo.currentTemp, yo.AUX010, yo.AUX100, yo.AUX255);

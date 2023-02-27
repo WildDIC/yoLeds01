@@ -14,19 +14,19 @@ void ledsStartUP();
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param blenType размытие переходов между цветами ( 0-1) */
-CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND);
+@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
+CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 
-/* Забираем цвет colorID из текущей targetPalette палитры.
+/* Забираем цвет colorID из текущей activePollitre палитры.
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param blenType размытие переходов между цветами ( 0-1) */
-CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = LINEARBLEND);
+@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
+CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 
 void powerON();
 void powerOFF();
@@ -54,6 +54,8 @@ void setSpeed( 		int value);
 void setAUX010(	 	int value);
 void setAUX100( 	int value);
 void setAUX255( 	int value);
+void setAUX355( 	int value);
+void setAUX455( 	int value);
 void setSaturation( int value);
 void setTemperature(int value);
 void setBrightness( int value);

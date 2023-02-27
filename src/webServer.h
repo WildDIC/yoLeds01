@@ -40,9 +40,9 @@ int rState(int numValue)
 /*Собираем здесь, отдельно, а в джонсоне*/
 String makeColorString()
 {
-	String colorString   = "\"vC1\": \"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\", ";
-	colorString 		+= "\"vC2\": \"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\", ";
-	colorString 		+= "\"vC3\": \"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\", ";
+	String colorString   = "\"vC1\":\"rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")\",";
+	colorString 		+= "\"vC2\":\"rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")\",";
+	colorString 		+= "\"vC3\":\"rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")\",";
 	return colorString;
 }
 
@@ -51,24 +51,30 @@ String makeColorString()
 String webServerMakeJSON()
 {
 	String out = "{";
-	out += "\"vBri\": "		+ String(yo.currentBrightness)	+", ";
-	out += "\"vSat\": "		+ String(yo.currentSaturn)		+", ";
-	out += "\"vTemp\": "	+ String(yo.currentTemp)		+", ";
-	out += "\"vSpeed\": "	+ String(yo.currentSpeed)		+", ";
-	out += "\"vPressed\": "	+ String(yo.lastPressed)		+", ";
-	out += "\"vONOFF\": "	+ String(yo.ONOFF)				+", ";
-	out += "\"vUnsave\": "	+ String(yo.isNeedSaveEEPROM)	+", ";
-	out += "\"vPCur\": "	+ String(yo.pollCurrent)		+", ";
-	out += "\"vStyle\": "	+ yo.rndStyle 					+", ";
-	out += "\"vAUX010\": "	+ String( yo.AUX010) 			+", ";
-	out += "\"vAUX100\": "	+ String( yo.AUX100)			+", ";
-	out += "\"vAUX255\": "	+ String( yo.AUX255)			+", ";
-	out += "\"nAUX010\": \""+ String( yo.name010)			+"\", ";
-	out += "\"nAUX100\": \""+ String( yo.name100)			+"\", ";
-	out += "\"nAUX255\": \""+ String( yo.name255)			+"\", ";
-	out += "\"nSpeed\":  \""+ String( yo.nameSpeed) 		+"\", ";
+	out += "\"vBri\":"		+ String(yo.currentBrightness)	+",";
+	out += "\"vSat\":"		+ String(yo.currentSaturn)		+",";
+	out += "\"vTmp\":"		+ String(yo.currentTemp)		+",";
+	out += "\"vSpd\":"		+ String(yo.currentSpeed)		+",";
+	out += "\"vPressed\":"	+ String(yo.lastPressed)		+",";
+	out += "\"vONOFF\":"	+ String(yo.ONOFF)				+",";
+	out += "\"vUnsave\":"	+ String(yo.isNeedSaveEEPROM)	+",";
+	out += "\"vPCur\":"		+ String(yo.pollCurrent)		+",";
+	out += "\"vStyle\":"	+ yo.rndStyle 					+",";
+	out += "\"vCndl\":"		+ String( yo.candle) 			+",";
+	out += "\"vIsCndl\":"	+ String( yo.iscandle) 			+",";
+	out += "\"v010\":"		+ String( yo.AUX010) 			+",";
+	out += "\"v100\":"		+ String( yo.AUX100)			+",";
+	out += "\"v255\":"		+ String( yo.AUX255)			+",";
+	out += "\"v355\":"		+ String( yo.AUX355)			+",";
+	out += "\"v455\":"		+ String( yo.AUX455)			+",";
+	out += "\"n010\":\""	+ String( yo.name010)			+"\",";
+	out += "\"n100\":\""	+ String( yo.name100)			+"\",";
+	out += "\"n255\":\""	+ String( yo.name255)			+"\",";
+	out += "\"n355\":\""	+ String( yo.name355)			+"\",";
+	out += "\"n455\":\""	+ String( yo.name455)			+"\",";
+	out += "\"nSpd\":\""	+ String( yo.nameSpeed) 		+"\",";
 	out += makeColorString();
-	out += "\"vPDef\": "	+ String(yo.pollDefault)		+" ";
+	out += "\"vPDef\":"		+ String(yo.pollDefault)		+" ";
 	out += "}";      // 	ЗАПЯТАЯ НА ПРЕДПОСЛЕДНЕМ ЭЛЕМЕНТЕ !!! ПРОВЕРЬ!!! НЕ ЗАБУДЬ!!!!!
 	return out;
 }
@@ -220,8 +226,9 @@ void webServerStartUP()
   	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
 	server.on("/reset", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSON());});
 	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
-	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; request->send(200, "text/plain", "Saved.");});
-	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ powerONOFF();	webServerUpdate(); request->send(200, "text/plain", "Powered.");});
+	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; 			request->send(200, "text/plain", "Saved.");});
+	server.on( "/candle",   HTTP_GET, [](AsyncWebServerRequest *request){ yo.iscandle = !yo.iscandle; 		request->send(200, "text/plain", "Candle.");});
+	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
 
 	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) 
 	{

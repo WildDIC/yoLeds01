@@ -64,8 +64,6 @@ bool fReadBOOL()
 	return readBOOL;
 }
 
-
-
 void fWriteDATA( uint16_t data)	{ EEPROM.put( EEPROM_CURRENT_INT, data); }
 void fWriteDATA( int data)		{ EEPROM.put( EEPROM_CURRENT_INT, data); }
 void fWriteDATA( byte data)		{ EEPROM.put( EEPROM_CURRENT_BYTE, data); }
@@ -94,9 +92,7 @@ void eepromSaveWave( bool forceSaveEEPROM = false)
 				saveEEPROM( mbIter->first);
 				saveEEPROM( ++mbIter->second.savno);
 				saveEEPROM( mbIter->second.speed);
-				saveEEPROM( mbIter->second.aux010);
-				saveEEPROM( mbIter->second.aux100);
-				saveEEPROM( mbIter->second.aux255);
+				saveEEPROM( mbIter->second.aux010);		saveEEPROM( mbIter->second.aux100);		saveEEPROM( mbIter->second.aux255);
 				saveEEPROM( mbIter->second.temp);
 				saveEEPROM( mbIter->second.saturn);
 				saveEEPROM( mbIter->second.c1.r);		saveEEPROM( mbIter->second.c1.g);		saveEEPROM( mbIter->second.c1.b);
@@ -105,11 +101,12 @@ void eepromSaveWave( bool forceSaveEEPROM = false)
 				
 				saveEEPROM( mbIter->second.indForWeb);   // пишем реальный индекс вавы из мапы для контроля положения при считывании
 				saveEEPROM( mbIter->second.pollCurrent);
-				saveEEPROM( mbIter->second.bright);				
+				
+				saveEEPROM( mbIter->second.aux355);		saveEEPROM( mbIter->second.aux455);				
 
 				mbIter->second.needSave = false;
 
-				Serial.printf( "-=> %d Save [savno=%d] ind=%d, ID=%d INDforWeb=%d, Bri=%d Pal=%d AUX010=%d [", 
+				Serial.printf( "-=> %d Save [savno=%d] ind=%d, ID=%d INDforWeb=%d, Bri=%d Pal=%d AUX355=%d [", 
 									EEPROM_CURRENT_ADDR, 
 													mbIter->second.savno,
 															ind, 
@@ -117,7 +114,7 @@ void eepromSaveWave( bool forceSaveEEPROM = false)
 																				mbIter->second.indForWeb, 
 																						mbIter->second.bright, 
 																								mbIter->second.pollCurrent, 
-																										mbIter->second.aux010);
+																										mbIter->second.aux355);
 				Serial.print( mbIter->second.name);
 				Serial.println( "].");
 			}							
@@ -152,9 +149,7 @@ void eepromLoadWave()
 		{
 			mWaves[waveID].savno    = savno;
 			mWaves[waveID].speed 	= fReadBYTE();
-			mWaves[waveID].aux010 	= fReadBYTE();
-			mWaves[waveID].aux100 	= fReadBYTE();
-			mWaves[waveID].aux255 	= fReadBYTE();
+			mWaves[waveID].aux010 	= fReadBYTE();		mWaves[waveID].aux100 	= fReadBYTE();	mWaves[waveID].aux255 	= fReadBYTE();
 			mWaves[waveID].temp 	= fReadBYTE();
 			mWaves[waveID].saturn 	= fReadBYTE();
 			mWaves[waveID].c1.r 	= fReadBYTE(); 		mWaves[waveID].c1.g = fReadBYTE(); 		mWaves[waveID].c1.b = fReadBYTE();
@@ -163,7 +158,7 @@ void eepromLoadWave()
 
 			uint8_t placed 			= fReadBYTE();     // читаем реальный индекс вавы. записанный при сохранении волн ( переменная пока для подстаховки)
 			mWaves[waveID].pollCurrent = fReadBYTE();					// read paletteID		
-			mWaves[waveID].bright 	= fReadBYTE();
+			mWaves[waveID].aux355 	= fReadBYTE();		mWaves[waveID].aux455 	= fReadBYTE();
 
 			if ( placed != mWaves[waveID].indForWeb) 
 			{ 	
@@ -197,7 +192,8 @@ void eepromSaveData( bool forceSaveEEPROM = false)
 		saveEEPROM( yo.c1.r); 	saveEEPROM( yo.c1.g); 	saveEEPROM( yo.c1.b);
 		saveEEPROM( yo.c2.r);	saveEEPROM( yo.c2.g);	saveEEPROM( yo.c2.b);
 		saveEEPROM( yo.c3.r);	saveEEPROM( yo.c3.g);	saveEEPROM( yo.c3.b);
-		saveEEPROM( yo.AUX010);	saveEEPROM( yo.AUX100);	saveEEPROM( yo.AUX255);
+	
+		saveEEPROM( yo.AUX010);	saveEEPROM( yo.AUX100);	saveEEPROM( yo.AUX255); saveEEPROM( yo.AUX355);	saveEEPROM( yo.AUX455);
 
 		eepromSaveWave( forceSaveEEPROM);
 		
@@ -227,7 +223,8 @@ void eepromLoadData()
 	yo.c1.r = fReadBYTE(); 		yo.c1.g = fReadBYTE(); 		yo.c1.b = fReadBYTE();
 	yo.c2.r = fReadBYTE();		yo.c2.g = fReadBYTE();		yo.c2.b = fReadBYTE();
 	yo.c3.r = fReadBYTE();		yo.c3.g = fReadBYTE();		yo.c3.b = fReadBYTE();
-	yo.AUX010 = fReadBYTE();	yo.AUX100 = fReadBYTE();	yo.AUX255 = fReadBYTE();
+
+	yo.AUX010 = fReadBYTE();	yo.AUX100 = fReadBYTE();	yo.AUX255 = fReadBYTE(); 	yo.AUX355 = fReadBYTE();	yo.AUX455 = fReadBYTE();
 }
 
 

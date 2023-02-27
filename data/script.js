@@ -68,7 +68,7 @@ function unsave( request){
 function pButtonClick( element) {
 	// var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
 	element.classList.toggle("active");
-	// if ( element.classList.contains("active")) { value = "&value=1"; };			// 1 - нажал нопку опять ты для цветов обновления случайных
+	// if ( element.classList.contains("active")) { value = "&value=1"; };		// 1 - нажал нопку опять ты для цветов обновления случайных
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "/power", true); 
@@ -79,6 +79,14 @@ function pButtonClick( element) {
 function sButtonClick( element) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "/save", true); 
+	xhr.send();
+}
+
+
+function cButtonClick( element) {
+	element.classList.toggle("active");
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/candle", true); 
 	xhr.send();
 }
 
@@ -117,48 +125,56 @@ function reseter( data){
 	var item = document.querySelector( ".default"); 		// очищаем класс в списке палитр
 	if ( item){ item.classList.remove( 'default'); }		
 
-	item = document.querySelector( ".opt-active");		// очищаем класс в списке палитр
+	item = document.querySelector( ".opt-active");			// очищаем класс в списке палитр
 	if ( item){ item.classList.remove( 'opt-active'); }			
 
 	document.getElementById( 10000003).value 				= json.vBri;
-	document.getElementById( 10000004).value 				= json.vSpeed;
-	document.getElementById( 10000005).value 				= json.vTemp;
+	document.getElementById( 10000004).value 				= json.vSpd;
+	document.getElementById( 10000005).value 				= json.vTmp;
 	document.getElementById( 10000006).value 				= json.vSat;	
-	document.getElementById( 10000007).value 				= json.vAUX010;
-	document.getElementById( 10000008).value 				= json.vAUX100;
-	document.getElementById( 10000009).value 				= json.vAUX255;
-	// document.querySelector( ".upser").innerHTML 			= json.vPressed;
+	
+	document.getElementById( 10000007).value 				= json.v010;
+	document.getElementById( 10000008).value 				= json.v100;
+	document.getElementById( 10000009).value 				= json.v255;
+	document.getElementById( 10000099).value 				= json.v355;
+	document.getElementById( 10000100).value 				= json.v455;
+
 	document.querySelector( ".Brightness-value").innerHTML 	= json.vBri;
 	document.querySelector( ".Saturations-value").innerHTML = json.vSat;
-	document.querySelector( ".Temperature-value").innerHTML = json.vTemp;
-	document.querySelector( ".Speed-value").innerHTML 		= json.vSpeed;	
-	document.querySelector( ".AUX010-value").innerHTML 		= json.vAUX010;	
-	document.querySelector( ".AUX100-value").innerHTML	 	= json.vAUX100;	
-	document.querySelector( ".AUX255-value").innerHTML	 	= json.vAUX255;	
-	document.querySelector( ".AUX010-name").innerHTML 		= json.nAUX010 + ": ";
-	document.querySelector( ".AUX100-name").innerHTML	 	= json.nAUX100 + ": ";
-	document.querySelector( ".AUX255-name").innerHTML	 	= json.nAUX255 + ": ";
-	document.querySelector( ".Speed-name").innerHTML	 	= json.nSpeed  + ": ";
+	document.querySelector( ".Temperature-value").innerHTML = json.vTmp;
+	document.querySelector( ".Speed-value").innerHTML 		= json.vSpd;	
+	
+	document.querySelector( ".AUX010-value").innerHTML 		= json.v010;	
+	document.querySelector( ".AUX100-value").innerHTML	 	= json.v100;	
+	document.querySelector( ".AUX255-value").innerHTML	 	= json.v255;	
+	document.querySelector( ".AUX355-value").innerHTML	 	= json.v355;	
+	document.querySelector( ".AUX455-value").innerHTML	 	= json.v455;	
+
+	document.querySelector( ".AUX010-name").innerHTML 		= json.n010 + ": ";
+	document.querySelector( ".AUX100-name").innerHTML	 	= json.n100 + ": ";
+	document.querySelector( ".AUX255-name").innerHTML	 	= json.n255 + ": ";
+	document.querySelector( ".AUX355-name").innerHTML	 	= json.n355 + ": ";
+	document.querySelector( ".AUX455-name").innerHTML	 	= json.n455 + ": ";
+	document.querySelector( ".Speed-name").innerHTML	 	= json.nSpd + ": ";
 
 	unsave( json.vUnsave);
 
-	if ( json.vStyle){  document.documentElement.setAttribute("style", json.vStyle); 	} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
-	
+	if ( json.vStyle){  document.documentElement.setAttribute("style", json.vStyle);} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
 
-	item = document.getElementById( "pollitres-button"); 							// обновляем стиля для кнопки выбора палитр
+	item = document.getElementById( "pollitres-button"); 						// обновляем стиля для кнопки выбора палитр
 	if ( json.vPCur > 1) {			
 		item.style.background = "var(--gr"+json.vPCur+")";
 	} else {
 		item.style.background = "var(--gr0)";
 	}
 
-	var menu = $( "#pollitres" ).selectmenu( "instance" ); 								// ссылка на обьект джиквери-меню
+	var menu = $( "#pollitres" ).selectmenu( "instance" ); 						// ссылка на обьект джиквери-меню
 	if ( document.querySelector( ".ui-menu-item")) {		
 		if ( menu.isOpen == false){ 
 			if ( $('#pollitres option:selected').val() != json.vPCur){			// текущий елемент меню не равен серверному
-				localSelect = false;													// фэлсим, что бы при выполнении селекта оно не выслалось обратно на сервер
-				item = menu.menuItems.eq( json.vPCur-1 ).parent( "li" );			// пытаемся установить выбранный елемент меню с сервера активным на странице
-				menu._select( item.data( "ui-selectmenu-item" ))						// и обновить его в меню
+				localSelect = false;											// фэлсим, что бы при выполнении селекта оно не выслалось обратно на сервер
+				item = menu.menuItems.eq( json.vPCur-1 ).parent( "li" );		// пытаемся установить выбранный елемент меню с сервера активным на странице
+				menu._select( item.data( "ui-selectmenu-item" ))				// и обновить его в меню
 			}					
 		} 
 		var sItem = document.getElementById( "ui-id-" + json.vPDef); 			// устанавливаем класс в списке палитр
@@ -167,16 +183,17 @@ function reseter( data){
 		if ( aItem){ aItem.classList.add( 'opt-active');}
 	}
 
-	wave.forEach((element) => element.classList.remove('active'));						// убираем активную кнопку
+	wave.forEach((element) => element.classList.remove('active'));				// убираем активную кнопку
+	item = document.getElementById( json.vPressed);								// ставим новую активную кнопку
+	if ( item){	item.classList.add('active');}	
 
-	if ( document.getElementById( json.vPressed)){
-		document.getElementById( json.vPressed).classList.add('active');				// ставим новую активную кнопку
-	}	
+	item = document.getElementById( 'icandl');									// кнопка тряски свечки
+	if ( json.vIsCndl == 1 && item){ item.classList.add('active');}
+	else{ 							 item.classList.remove('active'); }
 
-	var onoff = document.getElementById( 551489775);									// кнопка питания он-оффф
-	if ( json.vONOFF == 1 && onoff){ onoff.classList.add('active');}
-	else{ 					onoff.classList.remove('active'); }
-
+	item = document.getElementById( 551489775);									// кнопка питания он-оффф
+	if ( json.vONOFF == 1 && item){ item.classList.add('active');}
+	else{ 					 		item.classList.remove('active'); }
 
 	if ( json.vC1){ var c1 = new iro.Color( json.vC1); colorPicker.colors[0].set(c1);}
 	if ( json.vC2){ var c2 = new iro.Color( json.vC2); colorPicker.colors[1].set(c2);}

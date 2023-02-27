@@ -185,8 +185,8 @@ void aBlinken02(){
 	
 	for ( uint8_t i = 0; i < var01; i++){ leds[i * yo.AUX255] = outLeds[i];	}   // собсна переносим в ЛЕD из OUTLEDS попиксельно
 	
-	FastLED.show();
-	delay( yo.currentSpeed);
+	// FastLED.show();
+	// delay( yo.currentSpeed);
 }
 
 
@@ -204,29 +204,8 @@ void aRainbow()
 {
 	fadeToBlackBy(leds, NUM_LEDS, 4);
 	leds[beatsin8( yo.currentSpeed + 5, 0, NUM_LEDS - 1)] = ledGCfP( baza++, false);
-	FastLED.show();
-	delay( 2);
-}
-
-
-
-
-
-/* 
-		Костерок №01 
-*/
-void aFire01()
-{    
-	leds[random8(NUM_LEDS)] = ledGCfP( random8( 255));  
-	// leds[random8(NUM_LEDS)] = CHSV( yoPal[random8( 255)].h, yo.currentSaturn, random8( 200, 255)); 
-	leds[random8(NUM_LEDS)].nscale8( random8(100));
-
-	if ( random8() < 35)
-	{
-		fadeToBlackBy(leds, NUM_LEDS, 10);	
-	}
-    FastLED.show();
-	delay(yo.currentSpeed * 2);
+	// FastLED.show();
+	// delay( 2);
 }
 
 
@@ -240,10 +219,12 @@ void aFire01()
 	far01 - background fader pieces
 
 */
-void aFire02pre(){
+void aFire02pre()
+{
 	yo.name010 = "Density";
 	yo.name100 = "In/Out ticks x2";
 	yo.name255 = "Cooldown ticks";
+	yo.name355 = "Candle blink value";
 	yo.nameSpeed = "Active phase ticks x30";
 
 	for ( int ind = 0; ind < NUM_LEDS; ind++)
@@ -256,7 +237,7 @@ void aFire02pre(){
 void aFire02() 
 {
 	far00 = 255. / ( yo.currentSpeed * 30);
-	far01 = 255. / ( yo.AUX100 * 2);
+	far01 = 255. / ( yo.AUX100 << 1);
 
     for (int pos = 0; pos < NUM_LEDS; pos++)
 	{	
@@ -270,7 +251,7 @@ void aFire02()
 					LEDS_VALUE[pos] = yo.currentSpeed * 30;					
 					break;}				
 				case 3:{
-					LEDS_VALUE[pos] = yo.AUX100 * 2;
+					LEDS_VALUE[pos] = yo.AUX100 << 1;
 					break;}
 				case 4:{
 					LEDS_VALUE[pos] = yo.AUX255;
@@ -288,13 +269,13 @@ void aFire02()
 			switch (LEDS_STATUS[pos])
 			{
 				case 1:
-					leds[pos] = ledGCfP( 1, false, 255 - far01 * LEDS_VALUE[pos]); 
+					leds[pos] = ledGCfP( 1, false, 255 - far01 * LEDS_VALUE[pos], 0, true); 
 					break;			
 				case 2:
-					leds[pos] = ledGCfP(  255 - far00 * LEDS_VALUE[pos], false);   //, random8( 230, 255));				
+					leds[pos] = ledGCfP(  255 - far00 * LEDS_VALUE[pos], false, 255, 0, true); 
 					break;			
 				case 3:
-					leds[pos] = ledGCfP( 255, false, far01 * LEDS_VALUE[pos]); //LEDS_VALUE[pos] /= 1.2); 
+					leds[pos] = ledGCfP( 255, false, far01 * LEDS_VALUE[pos], 0, true);
 					break;
 				default:
 					break;
@@ -309,11 +290,11 @@ void aFire02()
 		if ( LEDS_STATUS[pos] > 4)
 		{
 			LEDS_STATUS[pos] = 1;
-			LEDS_VALUE[pos]  = yo.AUX100 * 2;
+			LEDS_VALUE[pos]  = yo.AUX100 << 1;
 		}
     }
-    FastLED.show();
-	delay( 1);
+    // FastLED.show();
+	// delay( 1);
 }
 
 
@@ -333,6 +314,7 @@ void aFire02()
 void aNoiseMordor(){ 
 	var02 	   	= 50;
 	color 	   	= 20;
+	baza 		= 40;
 	yo.name010 	= "Background speed";
 	yo.name100 	= "Background scale";
 	yo.name255 	= "Palette scale";
@@ -341,6 +323,7 @@ void aNoiseMordor(){
 void aNoiseFires(){  
 	var02 	   	= 0;
 	color 		= 0;
+	baza		= 70;
 	yo.name010 	= "Background speed";
 	yo.name100 	= "Background scale";
 	yo.name255 	= "Palette scale";
@@ -354,15 +337,15 @@ void aNoise()
 		var00 = inoise8(    i * ( yo.AUX255 >> 1), millis() / yo.currentSpeed);
 		var01 = inoise8(    i * ( yo.AUX100     ), millis() / yo.AUX010);
 		
-		var00 = constrain( var00, 65, 200);
-		var00 = map( var00, 65, 200, color, 255);
+		var00 = constrain( var00, baza, 200);
+		var00 = map( var00, baza, 200, color, 255);
 
-		var01 = constrain( var01, 65, 200);
-		var01 = map( var01, 65, 200, var02, 255);
+		var01 = constrain( var01, 60, 200);
+		var01 = map( var01, 60, 200, var02, 255);
 
-    	leds[i] = ledGCfP( var00, false, var01);      	
+    	leds[i] = ledGCfP( var00, false, var01, 0, true);      	
     }
-	FastLED.show();
+	// FastLED.show();
 }
 
 
@@ -379,7 +362,7 @@ void aBeatSINAgain()
 	{
       	leds[beatsin8( i, 0, NUM_LEDS - 1)] |= ledGCfP( baza+=16, true, 255, 0);  // ЖДОБАВИТЬСАТУРАЦИИИИИИИИИИИИИИИИИИИИИИИИИИИИ
     }
-	FastLED.show();
+	// FastLED.show();
 	delay( yo.currentSpeed * 2);
 }
 
@@ -410,7 +393,7 @@ void aWavesBeat()
     }
 	leds[beatsin8( 12, 0, NUM_LEDS - 1)] |=  ledGCfP( myPal[6].palette, baza, false);
      
-    FastLED.show();        
+    // FastLED.show();        
   	delay( yo.currentSpeed * 2);
 }
 
@@ -429,7 +412,7 @@ void aBeatSIN8()
 		leds[beatsin8( 10 + i, 0, NUM_LEDS - 1, 0, color)] = ledGCfP( baza + color);
 	}	
 
-    FastLED.show();
+    // FastLED.show();
 	delay( yo.currentSpeed * 2);
 }
 
@@ -469,7 +452,7 @@ void aGradient()
 		// leds[i] = blend( yo.c1, ledGCfP( var01), val); // val
 	}
 
-	FastLED.show();
+	// FastLED.show();
 	delay( yo.currentSpeed );
 }
 
@@ -583,7 +566,7 @@ void aFire03() {
     leds[i] = CRGB( (int)rz[i], (int)gz[i], (int)bz[i]);
 	// strip.setPixelColor(i, strip.Color((int)rz[i], (int)gz[i], (int)bz[i], 255) );
   }
-  FastLED.show();
+//   FastLED.show();
 	delay( yo.currentSpeed * 2);
 //   delay(10);    // run our loop at approx 100Hz; so new LED levels reach every ~100 ms (~10Hz)
 }
@@ -621,7 +604,7 @@ void aAndroid() {
 	}
 	var02 = a;
 	
-	FastLED.show();
+	// FastLED.show();
 	delay( yo.currentSpeed * 2);
 }
 
@@ -653,8 +636,8 @@ void aCreeping()
 
         leds[i] = CHSV( color, saturn, noise);
 	}	
-  	FastLED.show();
-  	delay(yo.currentSpeed);
+  	// FastLED.show();
+  	// delay(yo.currentSpeed);
 }
 
 
@@ -703,8 +686,29 @@ void aFire2012(){
       }
       leds[pixelnumber] = color;
     }
-	FastLED.show(); // display this frame
+	// FastLED.show(); // display this frame
 	delay( yo.currentSpeed * 2);
+}
+
+
+
+
+
+/* 
+		Костерок №01 
+*/
+void aFire01()
+{    
+	leds[random8(NUM_LEDS)] = ledGCfP( random8( 255));  
+	// leds[random8(NUM_LEDS)] = CHSV( yoPal[random8( 255)].h, yo.currentSaturn, random8( 200, 255)); 
+	leds[random8(NUM_LEDS)].nscale8( random8(100));
+
+	if ( random8() < 35)
+	{
+		fadeToBlackBy(leds, NUM_LEDS, 10);	
+	}
+    // FastLED.show();
+	delay(yo.currentSpeed * 2);
 }
 
 

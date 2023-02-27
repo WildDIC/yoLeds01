@@ -11,7 +11,8 @@ uint8_t LEDS_VALUE[NUM_LEDS];     // Массив для хранения ХУЕ
 uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
 /* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
-void ledsStartUP(){
+void ledsStartUP()
+{
 	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	// ledFadeOUT();
@@ -21,46 +22,52 @@ void ledsStartUP(){
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param blenType размытие переходов между цветами ( 0-1) NOBLEND / LINEARBLEND */
-CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = NOBLEND){
-	if ( isMapped == true){ colorID *= REVERS_NUM_LEDS; }	
-	// if ( isMapped){ colorID = ( colorID * 255) / ( NUM_LEDS -1); }	
-	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, blenType); 
-	if ( addToColor || yo.antiSaturn){ color.addToRGB( addToColor + yo.antiSaturn);}
+@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
+CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false)
+{
+	if ( isMapped == true)				{ colorID *= REVERS_NUM_LEDS; }	
+
+	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, NOBLEND); 
+
+	if ( addToColor || yo.antiSaturn)	{ color.addToRGB( addToColor + yo.antiSaturn);}
+	if ( candle && yo.iscandle) 		{ color.nscale8( yo.candle); }
 	return color;
 }
 
-/* Забираем цвет colorID из текущей targetPalette палитры.
+/* Забираем цвет colorID из текущей activePollitre палитры.
 @param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true) или брать как есть (false) 
+@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param blenType размытие переходов между цветами ( 0-1) */
-CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, TBlendType blenType = NOBLEND){
-	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, blenType);
+@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
+CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false)
+{
+	CRGB color = ledGCfP( activePollitre, colorID, isMapped, brightness, addToColor, candle);
 	return color;
 }
 
-void powerON(){  
-	// FastLED.setMaxPowerInMilliWatts(MAX_POWER); 	
+void powerON()
+{  
 	FastLED.setBrightness( yo.currentBrightness);
 	FastLED.delay( 5);
 	FastLED.show(); 
 }
 
-void powerOFF(){ 
-	// FastLED.setMaxPowerInMilliWatts(0); 			
+void powerOFF()
+{ 
 	FastLED.setBrightness( 0);
 	FastLED.delay( 5);
 	FastLED.show(); 
 }
 
+
 /* Включаем / выключаем питание (!!!) ленты, 
 тормозим анимацию и переходим ждущий режим (delay)  */
-void powerONOFF(){
+void powerONOFF()
+{
 	if ( yo.ONOFF){ powerOFF(); } 
 	else {			powerON(); 	}
 
@@ -68,13 +75,13 @@ void powerONOFF(){
 	Serial.printf( "State: %d\n", yo.ONOFF);  	
 }
 
+
 /* Сброс ленты в черное и обнуление LEDS_массивов диодов */
-void ledOFF(){ 
+void ledOFF()
+{ 
 	for ( int pos = 0; pos < NUM_LEDS; pos++){
 		LEDS_HUE[pos] = LEDS_FEDOR[pos] = 0;
 	}
-	// yo.lastPressed = resValue;
-
 	// for( uint8_t i = 0; i < 50; i++){
 	// 	fadeToBlackBy( leds, NUM_LEDS, 2);
 	// 	FastLED.show();
@@ -84,12 +91,14 @@ void ledOFF(){
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	FastLED.delay( 5);
 	FastLED.show();
-	// delay( 150);
 }
 
+
 /* Включаем беленькую */
-void ledUPWhite(){	
-  	if ( yo.ONOFF){
+void ledUPWhite()
+{	
+  	if ( yo.ONOFF)
+	{
 	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
 		FastLED.delay( 5);
 		FastLED.show();
@@ -99,10 +108,14 @@ void ledUPWhite(){
 	#endif
 }
 
+
 /* Включаем тестовое, сейчас = палитра */
-void ledUP(){  
-	if ( yo.ONOFF){
-		for ( int pos = 0; pos < NUM_LEDS; pos++){ 
+void ledUP()
+{  
+	if ( yo.ONOFF)
+	{
+		for ( int pos = 0; pos < NUM_LEDS; pos++)
+		{ 
 			// leds[pos] = pollitrR[pos*255/NUM_LEDS]; 
 			// leds[pos] = ColorFromPalette( targetPalette, colorID, 255, LINEARBLEND);
 			// leds[pos] = ledGCfP( pos);
@@ -118,12 +131,16 @@ void ledUP(){
 	}
 }
 
+
 /* Моргаем кратенько черненьким, при достижении края параметров */
 void ledBlink(){ powerOFF(); delay(3); powerON(); }
 
+
 /* Затухаем лентой вниз до нулевого состояния 10-го диода */
-void ledFadeOUT(){
-	for( int i = 0; i < 20; i++){
+void ledFadeOUT()
+{
+	for( int i = 0; i < 20; i++)
+	{
 		fadeToBlackBy(leds, NUM_LEDS, 2);
 		FastLED.show();
 		Serial.printf( "FadeOUT: (%d.%d.%d)", leds[10].r,  leds[10].g, leds[10].b );
@@ -131,25 +148,33 @@ void ledFadeOUT(){
 	}
 }
 
+
 void setSpeed(  int value){ yo.currentSpeed = value; if ( yo.loadOutside){ mWaves[yo.lastPressed].speed  = value;}}
 void setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux010 = value;}}
 void setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux100 = value;}}
 void setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux255 = value;}}
+void setAUX355( int value){ yo.AUX355 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux355 = value;}}
+void setAUX455( int value){ yo.AUX455 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux455 = value;}}
+
 
 /*@param force не пишем, так как закинули цвет в мапу с веб-сервера уже*/
-void setColors(	CRGB c1, CRGB c2, CRGB c3){
+void setColors(	CRGB c1, CRGB c2, CRGB c3)
+{
 	yo.c1 = c1;
 	yo.c2 = c2;
 	yo.c3 = c3;
 
-	if ( yo.loadOutside){
+	if ( yo.loadOutside)
+	{
 		mWaves[yo.lastPressed].c1 = c1;
 		mWaves[yo.lastPressed].c2 = c2;
 		mWaves[yo.lastPressed].c3 = c3;
 	}
 }
 
-void setSaturation( int value){ 
+
+void setSaturation( int value)
+{ 
 	if ( value < 0 ){ 
 		value = 100;
 	}
@@ -163,7 +188,9 @@ void setSaturation( int value){
 	if ( yo.loadOutside){ mWaves[yo.lastPressed].saturn = value; }	
 }
 
-void setTemperature( int value){ 
+
+void setTemperature( int value)
+{ 
 	if ( value < 0 ){ 
 		value = TEMP_IND_MAX;
 	}
@@ -181,7 +208,8 @@ void setTemperature( int value){
 }
 
 
-void setBrightness( int value){ 
+void setBrightness( int value)
+{ 
 	if ( value < 5 ){ 
 		value = 5;
 	}
@@ -193,29 +221,38 @@ void setBrightness( int value){
   	FastLED.show();
 }
 
+
 /* Меняем общуу срость анимации (0-...)
 * @param delta +/- yo.currentSpeed.*/
-void changeSpeed( int delta){
+void changeSpeed( int delta)
+{
 	yo.currentSpeed += delta;
-	if ( yo.currentSpeed > 50){ 
+	if ( yo.currentSpeed > 50)
+	{ 
 		yo.currentSpeed = 50; 
 		ledBlink();
-	} else if ( yo.currentSpeed < 2){ 
+	} else if ( yo.currentSpeed < 2)
+	{ 
 		yo.currentSpeed = 2;
 		ledBlink();
 	}
 	Serial.printf( "Speed: %d\n", yo.currentSpeed);
 }
 
+
 /* Меняем общуу температуру цвета ленты (0-255)
 * @param delta +/- yo.currentTemp.*/
-void changeTemperature( int delta){
+void changeTemperature( int delta)
+{
 	yo.currentTemp += delta;
-	if ( yo.currentTemp > TEMP_IND_MAX){ 
+	if ( yo.currentTemp > TEMP_IND_MAX)
+	{ 
 		yo.currentTemp = TEMP_IND_MAX; 
 		temperList[yo.currentTemp] = 0xFFFFFF;
 		ledBlink();
-	} else if ( yo.currentTemp < 0){ 
+	} 
+	else if ( yo.currentTemp < 0)
+	{ 
 		yo.currentTemp = 0; 
 		ledBlink();
 	}  
@@ -225,14 +262,19 @@ void changeTemperature( int delta){
 	Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
 }
 
+
 /* Меняем общуу яркость ленты (0-255)
 * @param delta +/- yo.currentBrightness.*/
-void changeBrightness( int delta){  
+void changeBrightness( int delta)
+{  
   	yo.currentBrightness = FastLED.getBrightness() + delta;
-  	if ( yo.currentBrightness > 255){
+  	if ( yo.currentBrightness > 255)
+	{
     	yo.currentBrightness = 255;
 		ledBlink();
-  	} else if ( yo.currentBrightness <= 5){
+  	}
+	else if ( yo.currentBrightness <= 5)
+	{
 	    yo.currentBrightness = 5;
 		ledBlink();
   	}  
@@ -241,14 +283,19 @@ void changeBrightness( int delta){
   	FastLED.show();
 }
 
+
 /* Меняем общуу сатурацию ленты (0-255)
 * @param delta +/- yo.currentSaturn.*/
-void changeSaturation( int delta){
+void changeSaturation( int delta)
+{
 	yo.currentSaturn += delta;	
-	if ( yo.currentSaturn > MAX_SATURATIOIN){ 
+	if ( yo.currentSaturn > MAX_SATURATIOIN)
+	{ 
 		yo.currentSaturn = MAX_SATURATIOIN; 
 		ledBlink();
-	} else if ( yo.currentSaturn < 0){ 
+	} 
+	else if ( yo.currentSaturn < 0)
+	{ 
 		yo.currentSaturn = 0;
 		ledBlink();
 	}
@@ -256,8 +303,10 @@ void changeSaturation( int delta){
 	Serial.printf( "Saturation: %d ( anti: %d)\n", yo.currentSaturn, yo.antiSaturn);
 }
 
+
 /* Сброс параметров ленты в дефолтное состояние */
-void ledReset(){
+void ledReset()
+{
 	setBrightness(128); 
 	// changeSpeed( -90); 
 	setSpeed( 5);
@@ -265,7 +314,9 @@ void ledReset(){
 	changeSaturation( 100);
 }
 
-CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend) {
+
+CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend) 
+{
   if( blend == 0)  return c1;
   if(blend == 255) return c2;
 
