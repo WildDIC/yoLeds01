@@ -6,8 +6,14 @@ $( function() {
 	// $( "#pollitres" ).selectmenu( "instance" )._refreshMenu();
 	$( "#pollitres" ).selectmenu( "open");
 	$( "#pollitres" ).selectmenu( "close");
-} );
 
+	document.querySelectorAll(".ui-menu-item-wrapper").forEach( function( item, i) {
+		if ( i >= 8 ){
+			item.style.setProperty("--bcolor", "var( --gr" + ( i + 1) + ")")	// вместо CSS_HOLDER из webServer.h
+			// item.style.background = "var( --gr" + i + ")";
+		}
+	});
+} );
 
 $( "#pollitres" ).selectmenu().selectmenu( "menuWidget" ).addClass( "overflow" ); 
 

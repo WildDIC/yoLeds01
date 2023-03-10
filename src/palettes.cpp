@@ -28,6 +28,7 @@ void paletteStartUP()
 		byte tcp[72]; //support gradient palettes with up to 18 entries
 		memcpy_P( tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
 		activePollitre.loadDynamicGradientPalette(tcp);
+		
 		myPal[i+ind].palette = activePollitre;
 		
 		if ( i > 11 - 1)
@@ -54,9 +55,11 @@ String getHEX( CRGB color){
 
 @param color CRGB текущего цвета, возвращаем его, если не требуется обновления.
 @return CRGB из сгенерированного CHSV цвета, потому что, сделать нормальный цвет можно только в HSV...*/
-CRGB getCol( CRGB color){
-	if ( yo.againButton || color.r == 0){
-		return CHSV( random8( 1, 255), 255, random8( 200, 255));
+CRGB getCol( CRGB color)
+{
+	if ( yo.againButton || color.r == 0)
+	{
+		return CHSV( random8( 1, 256), 255, random8( 200, 255));
 	}
 	return color;	
 }

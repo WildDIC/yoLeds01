@@ -82,6 +82,14 @@ void ledReset();
 
 CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend);
 
+uint8_t ledBeat8( uint8_t speed = 16, uint8_t scale = 8);
+uint8_t ledBeat(  uint8_t scale = 4);
+
+uint8_t ledCircle(   accum88 beats_per_minute, uint8_t timeShift = 0, uint32_t timeScale = 8);
+uint8_t ledCircle8(  accum88 beats_per_minute, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
+uint8_t ledCircle88( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
+
+
 #endif
 
 /*

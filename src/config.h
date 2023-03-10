@@ -50,6 +50,7 @@ struct config{
 	bool isNeedSaveEEPROM = false;
 	bool againButton = 1;				// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
 	clock_t now = 0;					// текущее время в clock()
+	uint8_t beat = 0;
 	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
 	int lastPressed;					// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер

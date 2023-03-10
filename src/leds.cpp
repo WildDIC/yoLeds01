@@ -326,3 +326,81 @@ CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend)
 
   return CRGB(r3, g3, b3);
 }
+
+
+/*
+returns 0-255 for a time period with x8'scale' and x'speed':
+speed:	
+	1 = 65.363ms	11 = 5.936ms
+	2 = 32.642ms	12 = 5.447ms
+	3 = 21.762ms	13 = 5.026ms
+	4 = 16.324ms	14 = 4.665ms
+	5 = 13.060ms	15 = 4.356ms
+	6 = 10.882ms	16 = 4.082ms
+	7 = 9.327ms		17 = 3.845ms
+	8 = 8.163ms		18 = 3.631ms
+	9 = 7.257ms		19 = 3.440ms
+	10 = 6.530ms	20 = 3.267ms
+scale:	
+	..., 7 = x0.5, 8 = x1, 9 = x2, ...
+*/
+uint8_t ledBeat8( uint8_t speed = 16, uint8_t scale = 8)
+{
+	return ( millis() * speed) >> scale;
+}
+
+
+/*
+returns 0-255 for a time period with the given 'scale':
+scale:
+	8 = 65.363ms
+	7 = 32.663ms
+	6 = 16.350ms
+	5 = 8.178ms
+	4 = 4.080ms
+	3 = 2.048ms
+	2 = 1.024ms
+	1 = 512/1.024
+*/
+uint8_t ledBeat( uint8_t scale = 4)
+{
+	return millis() >> scale;
+}
+
+/*
+	In/Out circle:
+		0-128-255 = 0-255-0
+*/
+uint8_t ledCir8(uint8_t in)
+{
+    if( in & 0x80) 
+	{
+        in = 255 - in;
+    }
+    uint8_t out = in << 1;
+    return out;
+}
+
+
+uint8_t ledCircle( accum88 beats_per_minute, uint8_t timeShift = 0, uint32_t timeScale = 8)
+{
+    uint8_t beat 	= ledBeat8( beats_per_minute, timeScale);
+    uint8_t result 	= ledCir8( beat + timeShift);
+    return result;
+}
+
+
+uint8_t ledCircle8( accum88 beats_per_minute, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8)
+{
+    uint8_t beat  	= ledCircle( beats_per_minute, timeShift, timeScale);
+    uint8_t result 	= scale8( beat, highest);
+    return result;
+}
+
+
+uint8_t ledCircle88( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8)
+{
+	uint8_t beat 	=  ledCircle8( beats_per_minute, ( highest - lowest), timeShift, timeScale);
+    uint8_t result 	= lowest + beat;
+    return result;
+}

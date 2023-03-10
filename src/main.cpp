@@ -46,12 +46,12 @@ void setup() {
 	byte ind = 0;
 	/* struct irdaItems{     code;	  name; 			typeWeb	indForWeb; leadOFF; isEffect; 	pt2Funca 		pt2static		pt2prewave 		pt2setter			min		max		pollDefault	bright	temp	speed	saturn	aux010	aux100	aux255 */
 	mWaves[IR_TV_ON] 		=  { 0, "Power ON/OFF",			1, 	++ind, 		false, 	false,		NULL, 			&powerONOFF, 	NULL, 			NULL};
-	mWaves[IR_PLAY] 		=  { 0, "White Color", 			1, 	++ind,  	true, 	true, 		NULL, 			&ledUPWhite, 	NULL, 			NULL, 				0, 		0,			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_FASTFF] 		=  { 0, "Pallette test", 		1, 	++ind,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_2] 		=  { 0, "Костерок v2.0",		1, 	++ind,  	true, 	true, 		&aFire02, 		NULL, 			aFire02pre,		NULL,				0, 		0, 			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
-	mWaves[IR_NUM_4] 		=  { 0, "8 waves", 				1, 	++ind,  	true, 	true, 		&aBeatSINAgain,	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_5] 		=  { 0, "8 waves сново", 		1, 	++ind,   	true, 	true, 		&aWavesBeat, 	NULL, 			aWavesBeatPre, 	NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
-	mWaves[IR_NUM_6] 		=  { 0, "4 beatSins waves",		1, 	++ind,  	true, 	true, 		&aBeatSIN8, 	NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_PLAY] 		=  { 0, "White Power Color", 	1, 	++ind,  	true, 	true, 		NULL, 			&ledUPWhite, 	NULL, 			NULL, 				0, 		0,			1, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_FASTFF] 		=  { 0, "Pallette static test",	1, 	++ind,  	true, 	true, 		NULL, 			&ledUP, 		NULL, 			NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_2] 		=  { 0, "Костерок v2.03",		1, 	++ind,  	true, 	true, 		&aFire02, 		NULL, 			aFire02pre,		NULL,				0, 		0, 			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};	
+	mWaves[IR_NUM_4] 		=  { 0, "VIII / IIX beatSIN waves",1,++ind,  	true, 	true, 		&aBeatSINAgain,	NULL, 			NULL, 			NULL, 				0, 		0,			4, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_5] 		=  { 0, "#.VI.WAVES.I.BEATSIN.#",1,	++ind,   	true, 	true, 		&aWavesBeat, 	NULL, 			aWavesBeatPre, 	NULL,				0, 		0, 			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
+	mWaves[IR_NUM_6] 		=  { 0, "4 beatSINs waves",		1, 	++ind,  	true, 	true, 		&aBeatSIN8, 	NULL, 			NULL, 			NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[10000002] 		=  { 0, "inoise8 palette",		1, 	++ind,  	true, 	true, 		&aNoise, 		NULL, 			aNoiseFires,	NULL, 				0, 		0,			15,			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[10000000] 		=  { 0, "inoise8 hue",		 	1, 	++ind,  	true, 	true, 		&aCreeping, 	NULL, 			aCreepingPre,	NULL, 				0, 		0,			9, 			125, 	50, 	10, 	100, 	5, 		50, 	125};
 	mWaves[10000011] 		=  { 0, "Огни Мордора ©",		1, 	++ind,  	true, 	true, 		&aNoise,	 	NULL, 			aNoiseMordor,	NULL, 				0, 		0,			21,			125, 	50, 	10, 	100, 	5, 		50, 	125};
@@ -113,6 +113,7 @@ void setup() {
 void loop() 
 {
 	yo.now = clock();
+	yo.beat = yo.now >> 8; // 255 = 60sec
 
 	if ( yo.now > startTime)
 	{
@@ -127,11 +128,6 @@ void loop()
 			yo.candle = inoise8( millis() >> 3, millis());
 			yo.candle = 255 - qsub8( yo.candle, yo.AUX355);
 		}
-		// else
-		// {
-		// 	yo.candle = 255;
-		// }
-		
 
 		pt2Func();
 

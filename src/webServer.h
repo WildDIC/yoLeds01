@@ -14,7 +14,6 @@ AsyncEventSource events("/events");
 
 byte NUM_RANGES = 1;
 byte NUM_BUTTONS = 1;			
-String CSS_HOLDER = "\n";		// css градиенты для select палитров
 String RANGE_HOLDER = "\n";		// полоски-двигалки
 String ROOT_HOLDER = ":root{\n" ;
 
@@ -117,8 +116,7 @@ void collectData()
 	for ( int i = 0; i < 58 + 11; i++){   // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ПАЛЛЕТЕ++ ( 23)
 
 		memcpy_P(tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);		
-
-		CSS_HOLDER +=  "\t\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
+		// CSS_HOLDER теперь в css -=> "div[id^="ui-id-"]" and js -=> var items = document.querySelectorAll(".ui-menu-item-wrapper");
 		ROOT_HOLDER += "\t\t\t--gr"+ String( i + yo.lastCustPal) +": linear-gradient( 90deg, ";
 
 		for ( byte ind = 0; ind < sizeof( tcp); ind += 4)
@@ -143,7 +141,6 @@ void collectData()
 		}
 		RANGE_HOLDER += "\t\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
 		RANGE_HOLDER += "\t\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
-		// if ( i == NUM_RANGES - 1){ RANGE_HOLDER += "\t\t</div>\n\n";  // close 'raiser' div	}
 	}	
 }
 
@@ -151,11 +148,8 @@ void collectData()
 // Replaces placeholder with button section in your web page
 String processor(const String& var)
 {
-	//Serial.println(var);
-	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER + "\n" + CSS_HOLDER;}
+	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER ;}
 	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
-
-	// SELECT replacer
 	if(var == "SELECTHOLDER")
 	{
 		String buttons = "";
@@ -172,7 +166,6 @@ String processor(const String& var)
 		buttons += "\t\t</optgroup>\n\t</select></div>\n\n";
 		return buttons;
 	}
-
 
 	// BUTTONRS replacer
 	if(var == "BUTTONPLACEHOLDER")
@@ -195,8 +188,6 @@ String processor(const String& var)
 void webServerUpdate()
 {
 	String out 	 = webServerMakeJSON();
-	// Serial.println( out);
-
 	char * chOut = new char [out.length()+1];
 	strcpy ( chOut, out.c_str());
 	events.send( chOut, "update", millis());
@@ -307,6 +298,9 @@ void webServerStartUP()
 	server.begin();
 }
 
+
+		// CSS_HOLDER +=  "\t\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
+		// CSS_HOLDER +=  "\t\t#ui-id-"+ String( i + yo.lastCustPal) +"::before{ content: ''; width: 330px; height: 5px; position: absolute; left: 10px; top: 20px; border-radius: 3px; background: var( --gr"+ String( i + yo.lastCustPal)+")}\n";
 
 /*
 // request->send(200, "application/json", webServerMakeJSON());
