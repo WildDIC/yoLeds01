@@ -2,25 +2,13 @@
 #define __WAVE_CLASS_H
 
 #include "../config.h"
+// #include "../waves.h"
 #include <FastLED.h>
-#include "leds.h"
+// #include "leds.h"
+
+// extern waveStorage w;
 
 // typedef void (*func_ptr)(int);
-
-uint8_t base00;     // изменение оттенка LED
-// int status;
-// int color;
-// int count;
-// uint8_t var00, var01, var02;
-// float far00, far01;
-
-// uint8_t baza = 0;     // изменение оттенка LED
-// int status = 0;
-// int color = 0;
-// int count = 0;
-uint8_t nvar00 = 0, nvar01 = 0, nvar02 = 0;
-// float far00 = 0, far01 = 0;
-
 
 class waveClass{
 	public: // спецификатор доступа public

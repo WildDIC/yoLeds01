@@ -2,129 +2,74 @@
 #define __LEDS_H
 
 extern CRGB leds[NUM_LEDS];            // Массив ленты
-extern uint8_t LEDS_HUE[NUM_LEDS];     // Массив для хранения ХУЕв цветов диодов (0-255)   
-extern uint8_t LEDS_FEDOR[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
-extern uint8_t LEDS_STATUS[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
-extern uint8_t LEDS_VALUE[NUM_LEDS];   // Массив для хранения Яркости диодов (0-255)
 
+class Ledas{
+	public: // спецификатор доступа public
+		// waveClass( int i, String n, bool s = false){	// конструктор класса
+		// 	id = i;		
+		// 	name = n;
+		// 	statik = s;
+		bool changed = false;   		// something chaged from web or irda
+		
+		/*Возвращает true ( bool Ledas.changed), 
+		если в настройках с сайта или ИРы что-то поменялось.
+		Сбрасывается на false, после первого обращения к себе.*/
+		bool isChanged(){
+			bool result = this->changed;
+			this->changed = false;
+			return result;
+		}
 
-/* Настраиваем и инициализируем FastLED ленту, кастомную палитру и уходим в черное...*/
-void ledsStartUP();
+		CRGB hsv2rgb( CHSV hsv);
+		CHSV rgb2hsv( CRGB rgb);
 
-/* Забираем цвет colorID из указанной colorPalette палитры.
-@param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
-@param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
-@param brightness  уйти в темненькое ( 0-255)
-@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CRGB ledGCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		void startUP();
+		void powerOFF();
+		static void powerON();
+		static void powerONOFF();
 
-/* Забираем цвет colorID из текущей activePollitre палитры.
-@param colorID номер цвета в паллитре ( 0-255)
-@param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
-@param brightness  уйти в темненькое ( 0-255)
-@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CRGB ledGCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		static void reset();
+		static void UPWhite();
+		static void UP();
+		void OFF();
+		void blink();
+		void fadeOUT();
 
-void powerON();
-void powerOFF();
+		static void setSpeed( 	int value);
+		static void setAUX010(	int value);
+		static void setAUX100( 	int value);
+		static void setAUX255( 	int value);
+		static void setAUX355( 	int value);
+		static void setAUX455( 	int value);
+		static void setSaturation( int value);
+		static void setTemperature(int value);
+		static void setBrightness( int value);
+		static void setColors(	CRGB c1, CRGB c2, CRGB c3);
 
-/* Включаем / выключаем питание (!!!) ленты, 
-тормозим анимацию и переходим ждущий режим (delay)  */
-void powerONOFF();
+		static void changeSpeed( int delta);
+		static void changeTemperature( int delta);
+		static void changeBrightness( int delta);
+		static void changeSaturation( int delta);
 
-/* Сброс ленты в черное и обнуление LEDS_массивов диодов */
-void ledOFF();
+		CRGB GCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		CRGB GCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		
+		CHSV GCfPH( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		CHSV GCfPH( CHSVPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 
-/* Включаем беленькую */
-void ledUPWhite();
+		CRGB blend( CRGB c1, CRGB c2, uint16_t blend);
 
-/* Включаем тестовое, сейчас = палитра */
-void ledUP();
+		uint8_t beat(  uint8_t scale = 4);
+		uint8_t beat8( uint8_t speed, uint8_t scale = 8);
 
-/* Моргаем кратенько черненьким, при достижении края параметров */
-void ledBlink();
+		uint8_t circle8(uint8_t in);
+		uint8_t circle( uint8_t ind, uint8_t total, uint8_t ts = 0);
 
-/* Затухаем лентой вниз до нулевого состояния 10-го диода */
-void ledFadeOUT();
+		uint8_t beatCircle(   accum88 beats_per_minute, uint8_t timeShift = 0, uint32_t timeScale = 8);
+		uint8_t beatCircle8(  accum88 beats_per_minute, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
+		uint8_t beatCircle88( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
+};
 
-void setSpeed( 		int value);
-void setAUX010(	 	int value);
-void setAUX100( 	int value);
-void setAUX255( 	int value);
-void setAUX355( 	int value);
-void setAUX455( 	int value);
-void setSaturation( int value);
-void setTemperature(int value);
-void setBrightness( int value);
-void setColors(	CRGB c1, CRGB c2, CRGB c3);
-
-/* Меняем общуу срость анимации (0-...)
-* @param delta +/- yo.currentSpeed.*/
-void changeSpeed( int delta);
-
-/* Меняем общуу температуру цвета ленты (0-255)
-* @param delta +/- yo.currentTemp.*/
-void changeTemperature( int delta);
-
-/* Меняем общуу яркость ленты (0-255)
-* @param delta +/- yo.currentBrightness.*/
-void changeBrightness( int delta);
-
-/* Меняем общуу сатурацию ленты (0-255)
-* @param delta +/- yo.currentSaturn.*/
-void changeSaturation( int delta);
-
-/* Сброс параметров ленты в дефолтное состояние */
-void ledReset();
-
-CRGB ledBlend( CRGB c1, CRGB c2, uint16_t blend);
-
-uint8_t ledBeat8( uint8_t speed = 16, uint8_t scale = 8);
-uint8_t ledBeat(  uint8_t scale = 4);
-
-uint8_t ledCircle(   accum88 beats_per_minute, uint8_t timeShift = 0, uint32_t timeScale = 8);
-uint8_t ledCircle8(  accum88 beats_per_minute, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
-uint8_t ledCircle88( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
-
+extern Ledas led;
 
 #endif
-
-/*
- * fade out function, higher rate = quicker fade
-
-void WS2812FX::fade_out(uint8_t rate) {
-  rate = (255-rate) >> 1;
-  float mappedRate = float(rate) +1.1;
-
-  uint32_t color = SEGCOLOR(1); // target color
-  int w2 = W(color);
-  int r2 = R(color);
-  int g2 = G(color);
-  int b2 = B(color);
-
-  for(uint16_t i = 0; i < SEGLEN; i++) {
-    color = getPixelColor(i);
-    int w1 = W(color);
-    int r1 = R(color);
-    int g1 = G(color);
-    int b1 = B(color);
-
-    int wdelta = (w2 - w1) / mappedRate;
-    int rdelta = (r2 - r1) / mappedRate;
-    int gdelta = (g2 - g1) / mappedRate;
-    int bdelta = (b2 - b1) / mappedRate;
-
-    // if fade isn't complete, make sure delta is at least 1 (fixes rounding issues)
-    wdelta += (w2 == w1) ? 0 : (w2 > w1) ? 1 : -1;
-    rdelta += (r2 == r1) ? 0 : (r2 > r1) ? 1 : -1;
-    gdelta += (g2 == g1) ? 0 : (g2 > g1) ? 1 : -1;
-    bdelta += (b2 == b1) ? 0 : (b2 > b1) ? 1 : -1;
-
-    setPixelColor(i, r1 + rdelta, g1 + gdelta, b1 + bdelta, w1 + wdelta);
-  }
-}
-
-*/

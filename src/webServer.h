@@ -3,7 +3,7 @@
 #include "SPIFFS.h"
 #include "config.h"
 
-extern void powerONOFF();
+// extern void powerONOFF();
 
 // need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
 //C:\Users\vanilka\Documents\PlatformIO\Projects\-=>YOUR_PROJECT_NAME<=-\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
@@ -219,7 +219,7 @@ void webServerStartUP()
 	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
 	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; 			request->send(200, "text/plain", "Saved.");});
 	server.on( "/candle",   HTTP_GET, [](AsyncWebServerRequest *request){ yo.iscandle = !yo.iscandle; 		request->send(200, "text/plain", "Candle.");});
-	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
+	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ led.powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
 
 	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) 
 	{
@@ -274,7 +274,7 @@ void webServerStartUP()
 				pch = strtok (NULL, "-");	
 			}
 
-			setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]));
+			led.setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]));
 			paletteSetActive( yo.pollCurrent, false);
 			webServerUpdate();
 		}

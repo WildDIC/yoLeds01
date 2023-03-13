@@ -1,12 +1,36 @@
 #include "config.h"
 #include "palettes.h"
+#include "leds.h"
 
 extern void requestSave();
 
 CRGBPalette16 activePollitre;
-// CHSVPalette16 activePollitreHSV;
+CHSVPalette16 activePollitreHSV;
 pollitraZ myPal[NUM_POLLITR];
 CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
+
+
+void rgb2hsvpalette( uint8_t ind) //, CRGBPalette16 rgbpalette = activePollitre)
+// void rgb2hsvpalette( uint8_t ind, CRGBPalette16 *rgbpalette)
+{
+	// CRGBPalette16 palette = *rgbpalette;
+	for (uint8_t i = 0; i < 16; i++)
+		{				
+			// myPal[ind].paletteHSV[i] = rgb2hsv_approximate( *rgbpalette[i]);
+			myPal[ind].paletteHSV[i] = led.rgb2hsv( activePollitre[i]);
+
+			// CRGB c = led.hsv2rgb( myPal[ind].paletteHSV[i]);
+			// CRGB f;
+			// hsv2rgb_rainbow( myPal[ind].paletteHSV[i], f);
+
+			// Serial.printf( "%d. %d. o[%d, %d, %d] m[%d, %d, %d] f[%d, %d, %d ] h[%d, %d, %d]\n", 
+			// 	ind, i, 
+			// 	activePollitre[i].r, activePollitre[i].g, activePollitre[i].b, 
+			// 	c.r, c.g, c.b, 
+			// 	f.r, f.g, f.b, 
+			// 	myPal[ind].paletteHSV[i].h, myPal[ind].paletteHSV[i].s, myPal[ind].paletteHSV[i].v);
+		}
+}
 
 /**/
 void paletteStartUP()
@@ -39,6 +63,9 @@ void paletteStartUP()
 		{
 			myPal[i+ind].name = String( i + 1) + ". " + palette_names[i];
 		}		
+
+		rgb2hsvpalette( i+ind);		
+		// rgb2hsvpalette( i+ind, &activePollitre);		
 	}	
 }
 
@@ -59,7 +86,7 @@ CRGB getCol( CRGB color)
 {
 	if ( yo.againButton || color.r == 0)
 	{
-		return CHSV( random8( 1, 256), 255, random8( 200, 255));
+		return CHSV( random8(), 255, random8( 200, 255));
 	}
 	return color;	
 }
@@ -106,6 +133,14 @@ void paletteSetActive( byte pollitraID, bool force=true)
 			activePollitre = myPal[pollitraID].palette;		
 			break;
 	}
+
+	if ( pollitraID <= 8)
+	{
+		rgb2hsvpalette( pollitraID);
+		// rgb2hsvpalette( pollitraID, &activePollitre);
+	}
+
+	activePollitreHSV = myPal[pollitraID].paletteHSV;
 
 	mWaves[yo.lastPressed].pollCurrent = pollitraID;
 	yo.pollCurrent = pollitraID;

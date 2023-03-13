@@ -104,11 +104,11 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 		mbIter = mWaves.find( resValue);
 		if ( mbIter != mWaves.end())
 		{
+			led.changed = true;
 			yoBug( "-=>> Наш выбор: ");			
 			yoBugN( mbIter->second.name);			
 
 			if ( mbIter->second.pt2setter){ 									// сэттер или чэнджер пришел
-				// yo.loadOutside = true;
 
 				if ( mbIter->second.typeWeb == 0){								// changer
 					mbIter->second.pt2setter( mbIter->second.min);
@@ -129,16 +129,16 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 				yo.name100 		= "AUX100";
 				yo.name255 		= "AUX255";
 				yo.nameSpeed	= "Speed";
-				setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3);
+				led.setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3);
 				// setBrightness( 	mbIter->second.bright);
-				setSpeed( 		mbIter->second.speed);
-				setSaturation( 	mbIter->second.saturn);
-				setTemperature( mbIter->second.temp);
-				setAUX010( 		mbIter->second.aux010);
-				setAUX100( 		mbIter->second.aux100);
-				setAUX255( 		mbIter->second.aux255);
+				led.setSpeed( 		mbIter->second.speed);
+				led.setSaturation( 	mbIter->second.saturn);
+				led.setTemperature( mbIter->second.temp);
+				led.setAUX010( 		mbIter->second.aux010);
+				led.setAUX100( 		mbIter->second.aux100);
+				led.setAUX255( 		mbIter->second.aux255);
 				paletteSetActive( mbIter->second.pollCurrent, true);
-				ledOFF();
+				led.OFF();
 				// Serial.println( "-==> Vars applied.");
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", resValue, mbIter->second.pollCurrent,	mbIter->second.bright, mbIter->second.speed, mbIter->second.saturn, mbIter->second.temp, mbIter->second.aux010, mbIter->second.aux100, mbIter->second.aux255);
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", yo.lastPressed, mbIter->second.pollCurrent,	yo.currentBrightness, yo.currentSpeed, yo.currentSaturn, yo.currentTemp, yo.AUX010, yo.AUX100, yo.AUX255);

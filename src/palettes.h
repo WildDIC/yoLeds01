@@ -2,7 +2,7 @@
 #define __PALETTES_H
 
 extern CRGBPalette16 activePollitre;
-// extern CHSVPalette16 activePollitreHSV;
+extern CHSVPalette16 activePollitreHSV;
 
 void paletteStartUP();
 void paletteSetActive( byte pollitraID, bool force);

@@ -299,8 +299,8 @@ void eepromStartUP()
 	EEPROM.get( EEPROM_ADDR_WRITER, readINT);
 	Serial.printf( "\nRead config from EEPROM [%d times]: yo base size = %db ( writen size = %db), waves write ind = %d.\n", readINT, sizeof(yo), EEPROM_CURRENT_ADDR - 0, ind);
 
-	if ( yo.ONOFF == true){ powerON();}
+	if ( yo.ONOFF == true){ led.powerON();}
 
-	setBrightness( yo.currentBrightness);
+	led.setBrightness( yo.currentBrightness);
 	irdaServer( yo.lastPressed, 0);
 }

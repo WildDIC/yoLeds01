@@ -22,11 +22,17 @@
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
+#define BETWEEN(a,b,n) ((a<n)&&(n<bb))
+
 
 #define MAX_SATURATIOIN 100
+// #define LED_PIN     5
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
 #define DATA_PIN 13                     // Выходной Пин ленты
 #define RECV_PIN 14                     // for ESP32 micrcontroller
 #define NUM_LEDS 120                    // Количество диодов в ленте
+
 #define NUM_TEMPS 51                    // Количество цветов в таблице температур
 #define TOP_INDEX (NUM_LEDS / 2)        // Половина длины ленты
 #define NUM_COLORS  255                 // Количество цветов в кастомной палитре
@@ -125,18 +131,10 @@ extern std::map<int, waveItem>::iterator mbIter;	// итератор для эт
 
 extern int temperList[NUM_TEMPS];
 
-
-
-struct sPol{
-	int id;
-	byte pollitra;
-};
-extern sPol savePollitre[NUM_POLLITR]; 	// сохранялка палитров на ЕЕПРОМ
-
 struct pollitraZ{
 	String name;						// Имя палитры
 	CRGBPalette16 palette;				// паллитра
-	// CHSVPalette16 paletteHSV;
+	CHSVPalette16 paletteHSV;
 };
 
 extern pollitraZ myPal[NUM_POLLITR];	// хранилище всех палитров
@@ -157,12 +155,46 @@ struct range{							// для вебсервера, формируем спис�
 };
 
 
+
+class waveStorage
+{
+private:
+	/* data */
+public:
+	int status 		= 0;
+	int count 		= 0;
+
+	uint8_t color 	= 0;
+	uint8_t ind 	= 0;
+	uint8_t baza 	= 0;     
+
+	uint8_t var00 	= 0;
+	uint8_t var01 	= 0;
+	uint8_t var02 	= 0;
+	uint8_t var03 	= 0;
+
+	float far00 	= 0.0;
+	float far01 	= 0.0;
+
+	uint8_t aVALUE[NUM_LEDS];
+	uint8_t aSTATUS[NUM_LEDS];
+	uint8_t aFADER[NUM_LEDS];
+
+	CRGB cIN_LEDS[NUM_LEDS];
+	CRGB cOUT_LEDS[NUM_LEDS];
+
+	// CHSV hIN_LEDS[NUM_LEDS];
+	// CHSV hOUT_LEDS[NUM_LEDS];
+};
+
+extern waveStorage w;
+
 int powInt(int x, int y);
 int parseInt(char* chars);
+bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher);
 
 extern int intConfig;
 
 // extern uint8_t base00;     // изменение оттенка LED
-
 
 #endif

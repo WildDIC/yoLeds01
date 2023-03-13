@@ -1,18 +1,18 @@
-#include "waveClass.h"
+// #include "waveClass.h"
 
-void animateFire(){
-	fadeToBlackBy(leds, NUM_LEDS, 4);
-	leds[beatsin8(13, 0, NUM_LEDS - 1)] = ledGCfP( base00++, false);
-	FastLED.show();
-	delay(yo.currentSpeed * 2);
-}
+// void funcFire02(){
+// 	fadeToBlackBy(leds, NUM_LEDS, 4);
+// 	leds[beatsin8(13, 0, NUM_LEDS - 1)] = led.GCfP( w.baza++, false);
+// 	FastLED.show();
+// 	delay(yo.currentSpeed * 2);
+// }
 
-waveClass initFire(){
-	waveClass animeClass( 3212321, "Fire 2024");
-	animeClass.nSpeed = "non SPID!";
-	animeClass.anime = &animateFire;
-	return animeClass;
-}
+// waveClass initFire( uint16_t id){
+// 	waveClass animeClass( id, "Fire 2024");
+// 	animeClass.nSpeed = "non SPID!";
+// 	animeClass.anime = &funcFire02;
+// 	return animeClass;
+// }
 
 
 

@@ -4,10 +4,11 @@ int intConfig;
 
 config yo;								// Конфиг со всякой шнягой полезной внутри
 void (*pt2Func)(); 						// Указатель на функцию для CASE
-sPol savePollitre[NUM_POLLITR];
 
 mapWAVES mWaves; 					// list for: IRDA - function - WEB
 std::map<int, waveItem>::iterator mbIter;
+
+waveStorage w;
 
 // mapPaletts currentPal; 
 // std::map<int, byte>::iterator palIter;
@@ -30,6 +31,11 @@ int parseInt(char* chars){
         sum = sum + powInt(n, x);
     }
     return sum;
+}
+
+bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher)
+{
+	return (( lowwer < number) && ( number < higher));
 }
 
 // uint8_t base00 = 0;     // изменение оттенка LED
