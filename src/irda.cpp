@@ -2,15 +2,16 @@
 #include "config.h"
 #include "irda.h"
 #include "leds.h"
+#include "animeClass.h"
 
 IRrecv irrecv(RECV_PIN);
 
 decode_results results;
 
-extern void ledOFF( int resValue);
-// extern void webServerUpdate();
 extern void paletteSetActive( byte pollitraID, bool force);
 extern void requestSave();
+
+extern animeClass a;
 
 /*мапа нескольких кодов пультов на один код действия
 	int codeNew = int codeOld*/ 
@@ -20,7 +21,8 @@ keyMaps keyCodes;
 void irdaStartUP()
 {	
 	keyCodes = {
-		// {127026699, IR_TV_ON},	
+		{1268261342, IR_TV_ON},	
+		// {1261884204, IR_TV_ON},	
 		// {127026699, IR_TVVOL_UP	},
 		// {127026699, IR_TVVOL_DN},	
 		// {127026699, IR_TVCHANL_UP},	
@@ -99,27 +101,19 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 	if ( resValue)
 	{		
 		yoBugF( "-=>> IR receive: %d\n", resValue);
-		// Serial.printf( "Code from web: %d = (%d) - [%d]\n", codeFromWeb, webValue, resValue);
+		// Serial.printf( "Code [%d] from web: (%d). resValue: %d\n", codeFromWeb, webValue, resValue);
 		
 		mbIter = mWaves.find( resValue);
 		if ( mbIter != mWaves.end())
 		{
-			led.changed = true;
+			a.changed = true;
 			yoBug( "-=>> Наш выбор: ");			
 			yoBugN( mbIter->second.name);			
 
-			if ( mbIter->second.pt2setter){ 									// сэттер или чэнджер пришел
-
-				if ( mbIter->second.typeWeb == 0){								// changer
-					mbIter->second.pt2setter( mbIter->second.min);
-				}
-				else if ( webValue){											// setter
-					mbIter->second.pt2setter( webValue);
-				}
-			} 
-
-			if ( mbIter->second.isEffect){	               						// если это эффект и надо применить цвета, палитры и прочее
-				if ( mbIter->second.pollCurrent < 1) { 							// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
+			if ( mbIter->second.isEffect)
+			{	               													// если это эффект и надо применить цвета, палитры и прочее
+				if ( mbIter->second.pollCurrent < 1 || mbIter->second.pollCurrent > NUM_POLLITR) 
+				{ 																// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
 					mbIter->second.pollCurrent = mbIter->second.pollDefault; 	// если текущая палитра не определена - ставим дефолтную
 				}
 				
@@ -128,8 +122,11 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 				yo.name010 		= "AUX010";
 				yo.name100 		= "AUX100";
 				yo.name255 		= "AUX255";
+				yo.name355 		= "AUX355";
+				yo.name455 		= "AUX455";
 				yo.nameSpeed	= "Speed";
-				led.setColors(		mbIter->second.c1, mbIter->second.c2, mbIter->second.c3);
+
+				led.setColors(		mbIter->second.c1, 	mbIter->second.c2,	 mbIter->second.c3);
 				// setBrightness( 	mbIter->second.bright);
 				led.setSpeed( 		mbIter->second.speed);
 				led.setSaturation( 	mbIter->second.saturn);
@@ -137,7 +134,9 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 				led.setAUX010( 		mbIter->second.aux010);
 				led.setAUX100( 		mbIter->second.aux100);
 				led.setAUX255( 		mbIter->second.aux255);
-				paletteSetActive( mbIter->second.pollCurrent, true);
+				led.setAUX355( 		mbIter->second.aux355);
+				led.setAUX455( 		mbIter->second.aux455);
+				paletteSetActive( 	mbIter->second.pollCurrent, false);
 				led.OFF();
 				// Serial.println( "-==> Vars applied.");
 				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", resValue, mbIter->second.pollCurrent,	mbIter->second.bright, mbIter->second.speed, mbIter->second.saturn, mbIter->second.temp, mbIter->second.aux010, mbIter->second.aux100, mbIter->second.aux255);
@@ -145,12 +144,13 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 				yo.loadOutside = true;
 			}
 
-			if ( mbIter->second.pt2prewave){ 	mbIter->second.pt2prewave();}			
-			if ( mbIter->second.pt2static){ 	mbIter->second.pt2static();}
-			if ( mbIter->second.isEffect){		pt2Func = mbIter->second.pt2Funca;}
-            
+			if ( mbIter->second.pt2static) 	mbIter->second.pt2static();
+			if ( mbIter->second.pt2setter) 	mbIter->second.pt2setter(  webValue);
+			if ( mbIter->second.pt2changer) mbIter->second.pt2changer( mbIter->second.delta);
+			if ( mbIter->second.isEffect)	pt2Func = mbIter->second.pt2Funca;
+
 			#ifdef EERPROM_ENABLE
-				requestSave();
+				if ( webValue != 666) requestSave();
 			#endif
 			
 			yo.pt2webUpdate();

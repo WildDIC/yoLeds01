@@ -48,4 +48,3 @@ void aFire2012(){
 	delay( yo.currentSpeed * 2);
 }
 
-

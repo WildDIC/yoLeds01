@@ -5,7 +5,7 @@ extern CRGBPalette16 activePollitre;
 extern CHSVPalette16 activePollitreHSV;
 
 void paletteStartUP();
-void paletteSetActive( byte pollitraID, bool force);
+void paletteSetActive( byte pollitraID, bool force=false);
 
 const byte ib_jul01_gp[] PROGMEM = {
 	0, 194,  1,  1,

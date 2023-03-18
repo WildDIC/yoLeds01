@@ -46,6 +46,8 @@ typedef void (*pt2static)(void); 		// function pointer type
 typedef void (*pt2prewave)(void); 		// function pointer type
 typedef void (*pt2setter)(int); 		// function pointer type
 
+typedef enum { ANIME_STATIC=0, ANIME_DYNAMIC=1, ANIME_SETTER=2, ANIME_CHANGER=4 } AnimeType;
+
 struct config{
 	byte currentBrightness = 255;        // Уровень яркости ( 0-255)
 	byte currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
@@ -56,7 +58,6 @@ struct config{
 	bool isNeedSaveEEPROM = false;
 	bool againButton = 1;				// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
 	clock_t now = 0;					// текущее время в clock()
-	uint8_t beat = 0;
 	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
 	int lastPressed;					// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
@@ -68,7 +69,9 @@ struct config{
 	CRGB c3 = CRGB( 0, 0, 255);
 	byte lastCustPal = 0;
 	uint8_t candle = 0;
+	uint8_t shift = 0;
 	bool iscandle = false;
+	bool ishifter = false;
 	byte AUX010;
 	byte AUX100;
 	byte AUX255;
@@ -98,8 +101,9 @@ struct waveItem{
 	bool isEffect;						// is pt2 change ( ON/OF)
 	void (*pt2Funca)(void);				// point to amination function
 	void (*pt2static)(void);			// point to solo function
-	void (*pt2prewave)(void);			// point to pre-wave function
+	// void (*pt2prewave)(void);			// point to pre-wave function
 	void (*pt2setter)(int);				// point to pre-wave function
+	void (*pt2changer)(int);			// point to pre-wave function
 	int min;							// min value for web-range
 	int max;							// max value for web-range
 	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
@@ -116,29 +120,24 @@ struct waveItem{
 	CRGB c2;
 	CRGB c3;
 	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
-	bool needSave; 						// флаг необходимости что-то засейвить в этой конструкции в еепром
-	bool needSaveJSON; 					// флаг необходимости что-то засейвить в этой конструкции в жосоне
+	// bool needSaveJSON; 					// флаг необходимости что-то засейвить в этой конструкции в жосоне
 	uint16_t savno; 					// количество записей вавы в память [Save No]
+	uint8_t minSpeed;
+	uint8_t maxSpeed;
+	byte delta;							// 
+	AnimeType animeType;
 };										// list for: IRDA - function - WEB
-
 typedef std::map<int, waveItem> mapWAVES;
 extern mapWAVES mWaves; 							// list for: IRDA - function - WEB
 extern std::map<int, waveItem>::iterator mbIter;	// итератор для этого
 
-// typedef std::map<int, byte> mapPaletts;
-// extern mapPaletts currentPal; 
-// extern std::map<int, byte>::iterator palIter;
-
-extern int temperList[NUM_TEMPS];
 
 struct pollitraZ{
 	String name;						// Имя палитры
 	CRGBPalette16 palette;				// паллитра
 	CHSVPalette16 paletteHSV;
 };
-
 extern pollitraZ myPal[NUM_POLLITR];	// хранилище всех палитров
-
 
 
 struct button{  						// для вебсервера, формируем список кнопко-эментов на странице
@@ -156,7 +155,7 @@ struct range{							// для вебсервера, формируем спис�
 
 
 
-class waveStorage
+class varStorage
 {
 private:
 	/* data */
@@ -186,15 +185,14 @@ public:
 	// CHSV hIN_LEDS[NUM_LEDS];
 	// CHSV hOUT_LEDS[NUM_LEDS];
 };
+extern varStorage v;
 
-extern waveStorage w;
+// extern animeClass a;
+
+extern int temperList[NUM_TEMPS];
 
 int powInt(int x, int y);
 int parseInt(char* chars);
 bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher);
-
-extern int intConfig;
-
-// extern uint8_t base00;     // изменение оттенка LED
 
 #endif

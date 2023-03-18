@@ -8,7 +8,7 @@ void aRainbow()
 	uint8_t ind = 0;
 	uint8_t bri = 255;
 	uint8_t pix = led.beatCircle88( 12, len, NUM_LEDS);
-	w.color = led.beat( 4);
+	v.color = led.beat( 4);
 
 	// fadeToBlackBy(leds, NUM_LEDS, 1);
 	// leds[ledCircle8( yo.currentSpeed << 2, NUM_LEDS)] = ledGCfP( baza++, false);
@@ -30,7 +30,7 @@ void aRainbow()
 			// leds[i] = CHSV( color, 255, 255);		
 		}
 		// leds[i] = ledGCfP( myPal[10].palette, color, false, bri);
-		leds[i] = CHSV( w.color, 255, bri);
+		leds[i] = ( CHSV( v.color, 255, bri));
 	}
 	// Serial.printf( "Color = %d, pix = %d\n", color, pix);
 	// delay( 5);

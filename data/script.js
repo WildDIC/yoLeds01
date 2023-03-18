@@ -96,6 +96,13 @@ function cButtonClick( element) {
 	xhr.send();
 }
 
+function fButtonClick( element) {
+	element.classList.toggle("active");
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", "/shift", true); 
+	xhr.send();
+}
+
 
 
 function buttonClick( element) {
@@ -193,6 +200,10 @@ function reseter( data){
 	item = document.getElementById( json.vPressed);								// ставим новую активную кнопку
 	if ( item){	item.classList.add('active');}	
 
+	item = document.getElementById( 'ishift');									// кнопка ыршаеf YCD pyufxtybq
+	if ( json.vIsShft == 1 && item){ item.classList.add('active');}
+	else{ 							 item.classList.remove('active'); }
+
 	item = document.getElementById( 'icandl');									// кнопка тряски свечки
 	if ( json.vIsCndl == 1 && item){ item.classList.add('active');}
 	else{ 							 item.classList.remove('active'); }
@@ -231,56 +242,60 @@ function updateDate( fullUpdate){
 //				COLORPICKER
 //////////////////////////////////////////////////////////
 
-const colorList = document.getElementById("colorList");
-const activeColor = document.getElementById("activeColor");
-
-
-
-var colorPicker = new iro.ColorPicker("#picker", {
+const colorList 	= document.getElementById("colorList");
+const activeColor 	= document.getElementById("activeColor");
+var colorPicker 	= new iro.ColorPicker("#picker", 
+{
 	width: 220,
-	// color: "#f00",
 	colors: [
     	"rgb(255, 0, 0)",
     	"rgb(0, 255, 0)",
     	"rgb(0, 0, 255)",
   	],
   	handleRadius: 14,
-	activeHandleRadius: 20,
+	activeHandleRadius: 16,
 	sliderSize: 35,
 	borderWidth: 1,
 	borderColor: "#fff",
 });
 
 
-
-function setColor(colorIndex) {
-  colorPicker.setActiveColor(colorIndex);
-}
-
+function setColor(colorIndex){ colorPicker.setActiveColor(colorIndex);}
 
 
 // https://iro.js.org/guide.html#color-picker-events
-colorPicker.on(["input:end"], function(){
+colorPicker.on(["input:end"], function()
+{
 	var ret = "";
-	colorPicker.colors.forEach(color => {
+	colorPicker.colors.forEach(color => 
+	{
 		ret += color.red + '-' + color.green + '-' + color.blue + '-';
 	});
-	console.log( "kkk " + ret);	
+	console.log( "kek: " + ret);	
+	
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "/colorset?funcID="+ret, true); 
 	xhr.send();
 });
 
-colorPicker.on(["mount", "color:change"], function(){
+
+colorPicker.on(["mount", "color:change"], function()
+{
   colorList.innerHTML = '';
-  colorPicker.colors.forEach(color => {
+  colorPicker.colors.forEach(color => 
+  {
     const index = color.index;
     const hexString = color.hexString;	
+
     colorList.innerHTML += `
-      <div class="onecolor" onClick="setColor(${ index })">
-        <div class="swatch" style="background: ${ hexString }"></div>
-        <span>${ hexString }<br>${ color.hslString }<br>${ color.rgbString }</span>
-      </div>
+      	<div class="onecolor" onClick="setColor(${ index })">
+        	<div class="swatch" style="background: ${ hexString }">	</div>
+        	<span>
+				${ hexString }<br>
+				hsv[${ Math.ceil( (color.hue * 255) / 360) }, ${ Math.ceil( color.saturation * 2.55) }, ${ Math.ceil( color.value * 2.55) }]<br>
+				${ color.rgbString }
+			</span>
+    	</div>
     `;
   });
 });

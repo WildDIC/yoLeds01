@@ -15,39 +15,45 @@
 	AUX255 - color scale
  */
 
-void aNoiseMordor(){ 
-	w.var02 	   	= 50;
-	w.color 	   	= 20;
-	w.baza 		= 40;
+void aNoiseMordor()
+{ 
+	v.var02 	= 50;
+	v.color 	= 20;
+	v.baza 		= 40;
 	yo.name010 	= "Background speed";
 	yo.name100 	= "Background scale";
 	yo.name255 	= "Palette scale";
+	yo.name455 	= "Color shift speed";
 	yo.nameSpeed = "Anime speed";
 }
-void aNoiseFires(){  
-	w.var02 	   	= 0;
-	w.color 		= 0;
-	w.baza		= 70;
+
+void aNoiseFires()
+{  
+	v.var02 	= 1;
+	v.color 	= 1;
+	v.baza		= 70;
 	yo.name010 	= "Background speed";
 	yo.name100 	= "Background scale";
 	yo.name255 	= "Palette scale";
+	yo.name455 	= "Color shift speed";
 	yo.nameSpeed = "Anime speed";
 }
+
 
 void aNoise()
 {
     for (int i = 0; i < NUM_LEDS; i++) 
 	{		
-		w.var00 = inoise8(    i * ( yo.AUX255 >> 1), millis() / yo.currentSpeed);
-		w.var01 = inoise8(    i * ( yo.AUX100     ), millis() / yo.AUX010);
+		uint8_t colorID = inoise8( i * ( yo.AUX255 >> 1), millis() / yo.currentSpeed);
+		uint8_t backVal = inoise8( i * ( yo.AUX100     ), millis() / yo.AUX010);
 		
-		w.var00 = constrain( w.var00, w.baza, 200);
-		w.var00 = map( w.var00, w.baza, 200, w.color, 255);
+		colorID = constrain( colorID, v.baza, 200);
+		colorID = map( colorID, v.baza, 200, v.color, 255);
 
-		w.var01 = constrain( w.var01, 60, 200);
-		w.var01 = map( w.var01, 60, 200, w.var02, 255);
+		backVal = constrain( backVal, 60, 200);
+		backVal = map( backVal, 60, 200, v.var02, 255);
 
-    	leds[i] = led.GCfP( w.var00, false, w.var01, 0, true);      	
+		leds[i] = led.GCfPH( colorID, false, backVal);  
     }
 	// FastLED.show();
 }

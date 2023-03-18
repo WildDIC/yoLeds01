@@ -12,10 +12,10 @@ Ledas led;
 void Ledas::startUP()
 {
 	// FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
-	FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+	FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); //.setCorrection( TypicalLEDStrip );
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	// ledFadeOUT();
-	FastLED.delay( 2);
+	FastLED.delay( 5);
 	FastLED.show();
 }
 
@@ -26,14 +26,14 @@ void Ledas::startUP()
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CRGB Ledas::GCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
+CRGB Ledas::GCfP( const struct CRGBPalette16& colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
 {
 	if ( isMapped == true)				{ colorID *= REVERS_NUM_LEDS; }	
 
 	CRGB color = ColorFromPalette( colorPalette, colorID, brightness, LINEARBLEND); 
 
 	if ( addToColor || yo.antiSaturn)	{ color.addToRGB( addToColor + yo.antiSaturn);}
-	if ( candle && yo.iscandle) 		{ color.nscale8( yo.candle); }
+	if ( yo.iscandle) 					{ color.nscale8( yo.candle); }
 	return color;
 }
 
@@ -57,14 +57,15 @@ CRGB Ledas::GCfP( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t ad
 @param brightness  уйти в темненькое ( 0-255)
 @param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
 @param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CHSV Ledas::GCfPH( CHSVPalette16 colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
+CHSV Ledas::GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
 {
 	if ( isMapped == true)				{ colorID *= REVERS_NUM_LEDS; }	
 
 	CHSV color = ColorFromPalette( colorPalette, colorID, brightness, LINEARBLEND); 
 
 	if ( addToColor || yo.antiSaturn)	{ color.sat = qsub8( color.sat, addToColor + yo.antiSaturn);}
-	if ( candle && yo.iscandle) 		{ color.val = ( color.val * yo.candle) >> 8; }
+	if ( yo.iscandle) 					{ color.val = ( color.val * yo.candle) >> 8; }
+	if ( yo.ishifter)					{ color.hue += yo.shift; }
 	return color;
 }
 
@@ -81,49 +82,28 @@ CHSV Ledas::GCfPH( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t a
 }
 
 
-
 CRGB Ledas::hsv2rgb( CHSV hsv)
 {
     CRGB rgb;
     uint16_t region, remainder, p, q, t;
     
-    if (hsv.s == 0)
-    {
-        rgb.r = hsv.v;
-        rgb.g = hsv.v;
-        rgb.b = hsv.v;
-        return rgb;
-    }
+    if (hsv.s == 0){ rgb.r = hsv.v;	rgb.g = hsv.v; rgb.b = hsv.v; 		return rgb; }
     
-    region = hsv.h / 43;
-    remainder = (hsv.h - (region * 43)) * 6; 
+    region 		= hsv.h / 43;
+    remainder 	= (hsv.h - (region * 43)) * 6; 
     
     p = (hsv.v * (255 - hsv.s)) >> 8;
-    q = (hsv.v * (255 - ((hsv.s * remainder) >> 8))) >> 8;
+    q = (hsv.v * (255 - ((hsv.s * 		 remainder)  >> 8))) >> 8;
     t = (hsv.v * (255 - ((hsv.s * (255 - remainder)) >> 8))) >> 8;
     
-    switch (region)
-    {
-        case 0:
-            rgb.r = hsv.v; rgb.g = t; rgb.b = p;
-            break;
-        case 1:
-            rgb.r = q; rgb.g = hsv.v; rgb.b = p;
-            break;
-        case 2:
-            rgb.r = p; rgb.g = hsv.v; rgb.b = t;
-            break;
-        case 3:
-            rgb.r = p; rgb.g = q; rgb.b = hsv.v;
-            break;
-        case 4:
-            rgb.r = t; rgb.g = p; rgb.b = hsv.v;
-            break;
-        default:
-            rgb.r = hsv.v; rgb.g = p; rgb.b = q;
-            break;
-    }
-    
+    switch (region){
+        case 0: 	rgb.r = hsv.v; 	rgb.g = t; 		rgb.b = p;           break;
+        case 1: 	rgb.r = q; 		rgb.g = hsv.v; 	rgb.b = p;           break;
+        case 2: 	rgb.r = p; 		rgb.g = hsv.v; 	rgb.b = t;           break;
+        case 3: 	rgb.r = p; 		rgb.g = q; 		rgb.b = hsv.v;       break;
+        case 4: 	rgb.r = t; 		rgb.g = p; 		rgb.b = hsv.v;       break;
+        default:	rgb.r = hsv.v; 	rgb.g = p; 		rgb.b = q;           break;
+    }    
     return rgb;
 }
 
@@ -137,26 +117,14 @@ CHSV Ledas::rgb2hsv( CRGB rgb)
     rgbMax = rgb.r > rgb.g ? (rgb.r > rgb.b ? rgb.r : rgb.b) : (rgb.g > rgb.b ? rgb.g : rgb.b);
 
     hsv.v = rgbMax;
-    if (hsv.v == 0)
-    {
-        hsv.h = 0;
-        hsv.s = 0;
-        return hsv;
-    }
+    if (hsv.v == 0){ hsv.h = 0; hsv.s = 0; 		return hsv;}
 
     hsv.s = 255 * ((long)(rgbMax - rgbMin)) / hsv.v;
-    if (hsv.s == 0)
-    {
-        hsv.h = 0;
-        return hsv;
-    }
+    if (hsv.s == 0){ hsv.h = 0;					return hsv;}
 
-    if (rgbMax == rgb.r)
-        hsv.h = 0 + 43 * (rgb.g - rgb.b) / (rgbMax - rgbMin);
-    else if (rgbMax == rgb.g)
-        hsv.h = 85 + 43 * (rgb.b - rgb.r) / (rgbMax - rgbMin);
-    else
-        hsv.h = 171 + 43 * (rgb.r - rgb.g) / (rgbMax - rgbMin);
+    if (rgbMax == rgb.r)		hsv.h =   0 + 43 * (rgb.g - rgb.b) / (rgbMax - rgbMin);
+    else if (rgbMax == rgb.g)   hsv.h =  85 + 43 * (rgb.b - rgb.r) / (rgbMax - rgbMin);
+    else				        hsv.h = 171 + 43 * (rgb.r - rgb.g) / (rgbMax - rgbMin);
 
     return hsv;
 }
@@ -200,46 +168,8 @@ void Ledas::OFF()
 	// }
 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
-	FastLED.delay( 5);
+	delay( 5);
 	FastLED.show();
-}
-
-
-/* Включаем беленькую */
-void Ledas::UPWhite()
-{	
-  	if ( yo.ONOFF)
-	{
-	  	fill_solid( leds, NUM_LEDS, CRGB::White); 	
-		FastLED.delay( 5);
-		FastLED.show();
-	}
-	#ifdef DEBUG_ENABLE
-		Serial.printf( "\nStatic RGB = (%d.%d.%d)\n", leds[10].r, leds[10].g, leds[10].b);
-	#endif
-}
-
-
-/* Включаем тестовое, сейчас = палитра */
-void Ledas::UP()
-{  
-	if ( yo.ONOFF)
-	{
-		for ( int pos = 0; pos < NUM_LEDS; pos++)
-		{ 
-			// leds[pos] = pollitrR[pos*255/NUM_LEDS]; 
-			// leds[pos] = ColorFromPalette( targetPalette, colorID, 255, LINEARBLEND);
-			// leds[pos] = ledGCfP( pos);
-			leds[pos] = led.GCfPH( pos, true);
-
-			#ifdef DEBUG_ENABLE
-				Serial.printf( "pos [%d], (%d.%d.%d)\n", pos, leds[pos].r, leds[pos].g, leds[pos].b);
-			#endif
-		}	
-		// for ( int pos = 0; pos < NUM_COLORS; pos++){ leds[pos] = CHSV( yoPal[pos]); }	
-		FastLED.show();
-		FastLED.delay( 5);
-	}
 }
 
 
@@ -423,11 +353,12 @@ void Ledas::changeSaturation( int delta)
 /* Сброс параметров ленты в дефолтное состояние */
 void Ledas::reset()
 {
+	yo.loadOutside = true;	
 	led.setBrightness(128); 
-	// changeSpeed( -90); 
 	led.setSpeed( 5);
-	led.changeTemperature( TEMP_IND_MAX); 
-	led.changeSaturation( 100);
+	led.setTemperature( TEMP_IND_MAX); 
+	led.setSaturation( 100);	
+	yo.loadOutside = false;
 }
 
 
@@ -531,8 +462,10 @@ uint8_t Ledas::circle( uint8_t ind, uint8_t total, uint8_t ts)
 */
 uint8_t Ledas::beatCircle( accum88 beats_per_minute, uint8_t timeShift, uint32_t timeScale)
 {
-    uint8_t beat 	= this->beat8( beats_per_minute, timeScale);
-    uint8_t result 	= this->circle8( beat + timeShift);
+    uint8_t beat 	= this->beat( 4);  //, timeScale);
+    // uint8_t beat 	= this->beat8( beats_per_minute, timeScale);
+	uint8_t beatts 	= beat + timeShift;
+    uint8_t result 	= this->circle8( beatts);
     return result;
 }
 
@@ -566,3 +499,34 @@ uint8_t Ledas::beatCircle88( accum88 beats_per_minute, uint8_t lowest, uint8_t h
     uint8_t result 	= lowest + beat;
     return result;
 }
+
+
+
+void hsv2rgb_01( CHSV rhs, CRGB thi)
+{
+	Serial.println( "Error");
+}
+
+
+
+// CRGB& operator= (const CHSV& rhs) 
+// {
+//     // lhs += rhs;
+// 	// hsv2rgb_01( rhs, *this);
+//     return CRGB(255,255,255);
+// }
+
+
+// CRGB CRGB operator= (const CHSV& rhs) __attribute__((always_inline))
+// {
+//         // hsv2rgb_01( rhs, *this);
+//         return CRGB(rhs);
+// }
+
+// struct CRGB {
+// 	inline CRGB& operator= (const CHSV& rhs) __attribute__((always_inline))
+//     {
+//         hsv2rgb_01( rhs, *this);
+//         return *this;
+//     }
+// }

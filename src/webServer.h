@@ -1,9 +1,6 @@
-// #include <WebServer.h>
 #include "ESPAsyncWebServer.h"
 #include "SPIFFS.h"
 #include "config.h"
-
-// extern void powerONOFF();
 
 // need replace in  												    .pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h:63
 //C:\Users\vanilka\Documents\PlatformIO\Projects\-=>YOUR_PROJECT_NAME<=-\.pio\libdeps\IR Test with FastLED 01\ESPAsyncWebServer-esphome\src\WebResponseImpl.h
@@ -13,9 +10,11 @@ AsyncEventSource events("/events");
 
 
 byte NUM_RANGES = 1;
-byte NUM_BUTTONS = 1;			
+byte NUM_BUTTONS = 0;
 String RANGE_HOLDER = "\n";		// полоски-двигалки
 String ROOT_HOLDER = ":root{\n" ;
+String BUTTON_HOLDER = "\n";
+String SELECT_HOLDER = "";
 
 #define PARAM_INPUT_1 "funcID"
 #define PARAM_INPUT_2  "value"
@@ -59,7 +58,7 @@ String webServerMakeJSON()
 	out += "\"vUnsave\":"	+ String(yo.isNeedSaveEEPROM)	+",";
 	out += "\"vPCur\":"		+ String(yo.pollCurrent)		+",";
 	out += "\"vStyle\":"	+ yo.rndStyle 					+",";
-	out += "\"vCndl\":"		+ String( yo.candle) 			+",";
+	out += "\"vIsShft\":"	+ String( yo.ishifter) 			+",";
 	out += "\"vIsCndl\":"	+ String( yo.iscandle) 			+",";
 	out += "\"v010\":"		+ String( yo.AUX010) 			+",";
 	out += "\"v100\":"		+ String( yo.AUX100)			+",";
@@ -85,6 +84,7 @@ void collectData()
 	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) 
 	{		
 		mbIter->second.code = mbIter->first;
+				
 		if ( mbIter->second.indForWeb)
 		{
 			if ( mbIter->second.typeWeb == 1)
@@ -99,7 +99,8 @@ void collectData()
 			}			
 		} 
     }	
-	
+
+
 	ROOT_HOLDER += "\t\t\t--gr0: #181E28;\n";
 	ROOT_HOLDER += "\t\t\t--gr2: #181E28;\n";
 	ROOT_HOLDER += "\t\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
@@ -108,7 +109,8 @@ void collectData()
 	ROOT_HOLDER += "\t\t\t--gr6: #181E28;\n";
 	ROOT_HOLDER += "\t\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
 	ROOT_HOLDER += "\t\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
-	
+
+
 
 	// собираем css градиенты для выбора палитр
 	byte tcp[72]; //support gradient palettes with up to 18 entries
@@ -130,6 +132,7 @@ void collectData()
 	ROOT_HOLDER += "\t\t}";
 
 
+
 	// RANGERS собираем полоски-двигалки 
 	for(int i = 1; i < NUM_RANGES; i++)
 	{
@@ -142,43 +145,42 @@ void collectData()
 		RANGE_HOLDER += "\t\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
 		RANGE_HOLDER += "\t\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
 	}	
+
+
+
+	// BUUTTON 
+	for ( int i = 1; i < NUM_BUTTONS + 1; i++ )
+	{ 
+		String active = ( yo.lastPressed == bList[i].code) ? " active" : "";
+		BUTTON_HOLDER += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
+		// Serial.printf( "-=> [%d] Wave ID (%d) = %s\n", i, bList[i].code, bList[i].name);
+	}
+
+
+	// SELECTORS
+	SELECT_HOLDER += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
+	for (size_t i = 0; i < NUM_POLLITR; i++)
+	{
+		if ( myPal[i].name.length() > 0)
+		{		
+			if ( i == yo.lastCustPal + 11){ SELECT_HOLDER += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n"; }				
+			String active = ( i == mWaves[yo.lastPressed].min) ?" selected = 'selected'" : "";
+			SELECT_HOLDER += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
+		}
+	}
+	SELECT_HOLDER += "\t\t</optgroup>\n\t</select></div>\n\n";
 }
+
 
 
 // Replaces placeholder with button section in your web page
 String processor(const String& var)
 {
-	if(var == "CSSPLACEHOLEDFR"){	return ROOT_HOLDER ;}
-	if(var == "RANGEPLACEHOLDER"){ 	return RANGE_HOLDER;}
-	if(var == "SELECTHOLDER")
-	{
-		String buttons = "";
-		buttons += "\n\t<div class=\"selectZ\">\n\t\t<select name=\"pollitres\" id=\"pollitres\">\n";
-		for (size_t i = 0; i < NUM_POLLITR; i++)
-		{
-			if ( myPal[i].name.length() > 0)
-			{		
-				if ( i == yo.lastCustPal + 11){ buttons += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n"; }				
-				String active = ( i == mWaves[yo.lastPressed].min) ?" selected = 'selected'" : "";
-				buttons += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
-			}
-		}
-		buttons += "\t\t</optgroup>\n\t</select></div>\n\n";
-		return buttons;
-	}
+	if(var == "CSSPLACEHOLEDFR")	return ROOT_HOLDER;
+	if(var == "RANGEPLACEHOLDER") 	return RANGE_HOLDER;
+	if(var == "BUTTONPLACEHOLDER")  return BUTTON_HOLDER;
+	if(var == "SELECTHOLDER")		return SELECT_HOLDER;
 
-	// BUTTONRS replacer
-	if(var == "BUTTONPLACEHOLDER")
-	{
-		String buttons = "\n";
-
-		for ( int i = 2; i < NUM_BUTTONS; i++ )
-		{ 
-			String active = ( yo.lastPressed == bList[i].code) ? " active" : "";
-			buttons += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
-		}
-		return buttons;
-	}
 	return String();
 }
 
@@ -202,26 +204,26 @@ void webServerUnsave()
 /*Поднимаем и настраиваем Веб-сервер ESPAsyncWebServer*/
 void webServerStartUP()
 {
-	collectData();
-	yo.pt2webUpdate = &webServerUpdate;
-	yo.pt2webUnsave = &webServerUnsave;
-
 	if(!SPIFFS.begin(true))
 	{
  	 	Serial.println("An Error has occurred while mounting SPIFFS");
   		return;
 	}
 	
-	server.on("/", 			HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/index.htm", String(), false, processor); });
-  	server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/style.css", "text/css"); });
-  	server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
-	server.on("/reset", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSON());});
-	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
-	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; 			request->send(200, "text/plain", "Saved.");});
-	server.on( "/candle",   HTTP_GET, [](AsyncWebServerRequest *request){ yo.iscandle = !yo.iscandle; 		request->send(200, "text/plain", "Candle.");});
-	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ led.powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
+	collectData();
+	yo.pt2webUpdate = &webServerUpdate;
+	yo.pt2webUnsave = &webServerUnsave;
 
-	server.on("/update", HTTP_GET, [] (AsyncWebServerRequest *request) 
+	server.on( "/", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/index.htm", String(), false, processor); });
+  	server.on( "/style.css",HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/style.css", "text/css"); });
+  	server.on( "/script.js",HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
+	server.on( "/reset", 	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSON());});
+	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
+	server.on( "/save",     HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; 				request->send(200, "text/plain", "Saved.");});
+	server.on( "/candle",   HTTP_GET, [](AsyncWebServerRequest *request){ yo.iscandle = !yo.iscandle; 			request->send(200, "text/plain", "Candle.");});
+	server.on( "/shift",   	HTTP_GET, [](AsyncWebServerRequest *request){ yo.ishifter = !yo.ishifter; 			request->send(200, "text/plain", "Shifter.");});
+	server.on( "/power",    HTTP_GET, [](AsyncWebServerRequest *request){ led.powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
+	server.on( "/update", 	HTTP_GET, [](AsyncWebServerRequest *request) 
 	{
 		if (request->hasParam( PARAM_INPUT_1)) 
 		{  
@@ -238,6 +240,7 @@ void webServerStartUP()
 		request->send(200, "text/plain", "OK");
 	});
 
+
 	server.on("/select", HTTP_GET, [] (AsyncWebServerRequest *request) 
 	{
 		if (request->hasParam( PARAM_INPUT_2)) 
@@ -253,6 +256,7 @@ void webServerStartUP()
 		}
 		request->send(200, "text/plain", "OK");
 	});
+
 
 	server.on("/colorset", HTTP_GET, [] (AsyncWebServerRequest *request) 
 	{
@@ -280,6 +284,7 @@ void webServerStartUP()
 		}
 		request->send(200, "text/plain", "OK");
 	});
+
 
 
 	events.onConnect([](AsyncEventSourceClient *client)

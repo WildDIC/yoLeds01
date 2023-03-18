@@ -7,9 +7,9 @@
   yo.AUX100 - длина полоски
   yo.AUX255 - скорость движения палитры
  */
-void aGradient01pre(){ w.var00 = 1; w.far01 = 50.0;}
-void aGradient02pre(){ w.var00 = 2; w.far01 = 50.0;}
-void aGradient03pre(){ w.var00 = 3; w.far01 = 50.0;}
+void aGradient01pre(){ v.var00 = 1; v.far01 = 50.0;}
+void aGradient02pre(){ v.var00 = 2; v.far01 = 50.0;}
+void aGradient03pre(){ v.var00 = 3; v.far01 = 50.0;}
 
 void aGradient() 
 {
@@ -23,14 +23,14 @@ void aGradient()
 
 	for(uint16_t i = 0; i < NUM_LEDS; i++)	
 	{
-		w.far00 = MIN( abs(pp-i), MIN( abs(p1-i), abs(p2-i)));
-		w.far00 = (yo.AUX100 > w.far00) ? w.far00/yo.AUX100 * 200 : 200;
+		v.far00 = MIN( abs(pp-i), MIN( abs(p1-i), abs(p2-i)));
+		v.far00 = (yo.AUX100 > v.far00) ? v.far00/yo.AUX100 * 200 : 200;
 
-		if ( w.var00 == 1){ w.var01 = nc;}
-		else if ( w.var00 == 2){ w.var01 = i + nc;}
-		else { w.var01 = i;}
+		if ( v.var00 == 1){ v.var01 = nc;}
+		else if ( v.var00 == 2){ v.var01 = i + nc;}
+		else { v.var01 = i;}
 		
-		leds[i] = led.blend( led.GCfP( w.var01), yo.c1, w.far00); // val
+		leds[i] = led.blend( led.GCfP( v.var01), yo.c1, v.far00); // val
 	}
 	// FastLED.show();
 	delay( yo.currentSpeed );

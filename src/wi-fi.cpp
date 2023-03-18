@@ -1,5 +1,4 @@
 #include "config.h"
-#include "main.h"
 #include "pass.h"
 #include "wi-fi.h"
 
@@ -78,46 +77,6 @@ const char* WIFI_PASS = "SecretPassword";
     WL_DISCONNECTED     = 6
 */
 int wifiStartUP(){
-	// wifiConnect();
 	wifiCheckConnect();
-    // Serial.printf( "\nConnecting to: %s\n", WIFI_SSID);
-    // WiFi.begin(WIFI_SSID, WIFI_PASS);
-    // while (WiFi.status() != WL_CONNECTED) {
-    //   	delay(250);
-    //   	Serial.print(".");
-    // }
-    // Serial.print("\nWiFi connected.\nIP address: ");    
-    // Serial.println( WiFi.localIP()); 
-    // return WiFi.status();
 }
 
-
-
-// wl_status_t wifiConnect(){
-	// startTimeWF = clock();
-	// Serial.printf( "\n[%d] Connecting to: %s\n", wifiChecks, WIFI_SSID);
-    // WiFi.begin(WIFI_SSID, WIFI_PASS);	
-	// wifiConnecting = true;
-
-	// while (WiFi.status() != WL_CONNECTED) {
-    //   	delay(200);
-    //   	Serial.print(".");
-	// 	if (  clock() > startTimeWF + WIFI_CONNECT_TIME){
-	// 		Serial.print( " Break tmeout!\n"); 	
-	// 		// WiFi.disconnect();
-	// 		break;
-	// 	}
-    // }
-
-	// // Serial.println( WiFi.getAutoReconnect());
-
-	// if ( WiFi.status() == WL_CONNECTED){
-	// 	wifiChecks = 1;
-	// 	Serial.printf( "\nWiFi connected.\nIP address: ");  
-    // 	Serial.println( WiFi.localIP()); 
-	// } else{
-	// 	Serial.printf( "WiFi connect error: %d\n", WiFi.status());
-	// }
-	
-	// return WiFi.status();
-// }

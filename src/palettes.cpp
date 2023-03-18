@@ -9,25 +9,23 @@ CHSVPalette16 activePollitreHSV;
 pollitraZ myPal[NUM_POLLITR];
 CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
 
-
 void rgb2hsvpalette( uint8_t ind) //, CRGBPalette16 rgbpalette = activePollitre)
-// void rgb2hsvpalette( uint8_t ind, CRGBPalette16 *rgbpalette)
 {
-	// CRGBPalette16 palette = *rgbpalette;
 	for (uint8_t i = 0; i < 16; i++)
 		{				
-			// myPal[ind].paletteHSV[i] = rgb2hsv_approximate( *rgbpalette[i]);
 			myPal[ind].paletteHSV[i] = led.rgb2hsv( activePollitre[i]);
 
+			// CHSV h = led.rgb2hsv( activePollitre[i]);
 			// CRGB c = led.hsv2rgb( myPal[ind].paletteHSV[i]);
-			// CRGB f;
-			// hsv2rgb_rainbow( myPal[ind].paletteHSV[i], f);
+			// // CRGB f;
+			// // hsv2rgb_rainbow( myPal[ind].paletteHSV[i], f);
 
 			// Serial.printf( "%d. %d. o[%d, %d, %d] m[%d, %d, %d] f[%d, %d, %d ] h[%d, %d, %d]\n", 
 			// 	ind, i, 
 			// 	activePollitre[i].r, activePollitre[i].g, activePollitre[i].b, 
 			// 	c.r, c.g, c.b, 
-			// 	f.r, f.g, f.b, 
+			// 	// f.r, f.g, f.b, 
+			// 	h.h, h.s, h.v,
 			// 	myPal[ind].paletteHSV[i].h, myPal[ind].paletteHSV[i].s, myPal[ind].paletteHSV[i].v);
 		}
 }
@@ -93,7 +91,7 @@ CRGB getCol( CRGB color)
 
 /* Меням активную палитру и записываем ее в текующую активность ленты
 @param byte pollitraID = Номер паллитры из myPal */
-void paletteSetActive( byte pollitraID, bool force=true)
+void paletteSetActive( byte pollitraID, bool force)
 {
 	switch ( pollitraID ) 	
 	{
@@ -137,7 +135,6 @@ void paletteSetActive( byte pollitraID, bool force=true)
 	if ( pollitraID <= 8)
 	{
 		rgb2hsvpalette( pollitraID);
-		// rgb2hsvpalette( pollitraID, &activePollitre);
 	}
 
 	activePollitreHSV = myPal[pollitraID].paletteHSV;
@@ -147,11 +144,188 @@ void paletteSetActive( byte pollitraID, bool force=true)
 	yo.pollDefault = mWaves[yo.lastPressed].pollDefault;
 
 	#ifdef EERPROM_ENABLE 
-		requestSave();
+		if ( force) requestSave();
 	#endif
 
 	#ifdef DEBUG_ENABLE
 		Serial.printf( "-=> Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
 	#endif
 }
+
+
+// CRGB hsv2rgb( CHSV in)
+// {
+//     double      hh, p, q, t, ff;
+//     long        i;
+//     CRGB        out;
+
+//     if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
+//         out.r = in.v;
+//         out.g = in.v;
+//         out.b = in.v;
+//         return out;
+//     }
+//     hh = in.h;
+//     if(hh >= 360.0) hh = 0.0;
+//     hh /= 60.0;
+//     i = (long)hh;
+//     ff = hh - i;
+//     p = in.v * (1.0 - in.s);
+//     q = in.v * (1.0 - (in.s * ff));
+//     t = in.v * (1.0 - (in.s * (1.0 - ff)));
+
+//     switch(i) {
+//     case 0:
+//         out.r = in.v;
+//         out.g = t;
+//         out.b = p;
+//         break;
+//     case 1:
+//         out.r = q;
+//         out.g = in.v;
+//         out.b = p;
+//         break;
+//     case 2:
+//         out.r = p;
+//         out.g = in.v;
+//         out.b = t;
+//         break;
+
+//     case 3:
+//         out.r = p;
+//         out.g = q;
+//         out.b = in.v;
+//         break;
+//     case 4:
+//         out.r = t;
+//         out.g = p;
+//         out.b = in.v;
+//         break;
+//     case 5:
+//     default:
+//         out.r = in.v;
+//         out.g = p;
+//         out.b = q;
+//         break;
+//     }
+//     return out;     
+// }
+
+  /**
+      * @desc Convert hsv object to rgb
+      * @param hsv - hsv color object
+    */
+    ;
+
+    // CRGB hsvToRgb( CHSV hsv) {
+    //   float h = hsv.h / 255;
+    //   float s = hsv.s / 255;
+    //   float v = hsv.v / 2255;
+      
+	//   float i = floor(h);
+    //   float f = h - i;
+    //   float p = v * (1 - s);
+    //   float q = v * (1 - f * s);
+    //   float t = v * (1 - (1 - f) * s);
+    //   float mod = i % 6;
+      
+	//   var r = [v, q, p, p, t, v][mod];
+    //   var g = [t, v, v, q, p, p][mod];
+    //   var b = [p, p, t, v, v, q][mod];
+      
+	//   return {
+    //     map( r * 255),
+    //     map( g * 255),
+    //     map( b * 255)
+    //   };
+    // }
+
+    /**
+      * @desc Convert rgb object to hsv
+      * @param rgb - rgb object
+    */
+    ;
+
+    // CHSV rgbToHsv( CRGB rgb) {
+    //   var r = rgb.r / 255;
+    //   var g = rgb.g / 255;
+    //   var b = rgb.b / 255;
+    //   var max = Math.max(r, g, b);
+    //   var min = Math.min(r, g, b);
+    //   var delta = max - min;
+    //   var hue = 0;
+    //   var value = max;
+    //   var saturation = max === 0 ? 0 : delta / max;
+
+    //   switch (max) {
+    //     case min:
+    //       hue = 0; // achromatic
+
+    //       break;
+
+    //     case r:
+    //       hue = (g - b) / delta + (g < b ? 6 : 0);
+    //       break;
+
+    //     case g:
+    //       hue = (b - r) / delta + 2;
+    //       break;
+
+    //     case b:
+    //       hue = (r - g) / delta + 4;
+    //       break;
+    //   }
+
+    //   return {
+    //     h: hue * 60 % 360,
+    //     s: clamp(saturation * 100, 0, 100),
+    //     v: clamp(value * 100, 0, 100)
+    //   };
+    // } 
+
+	
+// CHSV rgb2hsv( CRGB in)
+// {
+//     CHSV        out;
+//     double      min, max, delta;
+
+//     min = in.r < in.g ? in.r : in.g;
+//     min = min  < in.b ? min  : in.b;
+
+//     max = in.r > in.g ? in.r : in.g;
+//     max = max  > in.b ? max  : in.b;
+
+//     out.v = max;                                // v
+//     delta = max - min;
+//     if (delta < 0.00001)
+//     {
+//         out.s = 0;
+//         out.h = 0; // undefined, maybe nan?
+//         return out;
+//     }
+//     if( max > 0.0 ) { // NOTE: if Max is == 0, this divide would cause a crash
+//         out.s = (delta / max) * 255;                  // s
+//     } else {
+//         // if max is 0, then r = g = b = 0              
+//         // s = 0, h is undefined
+//         out.s = 0.0;
+//         out.h = NAN;                            // its now undefined
+//         return out;
+//     }
+//     if( in.r >= max )                           // > is bogus, just keeps compilor happy
+//     	out.h = 0   + 43 * ( in.g - in.b ) / delta;        // between yellow & magenta
+//     else 
+//     if( in.g >= max )
+//         out.h =  85 + 43 * ( in.b - in.r ) / delta;  // between cyan & yellow
+//     else
+//         out.h = 171 + 43 * ( in.r - in.g ) / delta;  // between magenta & cyan
+
+//     // out.h *= ( 60.0 * 0.7111);                              // degrees
+
+//     if( out.h < 0.0 )
+//         out.h += 256.0;
+
+//     return out;
+// }
+
 

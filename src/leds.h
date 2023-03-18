@@ -5,21 +5,6 @@ extern CRGB leds[NUM_LEDS];            // Массив ленты
 
 class Ledas{
 	public: // спецификатор доступа public
-		// waveClass( int i, String n, bool s = false){	// конструктор класса
-		// 	id = i;		
-		// 	name = n;
-		// 	statik = s;
-		bool changed = false;   		// something chaged from web or irda
-		
-		/*Возвращает true ( bool Ledas.changed), 
-		если в настройках с сайта или ИРы что-то поменялось.
-		Сбрасывается на false, после первого обращения к себе.*/
-		bool isChanged(){
-			bool result = this->changed;
-			this->changed = false;
-			return result;
-		}
-
 		CRGB hsv2rgb( CHSV hsv);
 		CHSV rgb2hsv( CRGB rgb);
 
@@ -29,8 +14,6 @@ class Ledas{
 		static void powerONOFF();
 
 		static void reset();
-		static void UPWhite();
-		static void UP();
 		void OFF();
 		void blink();
 		void fadeOUT();
@@ -52,10 +35,10 @@ class Ledas{
 		static void changeSaturation( int delta);
 
 		CRGB GCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
-		CRGB GCfP( CRGBPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		CRGB GCfP( const struct CRGBPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 		
 		CHSV GCfPH( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
-		CHSV GCfPH( CHSVPalette16 colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		CHSV GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 
 		CRGB blend( CRGB c1, CRGB c2, uint16_t blend);
 
@@ -73,3 +56,34 @@ class Ledas{
 extern Ledas led;
 
 #endif
+
+
+/*
+
+-=> hsv2rgb.cpp
+
+void hsv2rgb_rainbow( const CHSV& hsv, CRGB& rgb)
+{
+    uint16_t region, remainder, p, q, t;
+    
+    if (hsv.s == 0) {	rgb.r = hsv.v;	rgb.g = hsv.v;	rgb.b = hsv.v;		return;}
+    
+    region = hsv.h / 43;
+    remainder = (hsv.h - (region * 43)) * 6; 
+    
+    p = (hsv.v * (255 - hsv.s)) >> 8;
+    q = (hsv.v * (255 - ((hsv.s * 		 remainder)  >> 8))) >> 8;
+    t = (hsv.v * (255 - ((hsv.s * (255 - remainder)) >> 8))) >> 8;
+    
+    switch (region) {
+        case 0:		rgb.r = hsv.v; 	rgb.g = t; 		rgb.b = p;		break;
+        case 1:		rgb.r = q; 		rgb.g = hsv.v; 	rgb.b = p;    	break;
+        case 2: 	rgb.r = p; 		rgb.g = hsv.v; 	rgb.b = t;    	break;
+        case 3:		rgb.r = p; 		rgb.g = q; 		rgb.b = hsv.v;  break;
+        case 4: 	rgb.r = t; 		rgb.g = p; 		rgb.b = hsv.v;  break;
+        default:	rgb.r = hsv.v; 	rgb.g = p; 		rgb.b = q;   	break;
+    }
+}
+
+
+*/
