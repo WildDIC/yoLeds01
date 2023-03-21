@@ -5,8 +5,8 @@ extern CRGB leds[NUM_LEDS];            // Массив ленты
 
 class Ledas{
 	public: // спецификатор доступа public
-		CRGB hsv2rgb( CHSV hsv);
-		CHSV rgb2hsv( CRGB rgb);
+		CRGB hsv2rgb( const CHSV& hsv);
+		CHSV rgb2hsv( const CRGB& rgb);
 
 		void startUP();
 		void powerOFF();
@@ -27,7 +27,7 @@ class Ledas{
 		static void setSaturation( int value);
 		static void setTemperature(int value);
 		static void setBrightness( int value);
-		static void setColors(	CRGB c1, CRGB c2, CRGB c3);
+		static void setColors(	const CRGB& c1, const CRGB& c2, const CRGB& c3);
 
 		static void changeSpeed( int delta);
 		static void changeTemperature( int delta);
@@ -40,17 +40,17 @@ class Ledas{
 		CHSV GCfPH( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 		CHSV GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 
-		CRGB blend( CRGB c1, CRGB c2, uint16_t blend);
+		CRGB blend( const CRGB& c1, const CRGB& c2, uint16_t blend);
 
-		uint8_t beat(  uint8_t scale = 4);
-		uint8_t beat8( uint8_t speed, uint8_t scale = 8);
+		uint8_t beat(  uint8_t bpm = 4);
+		uint8_t beat8( uint8_t bpm, uint8_t timeScale = 8);
 
 		uint8_t circle8(uint8_t in);
 		uint8_t circle( uint8_t ind, uint8_t total, uint8_t ts = 0);
 
-		uint8_t beatCircle(   accum88 beats_per_minute, uint8_t timeShift = 0, uint32_t timeScale = 8);
-		uint8_t beatCircle8(  accum88 beats_per_minute, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
-		uint8_t beatCircle88( accum88 beats_per_minute, uint8_t lowest = 0, uint8_t highest = 255, uint8_t timeShift = 0, uint32_t timeScale = 8);
+		uint8_t beatCircle(   accum88 bpm = 8, uint8_t timeShift = 0, 	uint8_t timeScale = 8);
+		uint8_t beatCircle8(  accum88 bpm = 8, uint8_t highest = 255, 	uint8_t timeShift = 0, 	 uint8_t timeScale = 8);
+		uint8_t beatCircle88( accum88 bpm = 8, uint8_t lowest 	= 0, 	uint8_t highest   = 255, uint8_t timeShift = 0, uint8_t timeScale = 8);
 };
 
 extern Ledas led;

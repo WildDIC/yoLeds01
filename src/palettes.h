@@ -26,6 +26,12 @@ const byte es_vintage_57_gp[] PROGMEM = {
   255, 200, 190, 25};
 //   255,  46, 56,  4};
 
+const byte heatColor_my[] PROGMEM = {
+	0, 		0, 		0, 		0,
+	85,		136,	0, 		0,
+	170,	255,	0, 		0,
+	255, 	255, 	165,	0};
+
 
 // Gradient palette "es_vintage_01_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/es/vintage/tn/es_vintage_01.png.index.html
@@ -514,23 +520,10 @@ const byte Tiamat_gp[] PROGMEM = {
 //Custom palette by Aircoookie
 
 const byte April_Night_gp[] PROGMEM = {
-	0,   1,  5, 45, //deep blue
-   10,   1,  5, 45,
-   25,   5,169,175, //light blue
-   40,   1,  5, 45,
-   61,   1,  5, 45,
-   76,  45,175, 31, //green
-   91,   1,  5, 45,
-  112,   1,  5, 45,
-  127, 249,150,  5, //yellow
-  143,   1,  5, 45,
-  162,   1,  5, 45,
-  178, 255, 92,  0, //pastel orange
-  193,   1,  5, 45,
-  214,   1,  5, 45,
-  229, 223, 45, 72, //pink
-  244,   1,  5, 45,
-  255,   1,  5, 45};
+    0,   1,  2, 44,
+   84,   9, 11,112,
+  168,  77, 19,105,
+  255, 255,100,137};
 
 const byte Orangery_gp[] PROGMEM = {
 // 	0, 255, 95, 23,
@@ -581,27 +574,25 @@ const byte Atlantica_gp[] PROGMEM = {
   255,  40,170, 80};//#28AA50
 
   const byte C9_2_gp[] PROGMEM = {
-	0,   6, 126,   2, //green
-   45,   6, 126,   2,
-   45,   4,  30, 114, //blue
-   90,   4,  30, 114,
-   90, 255,   5,   0, //red
-  135, 255,   5,   0,
-  135, 196,  57,   2, //amber
-  180, 196,  57,   2,
-  180, 137,  85,   2, //yellow
-  255, 137,  85,   2};
+    0,  38, 73,145,
+   30,   7, 19, 51,
+   56,  73, 40,230,
+   86,  55, 49,182,
+  112,  15,135,250,
+  140, 125,122,212,
+  170,  13, 55,228,
+  198, 123, 65,228,
+  229,   7, 19, 51,
+  255,  38, 73,145};
 
   //C9, but brighter and with a less purple blue
   const byte C9_new_gp[] PROGMEM = {
-	0, 255,   5,   0, //red
-   60, 255,   5,   0,
-   60, 196,  57,   2, //amber (start 61?)
-  120, 196,  57,   2, 
-  120,   6, 126,   2, //green (start 126?)
-  180,   6, 126,   2,
-  180,   4,  30, 114, //blue (start 191?)
-  255,   4,  30, 114};
+    0,  55, 19,103,
+   51,  95, 32,133,
+  101, 167, 44,162,
+  153, 125,182,237,
+  204,  84,127,207,
+  255,  19, 40,114};
   
 // Gradient palette "temperature_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/arendal/tn/temperature.png.index.html
@@ -700,14 +691,15 @@ const byte semi_blue_gp[] PROGMEM = {
 // Size: 32 bytes of program space.
 
 const byte pink_candy_gp[] PROGMEM = {
-	0, 255,255,255,
-   45,   7, 12,255,
-  112, 227,  1,127,
-  112, 227,  1,127,
-  140, 255,255,255,
-  155, 227,  1,127,
-  196,  45,  1, 99,
-  255, 255,255,255};
+    0, 229, 22, 51,
+   45, 242,117, 52,
+   66, 255,235, 18,
+   99, 249,193,  4,
+  135, 106, 77,153,
+  170,  39, 15,151,
+  204, 121,142, 71,
+  242,  57,122,190,
+  255,  57,122,190};
 
 // Gradient palette "bhw1_w00t_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw1/tn/bhw1_w00t.png.index.html
@@ -750,102 +742,6 @@ const byte yelblu_hot_gp[] PROGMEM = {
   183, 179, 45,  1,
   219, 220,114,  2,
   255, 234,237,  1};
-
- // Gradient palette "bhw2_45_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw2/tn/bhw2_45.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 24 bytes of program space.
-
-const byte lite_light_gp[] PROGMEM = {
-	0,   0,  0,  0,
-	9,   1,  1,  1,
-   40,   5,  5,  6,
-   66,   5,  5,  6,
-  101,  10,  1, 12,
-  255,   0,  0,  0};
-
-// Gradient palette "bhw2_22_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw2/tn/bhw2_22.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Pink Plasma in SR
-// Size: 20 bytes of program space.
-
-const byte red_flash_gp[] PROGMEM = {
-	0,   0,  0,  0,
-   99, 227,  1,  1,
-  130, 249,199, 95,
-  155, 227,  1,  1,
-  255,   0,  0,  0};
-
-// Gradient palette "bhw3_40_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw3/tn/bhw3_40.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 32 bytes of program space.
-
-const byte blink_red_gp[] PROGMEM = {
-	0,   1,  1,  1,
-   43,   4,  1, 11,
-   76,  10,  1,  3,
-  109, 161,  4, 29,
-  127, 255, 86,123,
-  165, 125, 16,160,
-  204,  35, 13,223,
-  255,  18,  2, 18};
-
-// Gradient palette "bhw3_52_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw3/tn/bhw3_52.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Yellow2Blue in SR
-// Size: 28 bytes of program space.
-
-const byte red_shift_gp[] PROGMEM = {
-	0,  31,  1, 27,
-   45,  34,  1, 16,
-   99, 137,  5,  9,
-  132, 213,128, 10,
-  175, 199, 22,  1,
-  201, 199,  9,  6,
-  255,   1,  0,  1};
-
-// Gradient palette "bhw4_097_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_097.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Yellow2Red in SR
-// Size: 44 bytes of program space.
-
-const byte red_tide_gp[] PROGMEM = {
-	0, 247,  5,  0,
-   28, 255, 67,  1,
-   43, 234, 88, 11,
-   58, 234,176, 51,
-   84, 229, 28,  1,
-  114, 113, 12,  1,
-  140, 255,225, 44,
-  168, 113, 12,  1,
-  196, 244,209, 88,
-  216, 255, 28,  1,
-  255,  53,  1,  1};
-
-
-
-const byte RainbowStripeColors_my[] PROGMEM = {
-	0,		255,	0,		0,
-	17,		0,		0,		0,
-	34,		171,	85,		0,
-	51,		0,		0,		0,
-	68,		171,	171,	0,
-	85,		0,		0,		0,
-	102,	0,		255,	0,
-	119,	0,		0,		0,
-	136,	0,		171,	85,
-	153,	0,		0,		0,
-	170,	0,		0,		255,
-	187,	0,		0,		0,
-	204,	85,		0,		171,
-	221,	0,		0,		0,
-	238,	171,	0,		85,
-	255,	0,		0,		0,
-};
 
 const byte PartyColors_my[] PROGMEM = {
 	0,	85,	0,	171,
@@ -908,70 +804,112 @@ const byte blueToViolet_my[] PROGMEM = {
 	127, 	89, 0, 		176,
 	255, 	0, 	176, 	179};
 
-const byte deepForest_my[] PROGMEM = {
-	0,		9,		78,		32,
-	18,		10,		126,	76,
-	36,		14,		148,	92,
-	55,		11,		182,	112,
-	73,		12,		207,	126,
-	91,		66,		214,	152,
-	109,	105,	195,	161,
-	128,	127,	180,	160,
-	146,	108,	135,	120,
-	164,	90,		106,	97,
-	182,	74,		88,		79,
-	200,	21,		22,		21,
-	219,	0,		0,		81,
-	237,	0,		0,		142,
-	255,	0,		0,		190};
+// const byte OceanColors_my[] PROGMEM = {
+// 	0,		25,		25,		112,
+// 	17,		0,		0,		136,
+// 	34,		25,		25,		112,
+// 	51,		0,		0,		128,
+// 	68,		0,		0,		136,
+// 	85,		0,		0,		205,
+// 	102,	46,		136,	87,
+// 	119,	0,		128,	128,
+// 	136,	95,		158,	160,
+// 	153,	0,		0,		255,
+// 	170,	0,		139,	139,
+// 	187,	100,	149,	237,
+// 	204,	127,	255,	212,
+// 	221,	46,		139,	87,
+// 	238,	0,		255,	255,
+// 	255,	135,	206,	250
+// };
 
-const byte heatColor_my[] PROGMEM = {
-	0, 		0, 		0, 		0,
-	85,		136,	0, 		0,
-	170,	255,	0, 		0,
-	255, 	255, 	165,	0};
 
-const byte OceanColors_my[] PROGMEM = {
-	0,		25,		25,		112,
-	17,		0,		0,		136,
-	34,		25,		25,		112,
-	51,		0,		0,		128,
-	68,		0,		0,		136,
-	85,		0,		0,		205,
-	102,	46,		136,	87,
-	119,	0,		128,	128,
-	136,	95,		158,	160,
-	153,	0,		0,		255,
-	170,	0,		139,	139,
-	187,	100,	149,	237,
-	204,	127,	255,	212,
-	221,	46,		139,	87,
-	238,	0,		255,	255,
-	255,	135,	206,	250
-	// "191970", "000088", "191970", "000080", "000088", "0000CD", "2E8857", "008080", 
-	// "5F9EA0", "0000FF", "008B8B", "6495ED", "7FFFD4", "2E8B57", "00FFFF", "87CEFA"
-};
 
-const byte ForestColors_my[] PROGMEM = {
-	// "0x006400", "0x006400", "0x556B2F", "0x006400", "0x008000", "0x228B22", "0x6B8E23", "0x008000", 
-	// "0x2E8B57", "0x66CDAA", "0x32CD32", "0x9ACD32", "0x90EE90", "0x7CFC00", "0x66CDAA", "0x228B22"
-	0,		0,		100,	0,
-	17,		0,		100,	0,
-	34,		85,		107,	47,
-	51,		0,		100,	0,
-	68,		0,		128,	0,
-	85,		34,		139,	34,
-	102,	107,	142,	35,
-	119,	0,		128,	0,
-	136,	46,		139,	87,
-	153,	102,	205,	170,
-	170,	50,		205,	50,
-	187,	154,	205,	50,
-	204,	144,	238,	144,
-	221,	124,	252,	0,
-	238,	102,	205,	170,
-	255,	34,		139,	34
-};
+
+ // Gradient palette "bhw2_45_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw2/tn/bhw2_45.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 24 bytes of program space.
+
+const byte lite_light_gp[] PROGMEM = {
+    0, 192, 50,207,
+   25, 192, 50,207,
+   51, 133, 50,207,
+   76,  87, 50,207,
+  102,  59, 61,207,
+  127,  37, 73,207,
+  153,  37, 97,207,
+  178,  37,127,207,
+  204,  37,166,172,
+  229,  37,213,140,
+  255,  37,213,140};
+
+
+// Gradient palette "bhw2_22_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw2/tn/bhw2_22.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Pink Plasma in SR
+// Size: 20 bytes of program space.
+
+const byte red_flash_gp[] PROGMEM = {
+    0, 247,199, 87,
+   53, 247,199, 87,
+  107, 242,156, 75,
+  119, 234,119, 65,
+  132, 213, 88, 66,
+  145, 194, 62, 67,
+  158, 142, 33, 84,
+  202,  98, 13,105,
+  247,  34, 10, 35,
+  251,   5,  9,  5,
+  255,   5,  9,  5};
+
+
+
+// Gradient palette "bhw3_40_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw3/tn/bhw3_40.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 32 bytes of program space.
+
+const byte blink_red_gp[] PROGMEM = {
+    0,  23,  4, 32,
+   63,  98, 31, 52,
+  127, 224,138, 24,
+  191,   7, 55,164,
+  255,  23,  4, 32};
+
+
+// Gradient palette "bhw3_52_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw3/tn/bhw3_52.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Yellow2Blue in SR
+// Size: 28 bytes of program space.
+
+const byte red_shift_gp[] PROGMEM = {
+    0, 206,149,133,
+   40, 190,  8, 61,
+   76,  45,  7, 85,
+  101,   9, 18,130,
+  140,   7,162,138,
+  188, 153,219,194,
+  229,   7,162,138,
+  255,   7,162,138};
+
+
+// Gradient palette "bhw4_097_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_097.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Yellow2Red in SR
+// Size: 44 bytes of program space.
+
+const byte red_tide_gp[] PROGMEM = {
+    0,  43,  3,153,
+   63, 100,  4,103,
+  127, 188,  5, 66,
+  191, 161, 11,115,
+  255, 135, 20,182};
+
+
 
 // Gradient palette "bhw4_017_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_017.png.index.html
@@ -979,16 +917,42 @@ const byte ForestColors_my[] PROGMEM = {
 // Size: 40 bytes of program space.
 
 const byte candy2_gp[] PROGMEM = {
-	0,  39, 33, 34,
-   25,   4,  6, 15,
-   48,  49, 29, 22,
-   73, 224,173,  1,
-   89, 177, 35,  5,
-  130,   4,  6, 15,
-  163, 255,114,  6,
-  186, 224,173,  1,
-  211,  39, 33, 34,
-  255,   1,  1,  1};
+    0,  21,  3, 56,
+   25,  21,  3, 56,
+   51,  29, 10, 95,
+   76,  39, 21,145,
+  102,  40, 33,156,
+  127,  43, 47,170,
+  153,  58, 73,184,
+  178,  77,105,197,
+  204, 109,141,210,
+  229, 146,184,223,
+  255, 146,184,223};
+
+const byte RainbowStripeColors_my[] PROGMEM = {
+    0,  75,  1,221,
+   30, 252, 73,255,
+   48, 169,  0,242,
+  119,   0,149,242,
+  170,  43,  0,242,
+  206, 252, 73,255,
+  232,  78, 12,214,
+  255,   0,149,242};
+
+const byte deepForest_my[] PROGMEM = {
+    0,   0,255,255,
+  127, 255,  0,255,
+  191, 255,255,  0,
+  255, 255,255,255};
+
+
+const byte ForestColors_my[] PROGMEM = {
+    0, 113, 91,147,
+   72, 157, 88, 78,
+   89, 208, 85, 33,
+  107, 255, 29, 11,
+  141, 137, 31, 39,
+  255,  59, 33, 89};
 
 
 const byte lightFie_my[] PROGMEM = {

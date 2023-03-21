@@ -1,70 +1,46 @@
-// #include "waveClass.h"
 
 /* 
 		Костерок №03
 
-	far00 - active phaze ticks peaces
-	far01 - background fader pieces
-
 */
 void aFire03pre()
 {
-	yo.name010 = "Density";
+	// yo.name010 = "Density";
 	// yo.name100 = "In/Out ticks x2";
-	yo.name255 = "Cooldown ticks x2";
-	yo.name355 = "Candle blink value";
-	// yo.nameSpeed = "Active phase ticks x30";
+	yo.name255 = "Cooldown ticks";
+	// yo.name355 = "Blured amount";
+	yo.nameSpeed = "Speed x2";
 
 	for ( int ind = 0; ind < NUM_LEDS; ind++)
 	{
-		v.aSTATUS[ind] = random8( 4);
+		v.aSTATUS[ind] = 0;
 		v.aVALUE[ind] = random8();
 	}
 }
 
 void aFire03() 
 {
+	v.color = led.beat8( yo.currentSpeed << 1, 6);
+
     for (int pos = 0; pos < NUM_LEDS; pos++)
-	{	
-		if ( v.aVALUE[pos] <= 0)
+	{					
+		switch ( v.aSTATUS[pos])
 		{
-			v.aSTATUS[pos] += 1;
+		case 0:
+			v.var00 	= v.aVALUE[pos] + v.color;
+			leds[pos] 	= led.GCfPH( v.var00, false, led.circle8( v.var00)); 
 
-			switch ( v.aSTATUS[pos])
-			{
-				case 1: break;
-				case 2:{
-					v.aVALUE[pos] = yo.AUX255 << 1;
-					leds[pos] = CRGB::Black;
-					break;}					
-				default:{
-					v.aVALUE[pos] = 255;
-					v.aSTATUS[pos] = 3;
-					break;}
-			}
-		}
-		else{
-			v.aVALUE[pos] -= 1;
-
-			if ( v.aSTATUS[pos] == 1)
-			{
-				leds[pos] = ( led.GCfPH( 255 - v.aVALUE[pos], false,  led.circle8( v.aVALUE[pos]), 0, true)); 
-			}
+			if ( v.var00 == 255) v.aSTATUS[pos] = random8( yo.AUX255 >> 1, yo.AUX255); 
+			break;
+		
+		case 1:
+			v.aVALUE[pos] 	= 255 - v.color + 1;
+			v.aSTATUS[pos] 	= 0;
+			break;
+		
+		default:
+			v.aSTATUS[pos] 	-= 1;
+			break;		
 		}
 	}	        
-
-    for ( int pos01 = 0; pos01 < yo.AUX010; pos01++)
-	{
-        uint8_t pos = random8( NUM_LEDS);
-
-		if ( v.aSTATUS[pos] > 2)
-		{
-			v.aSTATUS[pos] = 1;
-			v.aVALUE[pos]  = random8( 240, 255);
-		}
-    }
-    // FastLED.show();
-	// delay( 10);
 }
-
-

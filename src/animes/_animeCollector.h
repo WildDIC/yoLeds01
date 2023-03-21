@@ -17,6 +17,12 @@
 #include "aRainbow01.h"
 #include "aSoundRain01.h"
 
+#include "blured.h"
+#include "twoSinsDemo.h"
+#include "breathwave.h"
+#include "lightings.h"
+#include "jungle.h"
+
 void animmeStartUP()
 {
 	a.addStatic( IR_PLAY, 	"White Power Color", 		&UPWhite, 			true);
@@ -35,6 +41,13 @@ void animmeStartUP()
 	a.addAmine(	IR_NUM_10,	"Rainbow Wave", 			&aRainbow, 			true);
 	a.addAmine(	10000001, 	"Musix echo", 				&aSoundCheck, 		true);
 	a.addAmine(	IR_NUM_0, 	"Fire 2012", 				&aFire2012,			true);
+	
+	a.addAmine(	10000014, 	"_blured", 					&blured,			true);
+	a.addAmine(	10000015, 	"_2 sins", 					&anime2sins,		true, 	9, 		&anime2sinsPre);
+	a.addAmine(	10000016, 	"_breath wave",				&beatwave,			true);
+	a.addAmine(	10000017, 	"_lightings wave",			&lightings,			true);
+	a.addAmine(	10000018, 	"_juungle wave",			&jungle,			true, 	9, 		&junglepre);
+	
 	// a.addAmine(	IR_NUM_7, 	"Gradient (wled) 1",		false, 	&aGradient, 		24, 	&aGradient01pre);
 	// a.addAmine(	IR_NUM_8, 	"Gradient (wled) 2",		false, 	&aGradient, 		24, 	&aGradient02pre);
 	
@@ -59,6 +72,8 @@ void animmeStartUP()
 
 	a.addStatic(IR_MENU_OK,		"Leds reset",			&Ledas::reset);	
 	a.addStatic(IR_TV_ON, 		"Power ON/OFF",			&Ledas::powerONOFF);
+
+	a.makeWebLists();
 }
 
 #endif

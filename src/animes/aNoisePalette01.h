@@ -44,14 +44,18 @@ void aNoise()
 {
     for (int i = 0; i < NUM_LEDS; i++) 
 	{		
+		uint8_t backVal = 255;
 		uint8_t colorID = inoise8( i * ( yo.AUX255 >> 1), millis() / yo.currentSpeed);
-		uint8_t backVal = inoise8( i * ( yo.AUX100     ), millis() / yo.AUX010);
 		
 		colorID = constrain( colorID, v.baza, 200);
 		colorID = map( colorID, v.baza, 200, v.color, 255);
 
-		backVal = constrain( backVal, 60, 200);
-		backVal = map( backVal, 60, 200, v.var02, 255);
+		if ( yo.AUX100 > 1)
+		{
+			backVal = inoise8( i * ( yo.AUX100     ), millis() / yo.AUX010);
+			backVal = constrain( backVal, 60, 200);
+			backVal = map( backVal, 60, 200, v.var02, 255);
+		}
 
 		leds[i] = led.GCfPH( colorID, false, backVal);  
     }

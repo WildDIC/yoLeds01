@@ -8,9 +8,19 @@
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
 
+struct button{  						// для вебсервера, формируем список кнопко-эментов на странице
+	int code;
+	String name;
+};
 
-byte NUM_RANGES = 1;
-byte NUM_BUTTONS = 0;
+struct range{							// для вебсервера, формируем список ранже-эментов на странице
+	int code;
+	int min;
+	int max;
+	String name;
+	int value;
+};
+
 String RANGE_HOLDER = "\n";		// полоски-двигалки
 String ROOT_HOLDER = ":root{\n" ;
 String BUTTON_HOLDER = "\n";
@@ -18,9 +28,6 @@ String SELECT_HOLDER = "";
 
 #define PARAM_INPUT_1 "funcID"
 #define PARAM_INPUT_2  "value"
-
-button bList[25];
-range rList[10];
 
 // возможно не стоит это выносить сыда, а вернуть в процессорку 200
 int rState(int numValue)
@@ -80,27 +87,6 @@ String webServerMakeJSON()
 
 void collectData()
 {	
-	mbIter = mWaves.begin();
-	for (int i = 0; mbIter != mWaves.end(); mbIter++, i++) 
-	{		
-		mbIter->second.code = mbIter->first;
-				
-		if ( mbIter->second.indForWeb)
-		{
-			if ( mbIter->second.typeWeb == 1)
-			{
-				NUM_BUTTONS++;
-				bList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.name };		
-			}
-			else if ( mbIter->second.typeWeb == 2)
-			{
-				NUM_RANGES++;
-				rList[mbIter->second.indForWeb] = { mbIter->second.code, mbIter->second.min, mbIter->second.max, mbIter->second.name};
-			}			
-		} 
-    }	
-
-
 	ROOT_HOLDER += "\t\t\t--gr0: #181E28;\n";
 	ROOT_HOLDER += "\t\t\t--gr2: #181E28;\n";
 	ROOT_HOLDER += "\t\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
@@ -110,6 +96,24 @@ void collectData()
 	ROOT_HOLDER += "\t\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
 	ROOT_HOLDER += "\t\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
 
+
+	button rButton[a.countWaves + 1];
+	range rRange[ a.countRanges + 1];
+
+	a.itButtons = a.keyButton.begin();	
+	for (int i = 0; a.itButtons != a.keyButton.end(); a.itButtons++, i++) 
+	{  			
+		rButton[mWaves[*a.itButtons].indForWeb] = { *a.itButtons, mWaves[*a.itButtons].name };
+		// Serial.print( *a.itButtons);
+		// Serial.print( mWaves[*a.itButtons].name);
+		// Serial.println( mWaves[*a.itButtons].indForWeb);
+	}
+
+	a.itForSave = a.keyRange.begin();	
+	for (int i = 0; a.itForSave != a.keyRange.end(); a.itForSave++, i++) 
+	{  			
+		rRange[mWaves[*a.itForSave].indForWeb] = { *a.itForSave, mWaves[*a.itForSave].min, mWaves[*a.itForSave].max, mWaves[*a.itForSave].name };
+	}
 
 
 	// собираем css градиенты для выбора палитр
@@ -134,7 +138,7 @@ void collectData()
 
 
 	// RANGERS собираем полоски-двигалки 
-	for(int i = 1; i < NUM_RANGES; i++)
+	for(int i = 1; i < a.countRanges + 1; i++)
 	{
 		int rValue = rState(i);
 		// уменьшалка
@@ -142,18 +146,18 @@ void collectData()
 		{
 			RANGE_HOLDER += "\t\t<div class='raiser' id='raiser' style='display: none;'>\n\n";
 		}
-		RANGE_HOLDER += "\t\t<div><span class='textLabel "+rList[i].name+"-name' id='"+rList[i].name+"-name'>"+rList[i].name+": </span><span class='textLabel "+rList[i].name+"-value' id=''>"+rValue+"</span>\n";
-		RANGE_HOLDER += "\t\t\t<input id='"+String( rList[i].code)+"' class='"+rList[i].name+"' type='range' min='"+rList[i].min+"' max='"+rList[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
+		RANGE_HOLDER += "\t\t<div><span class='textLabel "+rRange[i].name+"-name' id='"+rRange[i].name+"-name'>"+rRange[i].name+": </span><span class='textLabel "+rRange[i].name+"-value' id=''>"+rValue+"</span>\n";
+		RANGE_HOLDER += "\t\t\t<input id='"+String( rRange[i].code)+"' class='"+rRange[i].name+"' type='range' min='"+rRange[i].min+"' max='"+rRange[i].max+"' step='1' value='"+rValue+"' onchange='rInput(this)';></div>\n";
 	}	
 
 
 
 	// BUUTTON 
-	for ( int i = 1; i < NUM_BUTTONS + 1; i++ )
+	for ( int i = 1; i < a.countWaves + 1; i++ )
 	{ 
-		String active = ( yo.lastPressed == bList[i].code) ? " active" : "";
-		BUTTON_HOLDER += "\t<div><button onclick='buttonClick(this)' id='"+ String( bList[i].code) +"' class='wave"+ active +"'>"+ bList[i].name +"</button></div>\n";
-		// Serial.printf( "-=> [%d] Wave ID (%d) = %s\n", i, bList[i].code, bList[i].name);
+		String active = ( yo.lastPressed == rButton[i].code) ? " active" : "";
+		BUTTON_HOLDER += "\t<div><button onclick='buttonClick(this)' id='"+ String( rButton[i].code) +"' class='wave"+ active +"'>"+ rButton[i].name +"</button></div>\n";
+		// Serial.printf( "-=> [%d] Wave ID (%d) = %s\n", i, rButton[i].code, rButton[i].name);
 	}
 
 
@@ -165,7 +169,7 @@ void collectData()
 		{		
 			if ( i == yo.lastCustPal + 11){ SELECT_HOLDER += "\t\t<optgroup label=\"WLEDs Pollitres(c)\">\n"; }				
 			String active = ( i == mWaves[yo.lastPressed].min) ?" selected = 'selected'" : "";
-			SELECT_HOLDER += "\t\t\t<option id='option-poll-"+ String( i) +"'"+ active +" value='"+ String( i) +"'>"+ myPal[i].name +"</option>\n";
+			SELECT_HOLDER += "\t\t\t<option id='option-poll-" + String( i) + "'" + active + " value='" + String( i) + "'>" + myPal[i].name + "</option>\n";
 		}
 	}
 	SELECT_HOLDER += "\t\t</optgroup>\n\t</select></div>\n\n";

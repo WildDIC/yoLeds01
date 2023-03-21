@@ -12,7 +12,9 @@ Ledas led;
 void Ledas::startUP()
 {
 	// FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip ); 
-	FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); //.setCorrection( TypicalLEDStrip );
+	FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+	// set_max_power_in_volts_and_milliamps(5.5, 550);               // FastLED Power management set at 5V, 500mA.
+
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
 	// ledFadeOUT();
 	FastLED.delay( 5);
@@ -82,7 +84,7 @@ CHSV Ledas::GCfPH( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t a
 }
 
 
-CRGB Ledas::hsv2rgb( CHSV hsv)
+CRGB Ledas::hsv2rgb( const CHSV& hsv)
 {
     CRGB rgb;
     uint16_t region, remainder, p, q, t;
@@ -108,7 +110,7 @@ CRGB Ledas::hsv2rgb( CHSV hsv)
 }
 
 
-CHSV Ledas::rgb2hsv( CRGB rgb)
+CHSV Ledas::rgb2hsv( const CRGB& rgb)
 {
     CHSV hsv;
     uint16_t rgbMin, rgbMax;
@@ -122,7 +124,7 @@ CHSV Ledas::rgb2hsv( CRGB rgb)
     hsv.s = 255 * ((long)(rgbMax - rgbMin)) / hsv.v;
     if (hsv.s == 0){ hsv.h = 0;					return hsv;}
 
-    if (rgbMax == rgb.r)		hsv.h =   0 + 43 * (rgb.g - rgb.b) / (rgbMax - rgbMin);
+    if 		(rgbMax == rgb.r)	hsv.h =   0 + 43 * (rgb.g - rgb.b) / (rgbMax - rgbMin);
     else if (rgbMax == rgb.g)   hsv.h =  85 + 43 * (rgb.b - rgb.r) / (rgbMax - rgbMin);
     else				        hsv.h = 171 + 43 * (rgb.r - rgb.g) / (rgbMax - rgbMin);
 
@@ -195,7 +197,7 @@ void Ledas::fadeOUT()
 }
 
 
-void Ledas::setSpeed(  int value){ yo.currentSpeed = value; if ( yo.loadOutside){ mWaves[yo.lastPressed].speed  = value;}}
+void Ledas::setSpeed(  int value){ yo.currentSpeed = value;  if ( yo.loadOutside){ mWaves[yo.lastPressed].speed  = value;}}
 void Ledas::setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux010 = value;}}
 void Ledas::setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux100 = value;}}
 void Ledas::setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux255 = value;}}
@@ -204,7 +206,7 @@ void Ledas::setAUX455( int value){ yo.AUX455 = value; 		 if ( yo.loadOutside){ m
 
 
 /*@param force не пишем, так как закинули цвет в мапу с веб-сервера уже*/
-void Ledas::setColors(	CRGB c1, CRGB c2, CRGB c3)
+void Ledas::setColors(	const CRGB& c1, const CRGB& c2, const CRGB& c3)
 {
 	yo.c1 = c1;
 	yo.c2 = c2;
@@ -363,10 +365,10 @@ void Ledas::reset()
 
 
 
-CRGB Ledas::blend( CRGB c1, CRGB c2, uint16_t blend) 
+CRGB Ledas::blend( const CRGB& c1, const CRGB& c2, uint16_t blend) 
 {
-  if( blend == 0)  return c1;
-  if(blend == 255) return c2;
+  if ( blend == 0)  return c1;
+  if ( blend == 255) return c2;
 
   uint32_t r3 = (( c2.r * blend) + ( c1.r * ( 255 - blend))) >> 8;
   uint32_t g3 = (( c2.g * blend) + ( c1.g * ( 255 - blend))) >> 8;
@@ -378,7 +380,7 @@ CRGB Ledas::blend( CRGB c1, CRGB c2, uint16_t blend)
 
 /*
 returns 0-255 for a time period with x8'scale' and x'speed':
-speed:	
+bpm:	
 	1 = 65.363ms	11 = 5.936ms
 	2 = 32.642ms	12 = 5.447ms
 	3 = 21.762ms	13 = 5.026ms
@@ -389,18 +391,18 @@ speed:
 	8 = 8.163ms		18 = 3.631ms
 	9 = 7.257ms		19 = 3.440ms
 	10 = 6.530ms	20 = 3.267ms
-scale:	
+timeScale:	
 	..., 7 = x0.5, 8 = x1, 9 = x2, ...
 */
-uint8_t Ledas::beat8( uint8_t speed, uint8_t scale)
+uint8_t Ledas::beat8( uint8_t bpm, uint8_t timeScale)
 {
-	return ( millis() * speed) >> scale;
+	return ( millis() * bpm) >> timeScale;
 }
 
 
 /*
 returns 0-255 for a time period with the given 'scale':
-scale:
+timeScale:
 	8 = 65.363ms
 	7 = 32.663ms
 	6 = 16.350ms
@@ -410,9 +412,9 @@ scale:
 	2 = 1.024ms
 	1 = 512/1.024
 */
-uint8_t Ledas::beat( uint8_t scale)
+uint8_t Ledas::beat( uint8_t timeScale)
 {
-	return millis() >> scale;
+	return millis() >> timeScale;
 }
 
 /*
@@ -420,92 +422,148 @@ uint8_t Ledas::beat( uint8_t scale)
 	@param in index 0-255
 	@return in-out full circle 0-255-0
 */
-uint8_t Ledas::circle8(uint8_t in)
+// uint8_t Ledas::circle8(uint8_t in)
+// {
+//     if( in & 0x80) 
+// 	{
+//         in = 255 - in;
+//     }
+//     return scale8( in, in) << 2;
+// }
+
+/*
+	Псево sin8(), выдает 0-255-0 с замедлением на вершинах
+	@param in index 0-255
+	@return full circle 0-255-0
+*/
+uint8_t Ledas::circle8( uint8_t in)
 {
-    if( in & 0x80) 
-	{
-        in = 255 - in;
+	uint8_t out;
+    if( in & 0x80 ) in = 255 - in;
+        
+    if ( in < 64){
+        in = in << 1;
+        out  = ( in * in) >> 7;
+    }else{
+        in = ( 128 - in) << 1;
+        out = 255 - (( in * in) >> 7);  // (( in * in) / 255) * 2 = ( scale8( in, in))
     }
-    uint8_t out = in << 1;
     return out;
 }
-
-
 /*
 	In/Out circle: like triwave, but with custom period		
 	@param ind circle index
-	@param total total circe lenght 
-	@param ts timeshift ( total/2 = +255 )
-	@return 0 - total/2 - total = 0 - 255 - 0
+	@param highest total circe lenght 
+	@param ts timeshift ( highest/2 = +255 )
+	@return 0 - highest/2 - highest = 0 - 255 - 0
 */
-uint8_t Ledas::circle( uint8_t ind, uint8_t total, uint8_t ts)
+uint8_t Ledas::circle( uint8_t ind, uint8_t highest, uint8_t ts)
 {
-	uint8_t htotal = total >> 1;
-	ind = ( ts + ind) % total;			// % <=- сильно под вопросом
+	// uint8_t htotal = total >> 1;
+	// ind = ( ts + ind) % total;			// % <=- сильно под вопросом
+	// if ( ind > htotal){ ind = total - ind; }
+	// uint8_t result = ind * ( 255 / ( htotal));
 
-	if ( ind > htotal){
-		ind = total - ind;
-	}
-
-	uint8_t result = ind * ( 255 / ( htotal));
+	uint8_t result = ( ind << 8) / highest;
+	result = result + ts;
+	result = circle8( result);
 	return result;
 } 
 
-
-
 /* 
-Такой как beatSin8, только без sin и попроще с таймерами, выдает beats_per_minute( 0-255) циклов в минуту.
-@param beats_per_minute ожидаемый примерный BPM
+Такой как beatSin8, только без sin и попроще с таймерами, выдает bpm( 0-255) циклов в минуту.
+@param bpm ожидаемый примерный BPM
 @param timeShift ( 0-255) сдвигаем ответ 
 @param timeScale ( 1-Х ) множитель БПМ для ledBeat8()
 @return 0-255-0 in BPM from ( 0 - 255) + timeshift
 */
-uint8_t Ledas::beatCircle( accum88 beats_per_minute, uint8_t timeShift, uint32_t timeScale)
+uint8_t Ledas::beatCircle( accum88 bpm, uint8_t timeShift, uint8_t timeScale)
 {
-    uint8_t beat 	= this->beat( 4);  //, timeScale);
-    // uint8_t beat 	= this->beat8( beats_per_minute, timeScale);
-	uint8_t beatts 	= beat + timeShift;
-    uint8_t result 	= this->circle8( beatts);
+    uint8_t beat 	= this->beat8( bpm, timeScale);
+    uint8_t result 	= this->circle8( beat + timeShift);
     return result;
 }
 
 /* 
-Такой как beatSin8, только без sin и попроще с таймерами, выдает beats_per_minute ( 0-highest) циклов в минуту.
-@param beats_per_minute ожидаемый примерный BPM
+Такой как beatSin8, только без sin и попроще с таймерами, выдает bpm ( 0-highest) циклов в минуту.
+@param bpm ожидаемый примерный BPM
 @param highest ( 0-255) верхнее выдаваемое значение 
 @param timeShift ( 0-255) сдвигаем ответ 
 @param timeScale ( 1-Х ) множитель БПМ для ledBeat8()
 @return 0-255-0 in BPM from ( 0 - hightest) + timeshift
 */
-uint8_t Ledas::beatCircle8( accum88 beats_per_minute, uint8_t highest, uint8_t timeShift, uint32_t timeScale)
+uint8_t Ledas::beatCircle8( accum88 bpm, uint8_t highest, uint8_t timeShift, uint8_t timeScale)
 {
-    uint8_t beat  	= this->beatCircle( beats_per_minute, timeShift, timeScale);
+    uint8_t beat  	= this->beatCircle( bpm, timeShift, timeScale);
     uint8_t result 	= scale8( beat, highest);
     return result;
 }
 
 /* 
-Такой как beatSin8, только без sin и попроще с таймерами, выдает beats_per_minute ( lowest-highest) циклов в минуту.
-@param beats_per_minute ожидаемый примерный BPM
+Такой как beatSin8, только без sin и попроще с таймерами, выдает bpm ( lowest-highest) циклов в минуту.
+@param bpm ожидаемый примерный BPM
 @param lowest ( 0-255) нижнее выдаваемое значение 
 @param highest ( 0-255) верхнее выдаваемое значение 
 @param timeShift ( 0-255) сдвигаем ответ 
 @param timeScale ( 1-Х ) множитель БПМ для ledBeat8()
 @return 0-255-0 in BPM from ( lowest - highest) + timeshift 
 */
-uint8_t Ledas::beatCircle88( accum88 beats_per_minute, uint8_t lowest, uint8_t highest, uint8_t timeShift, uint32_t timeScale)
+uint8_t Ledas::beatCircle88( accum88 bpm, uint8_t lowest, uint8_t highest, uint8_t timeShift, uint8_t timeScale)
 {
-	uint8_t beat 	= this->beatCircle8( beats_per_minute, ( highest - lowest), timeShift, timeScale);
+	uint8_t beat 	= this->beatCircle8( bpm, ( highest - lowest), timeShift, timeScale);
     uint8_t result 	= lowest + beat;
+	CRGB(0,0,0) = CHSV( 0,0,0);
     return result;
 }
 
+// Contact(const Contact& other) = delete;
+
+// Contact(const Contact& other) = delete;
+// Contact& operator=(const Contact& other) = delete;
+// pixelTypes.h:172
+/// allow assignment from HSV color
+// inline CRGB& CRGB::operator= (const CHSV& rhs)  __attribute__((always_inline))
+// {
+//     hsv2rgb( rhs, *this);	
+// 	return *this;
+// }
 
 
-void hsv2rgb_01( CHSV rhs, CRGB thi)
-{
-	Serial.println( "Error");
-}
+// /// allow assignment from H, S, and V
+// inline CRGB& setHSV (uint8_t hue, uint8_t sat, uint8_t val) __attribute__((always_inline))
+// {
+// 	hsv2rgb_rainbow( CHSV(hue, sat, val), *this);
+// 	return *this;
+// }
+
+// /// allow assignment from just a Hue, saturation and value automatically at max.
+// inline CRGB& setHue (uint8_t hue) __attribute__((always_inline))
+// {
+// 	hsv2rgb_rainbow( CHSV(hue, 255, 255), *this);
+// 	return *this;
+// }
+
+
+// CRGB hsv2rgb_01( CHSV rhs)
+// {
+// 	Serial.println( "Error");
+// 	return CRGB( 0,0,0);
+// }
+
+
+// {
+//     CRGB h = hsv2rgb_01( rhs);
+//     return h;
+// }
+
+//     /// allow assignment from HSV color
+// inline CRGB& operator= (const CHSV& rhs) __attribute__((always_inline))
+// {
+//     hsv2rgb_rainbow( rhs, *this);
+//     return *this;
+// }
+
+
 
 
 

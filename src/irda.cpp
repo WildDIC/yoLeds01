@@ -69,6 +69,27 @@ void irdaNext()
 	irrecv.resume();  // Receive the next value		
 }
 
+
+int getIRcode()
+{
+	int resValue = 0;
+
+	if ( irrecv.decode( &results)) 
+	{
+		resValue = results.value;   	// получаем значение ИР-приеника
+		if ( resValue == ZERO_DATA)
+		{
+			resValue = yo.lastReceive;
+		} 
+		else 
+		{
+			yo.lastReceive = resValue;			
+		}
+		irdaNext();		
+	}
+	return resValue;
+}
+
 /* Обработка ИР приемника, через обход мапы mButtons
 и сохранение в ЕЕПроМ, если код с передатчика нашелся.
 Принимает входные параметры с вебсерра
@@ -81,19 +102,8 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 	if ( codeFromWeb){ 					// пришли данные с веб-сервера
 		resValue = codeFromWeb; 		
 	} 
-	else if ( irrecv.decode( &results)) 
-	{
-		resValue = results.value;   	// получаем значение ИР-приеника
-		
-		if ( resValue == ZERO_DATA)
-		{
-			resValue = yo.lastReceive;
-		} 
-		else 
-		{
-			yo.lastReceive = resValue;			
-		}
-		irdaNext();		
+	else{
+		resValue = getIRcode();
 	}		
 
 	if ( keyCodes[resValue]){	resValue = keyCodes[resValue]; }
@@ -107,6 +117,7 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 		if ( mbIter != mWaves.end())
 		{
 			a.changed = true;
+			
 			yoBug( "-=>> Наш выбор: ");			
 			yoBugN( mbIter->second.name);			
 

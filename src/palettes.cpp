@@ -68,11 +68,11 @@ void paletteStartUP()
 }
 
 
-String getHEX( CRGB color){
+String getHEX( const CRGB& color){
 	// long hex = ( color.r * 65536) + ( color.g * 256) * color.b;
 	// return " #" + String( hex, HEX);
 	// return " #" + String( color.r, HEX) + String( color.g, HEX) +String( color.b, HEX);
-	return " rgb(" + String( color.r) + ","+  String( color.g) +","+String( color.b) + ")";
+	return " rgb(" + String( color.r) + "," +  String( color.g) + "," + String( color.b) + ")";
 }
 
 /* Генерим новый CHSV случайный цвет для "рэндомных" палитр. 
@@ -80,17 +80,19 @@ String getHEX( CRGB color){
 
 @param color CRGB текущего цвета, возвращаем его, если не требуется обновления.
 @return CRGB из сгенерированного CHSV цвета, потому что, сделать нормальный цвет можно только в HSV...*/
-CRGB getCol( CRGB color)
+CRGB getCol( const CRGB& color)
 {
 	if ( yo.againButton || color.r == 0)
 	{
-		return CHSV( random8(), 255, random8( 200, 255));
+		return CHSV( random8(), random8( 200, 255), random8( 200, 255));
 	}
 	return color;	
 }
 
 /* Меням активную палитру и записываем ее в текующую активность ленты
-@param byte pollitraID = Номер паллитры из myPal */
+@param pollitraID = Номер паллитры из myPal
+@param force необходимость запросить сохранение после выбора палитры, 
+скорее всего надо, когда палитру меняем из веба, а не из ИРДы */
 void paletteSetActive( byte pollitraID, bool force)
 {
 	switch ( pollitraID ) 	

@@ -15,15 +15,14 @@
 #define EEPROM_ADDR_CONFIG 	EEPROM_ADDR_START  + 10		// адрес начала записи конфига yo
 #define EEPROM_ADDR_WAVES 	EEPROM_ADDR_CONFIG + 50 	// начальная запись массива waves ( +резерв под конфиг)
 
-#define EEPROM_SAVE_TIME 3 * 60 * 1000					// задержка на сохранение после изменения данных
-#define EEPROM_WAVE_SIZE 30								// предположительный размер/резерв сохранения настроек Вавы 
-#define EEPROM_SIZE EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * 25)
+#define EEPROM_SAVE_TIME 	3 * 60 * 1000				// задержка на сохранение после изменения данных
+#define EEPROM_WAVE_SIZE 	30							// предположительный размер/резерв сохранения настроек Вавы 
+#define INIT_KEY 			50     						// ключ первого запуска. 0-254, на выбор
+
 
 int EEPROM_CURRENT_ADDR = EEPROM_ADDR_START;			// указывает на адрес последней считанной ячейки памяти функциями фРидХХХХ, 
 int EEPROM_CURRENT_BYTE = EEPROM_ADDR_START;			// именно в туда мы будем потом, если надо (записываемые данные не совпали с сохраненными ранее),
 int EEPROM_CURRENT_INT  = EEPROM_ADDR_START;			// записывать проверяемые данные.
-
-#define INIT_KEY 50     								// ключ первого запуска. 0-254, на выбор
 
 int readINT;
 uint16_t read16t;
@@ -176,7 +175,7 @@ void eepromLoadData()
 
 void eepromSaveWaveIND()
 {
-	uint8_t size = a.keysWeb.size();
+	uint8_t size = a.keyButton.size();
 	EEPROM.get( EEPROM_ADDR_WAVEIND, ind);							
 	
 	if ( ind != size)
@@ -204,12 +203,12 @@ void eepromSaveWave()
 
 void eepromForceSaveWave()
 {
-	a.itForSave = a.keysWeb.begin();	
+	a.itButtons = a.keyButton.begin();	
 	Serial.println( "-=> Force saving wavedata...");
 
-	for (int i = 0; a.itForSave != a.keysWeb.end(); a.itForSave++, i++) 
+	for (int i = 0; a.itButtons != a.keyButton.end(); a.itButtons++, i++) 
 	{  			
-		eepromSaveWaveData( *a.itForSave);
+		eepromSaveWaveData( *a.itButtons);
 	}
 	
 	forceSave = false;
@@ -236,7 +235,7 @@ void eepromSaveHandler()
 
 /*Принимаем запрос на сохранение yo.isNeedSaveEEPROM.
 Откладываем таймер SAVE_DELAY секунд при каждом запросе
-Добавляем waveID в set a.forSave, в цикле при сохранени сет очищается*/
+Добавляем waveID в set a.forSave, в цикле, при сохранени, сет очищается*/
 void requestSave()
 {
 	yo.EEPROMsaveTime 	= yo.now + EEPROM_SAVE_TIME;
@@ -248,37 +247,35 @@ void requestSave()
 	// Serial.printf( "a.forSave set size: %d.\n", a.forSave.size());
 }
 
-
-
-
 /* Читаем данные из ЕЕПРОМ, если первый раз, то пишем туда дефлолтный конфиг.
 После чтения, устанавливаем в ленту данные из конфига.*/
 void eepromStartUP()
-{
-    EEPROM.begin( EEPROM_SIZE);	
+{	
+	int eepromSize = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * ( a.countWaves + 2)); 	// считаем примерный размер памяти для сохранения конфига + ( размер волны * количество)
+    EEPROM.begin( eepromSize);							// резервируем память под всякое
 
-	if ( EEPROM.read( EEPROM_ADDR_INIT) != INIT_KEY)  	// первый запуск		
+	if ( EEPROM.read( EEPROM_ADDR_INIT) != INIT_KEY)  	// первый запуск, если не нашли "резевный" ключь в тут		
 	{ 
     	Serial.println( "\nFirst run. EEPROM initialization...");	
 
 		EEPROM.write( EEPROM_ADDR_INIT, INIT_KEY);    	// записали ключ
-    	EEPROM.write( EEPROM_ADDR_WAVEIND, 0);    		// записали нулевое количество индексов палитр
+    	EEPROM.write( EEPROM_ADDR_WAVEIND, 0);    		// записали нулевое количество волнов ( ind = 0)
     	EEPROM.write( EEPROM_ADDR_WRITER, 0);    		// записали счетчик кол-ва записей
     	
-		eepromSaveData();	
-		eepromForceSaveWave();
+		eepromSaveData();								// сохраняем конфиг
+		eepromForceSaveWave();							// делаем первый "форсажный" сейв волн в еепрому
   	}
 
 	eepromLoadData();
 	eepromLoadWave();	
 	
-	if ( forceSave) eepromForceSaveWave(); 				// полный пересейв, если что-то пошло не так при считавынии ( ИД считанной строки не равно ИД по порядку) 
-
+	if ( forceSave) eepromForceSaveWave(); 				// полный пересейв, если что-то пошло не так при считавынии ( ИД считанной строки не равно ИД по порядку), 
+														// скорее всего не совпали ИД строк при считывании с тем, в каком положенни они были при записи в прошлый раз.
 	EEPROM.get( EEPROM_ADDR_WRITER, readINT);
 	EEPROM.get( EEPROM_ADDR_WAVEIND, ind);
 	
-	Serial.printf( "\nRead config from EEPROM [%d times]: yo base size = %db ( writen size = %db), waves write ind = %d.\n", readINT, sizeof(yo), EEPROM_CURRENT_ADDR - 0, ind);
-
+	Serial.printf( "\nRead config from EEPROM [%d times]. EEPROM: used = %db, reserved = %db. waves ind = %d. yo size = %db. \n", readINT, EEPROM_CURRENT_ADDR - 0, eepromSize, ind, sizeof(yo));
+	
 	if ( yo.ONOFF == true) led.powerON();
 
 	led.setBrightness( yo.currentBrightness);

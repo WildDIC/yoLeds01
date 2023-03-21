@@ -40,13 +40,7 @@
 #define TEMP_IND_MAX 50                 // Максимальный используемый индекс в таблице цветов
 #define GRADIENT_PALETTE_COUNT 58
 
-// typedef void (*pt2webUpdate)(void); 	// function pointer type
-typedef void (*pt2Funca)(void); 		// function pointer type
-typedef void (*pt2static)(void); 		// function pointer type
-typedef void (*pt2prewave)(void); 		// function pointer type
-typedef void (*pt2setter)(int); 		// function pointer type
-
-typedef enum { ANIME_STATIC=0, ANIME_DYNAMIC=1, ANIME_SETTER=2, ANIME_CHANGER=4 } AnimeType;
+// typedef enum { ANIME_STATIC=0, ANIME_DYNAMIC=1, ANIME_SETTER=2, ANIME_CHANGER=4 } AnimeType;
 
 struct config{
 	byte currentBrightness = 255;        // Уровень яркости ( 0-255)
@@ -93,39 +87,37 @@ extern void (*pt2Func)();				// ссылка на анима-функция
 
 // новое дописываем строго вниз ( ниже aux255), ибо собьем таблицу с определениями в main
 struct waveItem{
-    int code;							// IR code
+    int code = 0;							// IR code
     String name;						// Web button name
-	byte typeWeb;						// 0 = None, 1 = bList, 2 = rList 
-	byte indForWeb;						// IND in web list 
-	bool leadOFF;						// fill black and save LastPressed
-	bool isEffect;						// is pt2 change ( ON/OF)
-	void (*pt2Funca)(void);				// point to amination function
-	void (*pt2static)(void);			// point to solo function
-	// void (*pt2prewave)(void);			// point to pre-wave function
-	void (*pt2setter)(int);				// point to pre-wave function
-	void (*pt2changer)(int);			// point to pre-wave function
-	int min;							// min value for web-range
-	int max;							// max value for web-range
-	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
-	byte bright;
-	byte temp;
-	byte speed;
-	byte saturn;
-	byte aux010;
-	byte aux100;
-	byte aux255;
-	byte aux355;
-	byte aux455;
-	CRGB c1;
-	CRGB c2;
-	CRGB c3;
-	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
-	// bool needSaveJSON; 					// флаг необходимости что-то засейвить в этой конструкции в жосоне
-	uint16_t savno; 					// количество записей вавы в память [Save No]
-	uint8_t minSpeed;
-	uint8_t maxSpeed;
-	byte delta;							// 
-	AnimeType animeType;
+	byte typeWeb = 0;						// 0 = None, 1 = bList, 2 = rList 
+	byte indForWeb = 0;						// IND in web list 
+	bool leadOFF = false;						// fill black and save LastPressed
+	bool isEffect = false;						// is pt2 change ( ON/OF)
+	void (*pt2Funca)(void) = nullptr;				// point to amination function
+	void (*pt2static)(void) = nullptr;			// point to solo function
+	void (*pt2setter)(int) = nullptr;				// point to pre-wave function
+	void (*pt2changer)(int) = nullptr;			// point to pre-wave function
+	int min = 0;							// min value for web-range
+	int max = 255;							// max value for web-range
+	byte pollDefault = 9;					// ID код поллитры по-умолчанию из myPollitra[]	
+	byte bright = 128;
+	byte temp = TEMP_IND_MAX;
+	byte speed = 5;
+	byte saturn = 100;
+	byte aux010 = 5;
+	byte aux100 = 50;
+	byte aux255 = 128;
+	byte aux355 = 128;
+	byte aux455 = 128;
+	CRGB c1 = CRGB{ 255, 0, 0};
+	CRGB c2 = CRGB( 0, 255, 0);
+	CRGB c3 = CRGB{ 0, 0, 255};
+	byte pollCurrent = 9;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
+	uint16_t savno = 0; 					// количество записей вавы в память [Save No]
+	// uint8_t minSpeed;
+	// uint8_t maxSpeed;
+	byte delta = 1;							// 
+	// AnimeType animeType;
 };										// list for: IRDA - function - WEB
 typedef std::map<int, waveItem> mapWAVES;
 extern mapWAVES mWaves; 							// list for: IRDA - function - WEB
@@ -140,50 +132,35 @@ struct pollitraZ{
 extern pollitraZ myPal[NUM_POLLITR];	// хранилище всех палитров
 
 
-struct button{  						// для вебсервера, формируем список кнопко-эментов на странице
-    int code;
-    String name;
-};
-
-struct range{							// для вебсервера, формируем список ранже-эментов на странице
-    int code;
-	int min;
-	int max;
-    String name;
-	int *value;
-};
-
-
-
 class varStorage
 {
-private:
-	/* data */
-public:
-	int status 		= 0;
-	int count 		= 0;
+	private:
+		/* data */
+	public:
+		int status 		= 0;
+		int count 		= 0;
 
-	uint8_t color 	= 0;
-	uint8_t ind 	= 0;
-	uint8_t baza 	= 0;     
+		uint8_t color 	= 0;
+		uint8_t ind 	= 0;
+		uint8_t baza 	= 0;     
 
-	uint8_t var00 	= 0;
-	uint8_t var01 	= 0;
-	uint8_t var02 	= 0;
-	uint8_t var03 	= 0;
+		uint8_t var00 	= 0;
+		uint8_t var01 	= 0;
+		uint8_t var02 	= 0;
+		uint8_t var03 	= 0;
 
-	float far00 	= 0.0;
-	float far01 	= 0.0;
+		float far00 	= 0.0;
+		float far01 	= 0.0;
 
-	uint8_t aVALUE[NUM_LEDS];
-	uint8_t aSTATUS[NUM_LEDS];
-	uint8_t aFADER[NUM_LEDS];
+		uint8_t aVALUE[NUM_LEDS];
+		uint8_t aSTATUS[NUM_LEDS];
+		uint8_t aFADER[NUM_LEDS];
 
-	CRGB cIN_LEDS[NUM_LEDS];
-	CRGB cOUT_LEDS[NUM_LEDS];
+		CRGB cIN_LEDS[NUM_LEDS];
+		CRGB cOUT_LEDS[NUM_LEDS];
 
-	// CHSV hIN_LEDS[NUM_LEDS];
-	// CHSV hOUT_LEDS[NUM_LEDS];
+		// CHSV hIN_LEDS[NUM_LEDS];
+		// CHSV hOUT_LEDS[NUM_LEDS];
 };
 extern varStorage v;
 
@@ -194,5 +171,32 @@ extern int temperList[NUM_TEMPS];
 int powInt(int x, int y);
 int parseInt(char* chars);
 bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher);
+
+// CRGB& CRGB::operator=(const CHSV& rhs) = delete;
+
+inline void hsv2rgb_rainbow( const CHSV& hsv, CRGB& rgb) 
+{
+    uint16_t region, remainder, p, q, t;
+    
+    if (hsv.s == 0) {	rgb.r = hsv.v;	rgb.g = hsv.v;	rgb.b = hsv.v;		return;}
+    
+    region = hsv.h / 43;
+    remainder = (hsv.h - (region * 43)) * 6; 
+    
+    p = (hsv.v * (255 - hsv.s)) >> 8;
+    q = (hsv.v * (255 - ((hsv.s * 		 remainder)  >> 8))) >> 8;
+    t = (hsv.v * (255 - ((hsv.s * (255 - remainder)) >> 8))) >> 8;
+    
+    switch (region) {
+        case 0:		rgb.r = hsv.v; 	rgb.g = t; 		rgb.b = p;		break;
+        case 1:		rgb.r = q; 		rgb.g = hsv.v; 	rgb.b = p;    	break;
+        case 2: 	rgb.r = p; 		rgb.g = hsv.v; 	rgb.b = t;    	break;
+        case 3:		rgb.r = p; 		rgb.g = q; 		rgb.b = hsv.v;  break;
+        case 4: 	rgb.r = t; 		rgb.g = p; 		rgb.b = hsv.v;  break;
+        default:	rgb.r = hsv.v; 	rgb.g = p; 		rgb.b = q;   	break;
+    }
+	// Serial.println( "New");
+}
+
 
 #endif

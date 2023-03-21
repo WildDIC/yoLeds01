@@ -26,7 +26,9 @@
 
 void aBlinkerPreCum()
 {
-	v.var01 = NUM_LEDS / yo.AUX255 + 1; 			 	// колличество рабочих диодов
+	if ( yo.AUX255 < 1) yo.AUX255 = 1;
+
+	v.var01 = (NUM_LEDS - 1) / ( yo.AUX255 + 0) + 1; 			 	// колличество рабочих диодов
 
 	for ( int i = 0; i < v.var01; i++) 
 	{
@@ -36,7 +38,8 @@ void aBlinkerPreCum()
 	}
 	fill_solid( leds, NUM_LEDS, CRGB::Black);		
 	fill_solid( v.cIN_LEDS, NUM_LEDS, CRGB::Black);		
-	fill_solid( v.cOUT_LEDS, NUM_LEDS, CRGB::Black);				
+	fill_solid( v.cOUT_LEDS, NUM_LEDS, CRGB::Black);			
+	Serial.printf( "i=%d, au=%d\n", v.var01, yo.AUX255);	
 }
 
 
@@ -59,13 +62,13 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 	// 	ptLEDS = outLeds;	
 	}
 	
-	base = 1;
+	// base = 1;
 
 	switch ( base)
 	{
 		case 1:
 			for ( int i = 0; i < v.var01; i++) {	
-				*( ptLEDS + i) = ( led.GCfP( v.color, false, led.beatCircle( yo.AUX100, v.aFADER[i]))); 
+				*( ptLEDS + i) = ( led.GCfPH( v.color, false, led.beatCircle( yo.AUX100, v.aFADER[i]))); 
 				// *( ptLEDS + i) = led.hsv2rgb( led.GCfPH( v.color, false, led.beatCircle( yo.AUX100, v.aFADER[i])) ); 
 				// uint8_t  val 	= led.beatCircle( yo.AUX100, v.aFADER[i]);
 				// CHSV col 		= led.GCfPH( v.color, false);
@@ -146,18 +149,20 @@ void aBlinken02(){
 	// color = (uint8_t) far00;
 	EVERY_N_SECONDS( 35) 
 	{	
-		// v.count = random8( 1, 6);  // +1 becoz THIS IS RANDOM!!!
+		v.count = random8( 1, 6);  // +1 becoz THIS IS RANDOM!!!
 
-		// if ( v.count != v.baza)	{
-		// 	v.status = 1;  
-		// }
+		if ( v.count != v.baza)	{
+			v.status = 1;  
+		}
 	} 	
+	
 	//перерасчет при смене настроек с сайта
 	if ( a.isChanged()) { aBlinkerPreCum(); }
+
 	// фиксики	
 	if ( yo.currentSpeed < 4)
 	{
-		fadeToBlackBy(leds, NUM_LEDS, 1); 
+		fadeToBlackBy(leds, NUM_LEDS, 1);
 
 		uint8_t pos = inoise8( 0, millis() >> 2);
 		pos = map(pos, 30, 225, 0, NUM_LEDS);  	
@@ -196,7 +201,8 @@ void aBlinken02(){
 			aBllinker02anime( v.baza, 0); 
 		}
 		
-		for ( uint8_t i = 0; i < v.var01; i++){ leds[i * yo.AUX255] = v.cOUT_LEDS[i];	}   // собсна переносим в ЛЕD из OUTLEDS попиксельно	
+		for ( uint8_t i = 0; i < v.var01; i++){ 
+			leds[i * yo.AUX255] = v.cOUT_LEDS[i];	}   // собсна переносим в ЛЕD из OUTLEDS попиксельно	
 	}
 }
 

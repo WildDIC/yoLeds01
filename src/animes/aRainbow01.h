@@ -7,7 +7,7 @@ void aRainbow()
 	uint8_t len = yo.AUX100;
 	uint8_t ind = 0;
 	uint8_t bri = 255;
-	uint8_t pix = led.beatCircle88( 12, len, NUM_LEDS);
+	uint8_t pix = led.beatCircle88( yo.AUX355, len, NUM_LEDS);
 	v.color = led.beat( 4);
 
 	// fadeToBlackBy(leds, NUM_LEDS, 1);
@@ -15,7 +15,7 @@ void aRainbow()
 
 	for ( uint8_t i = 0; i < NUM_LEDS; i++)
 	{
-		if ( isBetween( i, pix-len, pix))
+		if ( isBetween( i, pix - len, pix))
 		{
 			bri = led.circle( ind++, len, yo.AUX255);
 			// leds[i] = CHSV( color, 255, bri);			
@@ -26,11 +26,13 @@ void aRainbow()
 		}
 		else
 		{
+			bri = 255;
 			// leds[i] = CRGB::Black;
-			// leds[i] = CHSV( color, 255, 255);		
+			// leds[i] = CHSV( v.color, 255, 255);		
 		}
-		// leds[i] = ledGCfP( myPal[10].palette, color, false, bri);
+		
 		leds[i] = ( CHSV( v.color, 255, bri));
+		// leds[i] = ledGCfP( myPal[10].palette, color, false, bri);
 	}
 	// Serial.printf( "Color = %d, pix = %d\n", color, pix);
 	// delay( 5);
