@@ -30,41 +30,151 @@ void rgb2hsvpalette( uint8_t ind) //, CRGBPalette16 rgbpalette = activePollitre)
 		}
 }
 
+String PALL_HOLDER = ":root{\n" ;;
+
 /**/
 void paletteStartUP()
-{
-	byte ind = 0; // -1? Просто, что было красиво в ++
-	myPal[++ind] = { "*solid white color*"};	 myPal[ind].palette = CRGBPalette16( CRGB::White);
-	myPal[++ind] = { "- 1 Random color"};	 
-	myPal[++ind] = { "- 2 Random colors"}; 
-	myPal[++ind] = { "- 3 Random colors"}; 
-	myPal[++ind] = { "- c2 color"}; 
-	myPal[++ind] = { "- c2 to c3 colors"}; 
-	myPal[++ind] = { "- c2 to c3 to c2 colors"}; 
-	myPal[++ind] = { "- c1 to c2 to c3 colors"}; 
+{	
+	uint8_t ind 	= 1;	
 
-	++ind;
-	yo.lastCustPal = ind;		// для вебсервера
-	
-	for ( int i = 0; i < 58 + 11; i++){  // ЗДЕСЯ ИНДЕКСЫ ПАЛИТР МЕНЯТЬ КОЛИЧЕСТВО РАЗНЫЕ НАДО МНОГО СИЛЬНО  + ТАКОЕ в ВЕБСЕРВЕРЕ++ ( 74)
-		byte tcp[72]; //support gradient palettes with up to 18 entries
-		memcpy_P( tcp, (byte*)pgm_read_dword(&(gGradientPalettes[i])), 72);
-		activePollitre.loadDynamicGradientPalette(tcp);
-		
-		myPal[i+ind].palette = activePollitre;
-		
-		if ( i > 11 - 1)
-		{
-			myPal[i+ind].name = String( i - 10) + ". " + palette_names[i];
-		} 
-		else
-		{
-			myPal[i+ind].name = String( i + 1) + ". " + palette_names[i];
-		}		
+	palStorage paletteStorage[] = {
+		// { ind++, "*empty zero line*"},
+		{ ind++, "*solid white color*"},
+		{ ind++, "- 1 Random color"},	 
+		{ ind++, "- 2 Random colors"}, 
+		{ ind++, "- 3 Random colors"}, 
+		{ ind++, "- c2 color"}, 
+		{ ind++, "- c2 to c3 colors"}, 
+		{ ind++, "- c2 to c3 to c2 colors"}, 
+		{ ind++, "- c1 to c2 to c3 colors"},
 
-		rgb2hsvpalette( i+ind);		
-		// rgb2hsvpalette( i+ind, &activePollitre);		
-	}	
+		{ ind++, "RainbowColors", 	RainbowColors_my},			// 05 - 
+		{ ind++, "Temperature",		temperature_gp},               //54-41 Temperature
+		{ ind++, "PartyColors",		PartyColors_my},
+
+		{ ind++, "- green to blue",	greenToBlue_my},
+		{ ind++, "- red to violet",	redToViolet_my},
+		{ ind++, "- blue to violet",blueToViolet_my},
+
+		{ ind++, "Light of my fire",lightFie_my},				  // Light of my fire
+		{ ind++, "Swamp fire",		retro2_16_gp},                 //17-04 Swamp fire
+		{ ind++, "Orangery fire",	Orangery_gp},                  //47-34 Orangery
+		{ ind++, "Hell fire",		orangeFire_my},				  // Hell fire
+		{ ind++, "Sakura",			Sakura_gp},                    //49-36 Sakura
+
+		{ ind++, "Pastel",			Sunset_Yellow_gp},             //20-07 Pastel
+		{ ind++, "Fire",			lava_gp},                      //35-22 Fire
+		{ ind++, "HeatColors",		heatColor_my},
+		{ ind++, "Icefire",			fierce_ice_gp},                //36-23 Icefire
+		{ ind++, "Grintage",		es_vintage_57_gp},             //32-19 Grintage
+		{ ind++, "Yelblu Hot",		yelblu_hot_gp},                //64-51 Yelblu Hot
+		{ ind++, "Magred",			BlacK_Magenta_Red_gp},         //41-28 Magred
+
+		{ ind++, "Analogous",		Analogous_1_gp},               //18-05 Analogous
+		{ ind++, "Orange & Teal",	Orange_Teal_gp},               //44-31 Orange & Teal	
+		{ ind++, "Toxy Reaf",		toxy_reaf_gp},                 //58-45 Toxy Reaf
+		{ ind++, "Drywet",			GMT_drywet_gp},                //30-17 Drywet
+		{ ind++, "Yelblu",			Blue_Cyan_Yellow_gp},          //43-30 Yelblu
+		{ ind++, "Tertiary",		Tertiary_01_gp},               //34-21 Tertiary
+		{ ind++, "Atlantica",		Atlantica_gp},                 //51-38 Atlantica
+		{ ind++, "Retro Clown",		retro_clown_gp},               //56-43 Retro Clown
+		{ ind++, "Red Flash",		red_flash_gp},                 //66-53 Red Flash
+
+		{ ind++, "Пастила",			deepForest_my},
+		{ ind++, "Strange Fire",	candy2_gp},                     //70-57 Candy2
+		{ ind++, "Lite Cactus",		lite_light_gp},                //65-52 Lite Light
+		{ ind++, "Sunset",			Sunset_Real_gp},               //13-00 Sunset
+		{ ind++, "Rivendell",		es_rivendell_15_gp},           //14-01 Rivendell
+		{ ind++, "Breeze",			es_ocean_breeze_036_gp},       //15-02 Breeze
+		{ ind++, "Red & Blue",		rgi_15_gp},                    //16-03 Red & Blue
+		{ ind++, "Splash",			es_pinksplash_08_gp},          //19-06 Splash
+		{ ind++, "Sunset 2",		Another_Sunset_gp},            //21-08 Sunset2
+		{ ind++, "Beech",			Beech_gp},                     //22-09 Beech
+		{ ind++, "Vintage",			es_vintage_01_gp},             //23-10 Vintage
+		{ ind++, "Departure",		departure_gp},                 //24-11 Departure
+		{ ind++, "Landscape",		es_landscape_64_gp},           //25-12 Landscape
+		{ ind++, "Beach",			es_landscape_33_gp},           //26-13 Beach
+		{ ind++, "Sherbet",			rainbowsherbet_gp},            //27-14 Sherbet
+		{ ind++, "Hult",			gr65_hult_gp},                 //28-15 Hult
+		{ ind++, "Hult 64",			gr64_hult_gp},                 //29-16 Hult64
+		{ ind++, "Jul",				ib_jul01_gp},                  //31-18 Jul
+		{ ind++, "Rewhi",			ib15_gp},                      //33-20 Rewhi
+		{ ind++, "Cyane",			Colorfull_gp},                 //37-24 Cyane
+		{ ind++, "Light Pink",		Pink_Purple_gp},               //38-25 Light Pink
+		{ ind++, "Autumn",			es_autumn_19_gp},              //39-26 Autumn
+		{ ind++, "Magenta",			BlacK_Blue_Magenta_White_gp},  //40-27 Magenta
+		{ ind++, "Yelmag",			BlacK_Red_Magenta_Yellow_gp},  //42-29 Yelmag
+		{ ind++, "Tiamat",			Tiamat_gp},                    //45-32 Tiamat
+		{ ind++, "April Night",		April_Night_gp},               //46-33 April Night
+		{ ind++, "C9",				C9_gp},                        //48-35 C9
+		{ ind++, "Aurora",			Aurora_gp},                    //50-37 Aurora
+		{ ind++, "C9 2",			C9_2_gp},                      //52-39 C9 2
+		{ ind++, "C9 New",			C9_new_gp},                    //53-40 C9 New
+		{ ind++, "Aurora 2",		Aurora2_gp},                   //55-42 Aurora 2
+		{ ind++, "Candy",			candy_gp},                     //57-44 Candy
+		{ ind++, "Fairy Reaf",		fairy_reaf_gp},                //59-46 Fairy Reaf
+		{ ind++, "Semi Blue",		semi_blue_gp},                 //60-47 Semi Blue
+		{ ind++, "Pink Candy",		pink_candy_gp},                //61-48 Pink Candy
+		{ ind++, "Red Reaf",		red_reaf_gp},                  //62-49 Red Reaf
+		{ ind++, "Aqua Flash",		aqua_flash_gp},                //63-50 Aqua Flash
+		{ ind++, "Blink Red",		blink_red_gp},                 //67-54 Blink Red
+		{ ind++, "Red Shift",		red_shift_gp},                 //68-55 Red Shift
+		{ ind++, "Red Tide",		red_tide_gp},                  //69-56 Red Tide
+		{ ind++, "RainbowStripeColors",RainbowStripeColors_my},
+		{ ind++, "File Colors",	ForestColors_my}
+	};
+
+	yo.palRandom	= 8;
+	yo.palCust 		= 11 + yo.palRandom;		// для вебсервера
+	yo.palTotal 	= ind;
+
+	PALL_HOLDER += "\t\t\t--gr0: #181E28;\n";
+	PALL_HOLDER += "\t\t\t--gr1: #181E28;\n";
+	PALL_HOLDER += "\t\t\t--gr2: #181E28;\n";
+	PALL_HOLDER += "\t\t\t--gr3: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	PALL_HOLDER += "\t\t\t--gr4: linear-gradient( 90deg, #181E28, #ff0000, #00ff00);\n";
+	PALL_HOLDER += "\t\t\t--gr5: linear-gradient( 90deg, #181E28, #ff0000, #00ff00, #0000ff);\n";
+	PALL_HOLDER += "\t\t\t--gr6: #181E28;\n";
+	PALL_HOLDER += "\t\t\t--gr7: linear-gradient( 90deg, #181E28, #ff0000);\n";
+	PALL_HOLDER += "\t\t\t--gr8: linear-gradient( 90deg, #181E28, #ff0000, #0000ff);\n";
+
+	for ( auto pal : paletteStorage)
+	{
+		uint8_t ind = pal.ind;
+
+		if ( pal.name)  		// ифы что бы номерочки ставить разные в нпазваниях палитр в селекторе на сайте.
+		{
+			if 		( ind <= yo.palRandom) 	myPal[ind].name = pal.name;
+			else if ( ind <=  yo.palCust) 	myPal[ind].name = String( ind - yo.palRandom) + ". " + pal.name;
+			else							myPal[ind].name = String( ind - yo.palCust  ) + ". " + pal.name;
+		}
+		
+		if ( pal.pals)
+		{
+			byte tcp[72]; //support gradient palettes with up to 18 entries
+			memcpy_P( tcp, ( byte*) pgm_read_dword( &( pal.pals)), 72);	
+			activePollitre.loadDynamicGradientPalette( tcp);
+			
+			myPal[ind].palette = activePollitre;		
+
+			rgb2hsvpalette( ind);	
+			
+			PALL_HOLDER += "\t\t\t--gr"+ String( ind) +": linear-gradient( 90deg, ";
+			for ( byte i = 0; i < sizeof( tcp); i += 4)
+			{
+				String coma = ( tcp[i] == 255) ? "%" : "%,";
+
+				PALL_HOLDER += "rgb(" + String( tcp[i+1]) + "," 
+									  + String( tcp[i+2]) + "," 
+									  + String( tcp[i+3]) + ") "
+									  + String( tcp[i] * 100 / 255) + coma;   // сдвигать >> 8 не надо, проценты получаются кривые малость 100 - 99
+				
+				if ( tcp[i]== 255) break;
+			}
+			PALL_HOLDER += ");\n";
+		}
+	}
+	PALL_HOLDER += "\t\t}";
 }
 
 
@@ -141,9 +251,9 @@ void paletteSetActive( byte pollitraID, bool force)
 
 	activePollitreHSV = myPal[pollitraID].paletteHSV;
 
-	mWaves[yo.lastPressed].pollCurrent = pollitraID;
-	yo.pollCurrent = pollitraID;
-	yo.pollDefault = mWaves[yo.lastPressed].pollDefault;
+	mWaves[yo.waveID].palCurrent = pollitraID;
+	yo.palCurrent = pollitraID;
+	yo.palDefault = mWaves[yo.waveID].palDefault;
 
 	#ifdef EERPROM_ENABLE 
 		if ( force) requestSave();
@@ -314,7 +424,7 @@ void paletteSetActive( byte pollitraID, bool force)
 //         out.h = NAN;                            // its now undefined
 //         return out;
 //     }
-//     if( in.r >= max )                           // > is bogus, just keeps compilor happy
+//     if( in.r >= max )                           // > is bogus, just keepaletteStorage compilor happy
 //     	out.h = 0   + 43 * ( in.g - in.b ) / delta;        // between yellow & magenta
 //     else 
 //     if( in.g >= max )

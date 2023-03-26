@@ -1,33 +1,40 @@
 #ifndef __WAVE_CLASS_H
 #define __WAVE_CLASS_H
 
-#include "config.h"
 #include <FastLED.h>
 #include <unordered_set>
-#include <set>
-
+#include <vector>
+#include "config.h"
+#include "leds.h"
+#include "irda.h"
 
 class animeClass
 {
 	public:	
 		int indAnime	= 0;
 		int indSetter 	= 0;	
+		
 		uint8_t countWaves = 0;
 		uint8_t countRanges = 0;
+
 		bool changed 	= false;   				// something chaged from web or irda
 
-		std::set <int> forSave;					// сет для НЕ СОХРАНЕННЫХ ключей "ИД волн", которые необходимо сохранить, так как у них что-то изменилось
-    	std::set <int> keysAll;  				// сет для ВСЕХ ИД, чекаем уникальность введенных ИД для активностей, вроде как пофик, но вот чёта хочется.
-    	std::set <int> keyRange;  				// сет для РЭНДЖЕЙ - полоски-двиалки для сайта
+		uint8_t currentNoWaves = 0;				// индекс текущей активности, надо для переключалки их по кругу через "чэнджер" с ИРы в nextWave()
+		
+		std::vector <int> vButton;				// vector, храним список активностей, отсортированных по списку вывода на сайте
+		std::vector <int> vRanges;				// vector, храним список рэнджой, отсортированных по списку вывода на сайте
+
+		std::unordered_set <int> forSave;		// сет для НЕ СОХРАНЕННЫХ ключей "ИД волн", которые необходимо сохранить, так как у них что-то изменилось
+    	std::unordered_set <int> keysAll;  		// сет для ВСЕХ ИД, чекаем уникальность введенных ИД для активностей, вроде как пофик, но вот чёта хочется.
+    	std::unordered_set <int> keyRange;  	// сет для РЭНДЖЕЙ - полоски-двиалки для сайта
     	std::unordered_set <int> keyButton; 	// сет для КНОПОК - активности типа статик или анимашка для веба, по факту - хранит активные активности.
 		
-		std::set <int> :: iterator itForSave; 	// = forSave.begin(); //insert erase couunt
-		std::unordered_set <int> :: iterator itButtons; 	
-		std::pair<std::set <int> :: iterator, bool> itKeys; // итератор для анордеред_мапы с ИД активностей
-
+		std::pair<std::unordered_set <int> :: iterator, bool> itKeys; // итератор для анордеред_мапы с ИД активностей
 
 		/*		Какая-то функция, которая запускается после всего для чего-то, что надо сделать потом.*/
 		void makeWebLists();
+
+		void applyWaveData( const waveItem &c);
 
 		/*Возвращает true ( bool Ledas.changed), 
 		если в настройках с сайта или ИРы что-то поменялось.
@@ -71,6 +78,8 @@ class animeClass
 		@param delta +/- add/sub, передаем это значение в функцию*/
 		void addChanger( 	int id, const String& name, void (*ptChanger)(int),	byte delta 	= 1);		
 		bool isInID( 		int id);
+
+		static void nextWave( int delta = 1);
 	
 	private:
 		waveItem* addDefault( int id);

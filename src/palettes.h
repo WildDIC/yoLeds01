@@ -7,6 +7,16 @@ extern CHSVPalette16 activePollitreHSV;
 void paletteStartUP();
 void paletteSetActive( byte pollitraID, bool force=false);
 
+struct palStorage{
+	uint8_t ind;
+	String name;
+	const byte *pals;
+};
+
+extern String PALL_HOLDER;
+
+
+
 const byte ib_jul01_gp[] PROGMEM = {
 	0, 194,  1,  1,
    94,   1, 29, 18,
@@ -961,105 +971,109 @@ const byte lightFie_my[] PROGMEM = {
 	// 255, 	255, 195, 0};
 	255, 		255, 195, 0};
 
-
-
-const String palette_names[70] = {
-	// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
-	// "Forest","Rainbow","Rainbow Bands",
-	"RainbowColors", "Temperature", "PartyColors", "- green to blue", "- red to violet", "- blue to violet", 			/// 11 palitres
-	"Light of my fire", "Swamp fire",  "Orangery fire", "Hell fire", "Sakura",
-	
-	"Pastel", 	
-	"Fire", "HeatColors", "Icefire", "Grintage", "Yelblu Hot", "Magred", 
-	 "Analogous", "Orange & Teal", "Toxy Reaf", "Drywet", "Yelblu", "Tertiary", "Atlantica", "Retro Clown",
-
-	"Sunset","Rivendell","Breeze","Red & Blue","Splash",							//   58 palitres
-	"Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
-	"Jul","Rewhi","Cyane","Light Pink","Autumn", "Magenta","Yelmag","Tiamat","April Night", "C9",
-	"Aurora","C9 2","C9 New","Aurora 2","Candy","Fairy Reaf",
-	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2", 
-	"RainbowStripeColors", "Deep forest", "ForestColors"};
-
-// Single array of defined cpt-city color palettes.
-// This will let us programmatically choose one based on
-// a number, rather than having to activate each explicitly
-// by name every time.
-const byte* const gGradientPalettes[] PROGMEM = {
-	// + 11
-  	RainbowColors_my,			// 05 - 
-	temperature_gp,               //54-41 Temperature
-	PartyColors_my,
-
-	greenToBlue_my,
-	redToViolet_my,
-	blueToViolet_my,
-
-	lightFie_my,				  // Light of my fire
-	retro2_16_gp,                 //17-04 Swamp fire
-	Orangery_gp,                  //47-34 Orangery
-	orangeFire_my,				  // Hell fire
-	Sakura_gp,                    //49-36 Sakura
-
-	Sunset_Yellow_gp,             //20-07 Pastel
-	lava_gp,                      //35-22 Fire
-	heatColor_my,
-	fierce_ice_gp,                //36-23 Icefire
-	es_vintage_57_gp,             //32-19 Grintage
-	yelblu_hot_gp,                //64-51 Yelblu Hot
-	BlacK_Magenta_Red_gp,         //41-28 Magred
-	
-	Analogous_1_gp,               //18-05 Analogous
-	Orange_Teal_gp,               //44-31 Orange & Teal	
-	toxy_reaf_gp,                 //58-45 Toxy Reaf
-	GMT_drywet_gp,                //30-17 Drywet
-	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
-	Tertiary_01_gp,               //34-21 Tertiary
-	Atlantica_gp,                 //51-38 Atlantica
-	retro_clown_gp,               //56-43 Retro Clown
-
-	Sunset_Real_gp,               //13-00 Sunset
-	es_rivendell_15_gp,           //14-01 Rivendell
-	es_ocean_breeze_036_gp,       //15-02 Breeze
-	rgi_15_gp,                    //16-03 Red & Blue
-	es_pinksplash_08_gp,          //19-06 Splash
-	Another_Sunset_gp,            //21-08 Sunset2
-	Beech_gp,                     //22-09 Beech
-	es_vintage_01_gp,             //23-10 Vintage
-	departure_gp,                 //24-11 Departure
-	es_landscape_64_gp,           //25-12 Landscape
-	es_landscape_33_gp,           //26-13 Beach
-	rainbowsherbet_gp,            //27-14 Sherbet
-	gr65_hult_gp,                 //28-15 Hult
-	gr64_hult_gp,                 //29-16 Hult64
-	ib_jul01_gp,                  //31-18 Jul
-	ib15_gp,                      //33-20 Rewhi
-	Colorfull_gp,                 //37-24 Cyane
-	Pink_Purple_gp,               //38-25 Light Pink
-	es_autumn_19_gp,              //39-26 Autumn
-	BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
-	BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
-	Tiamat_gp,                    //45-32 Tiamat
-	April_Night_gp,               //46-33 April Night
-	C9_gp,                        //48-35 C9
-	Aurora_gp,                    //50-37 Aurora
-	C9_2_gp,                      //52-39 C9 2
-	C9_new_gp,                    //53-40 C9 New
-	Aurora2_gp,                   //55-42 Aurora 2
-	candy_gp,                     //57-44 Candy
-	fairy_reaf_gp,                //59-46 Fairy Reaf
-	semi_blue_gp,                 //60-47 Semi Blue
-	pink_candy_gp,                //61-48 Pink Candy
-	red_reaf_gp,                  //62-49 Red Reaf
-	aqua_flash_gp,                //63-50 Aqua Flash
-	lite_light_gp,                //65-52 Lite Light
-	red_flash_gp,                 //66-53 Red Flash
-	blink_red_gp,                 //67-54 Blink Red
-	red_shift_gp,                 //68-55 Red Shift
-	red_tide_gp,                  //69-56 Red Tide
-	candy2_gp,                     //70-57 Candy2
-	RainbowStripeColors_my,
-	deepForest_my,
-	ForestColors_my
-};
+const byte empty_my[] PROGMEM = {
+	0, 			255, 255, 255,
+	255, 		0, 0, 0};
 
 #endif
+
+
+
+// const String palette_names[70] = {
+// 	// "Default","* Random Cycle","* Color 1","* Colors 1&2","* Color Gradient","* Colors Only","Party","Cloud","Lava","Ocean",
+// 	// "Forest","Rainbow","Rainbow Bands",
+// 	"RainbowColors", "Temperature", "PartyColors", "- green to blue", "- red to violet", "- blue to violet", 			/// 11 palitres
+// 	"Light of my fire", "Swamp fire",  "Orangery fire", "Hell fire", "Sakura",
+	
+// 	"Pastel", 	
+// 	"Fire", "HeatColors", "Icefire", "Grintage", "Yelblu Hot", "Magred", 
+// 	 "Analogous", "Orange & Teal", "Toxy Reaf", "Drywet", "Yelblu", "Tertiary", "Atlantica", "Retro Clown",
+
+// 	"Sunset","Rivendell","Breeze","Red & Blue","Splash",							//   58 palitres
+// 	"Sunset 2","Beech","Vintage","Departure","Landscape","Beach","Sherbet","Hult","Hult 64",
+// 	"Jul","Rewhi","Cyane","Light Pink","Autumn", "Magenta","Yelmag","Tiamat","April Night", "C9",
+// 	"Aurora","C9 2","C9 New","Aurora 2","Candy","Fairy Reaf",
+// 	"Semi Blue","Pink Candy","Red Reaf","Aqua Flash","Lite Light","Red Flash","Blink Red","Red Shift","Red Tide", "Candy2", 
+// 	"RainbowStripeColors", "Deep forest", "ForestColors"};
+
+// // Single array of defined cpt-city color palettes.
+// // This will let us programmatically choose one based on
+// // a number, rather than having to activate each explicitly
+// // by name every time.
+// const byte* const gGradientPalettes[] PROGMEM = {
+// 	// + 11
+//   	RainbowColors_my,			// 05 - 
+// 	temperature_gp,               //54-41 Temperature
+// 	PartyColors_my,
+
+// 	greenToBlue_my,
+// 	redToViolet_my,
+// 	blueToViolet_my,
+
+// 	lightFie_my,				  // Light of my fire
+// 	retro2_16_gp,                 //17-04 Swamp fire
+// 	Orangery_gp,                  //47-34 Orangery
+// 	orangeFire_my,				  // Hell fire
+// 	Sakura_gp,                    //49-36 Sakura
+
+// 	Sunset_Yellow_gp,             //20-07 Pastel
+// 	lava_gp,                      //35-22 Fire
+// 	heatColor_my,
+// 	fierce_ice_gp,                //36-23 Icefire
+// 	es_vintage_57_gp,             //32-19 Grintage
+// 	yelblu_hot_gp,                //64-51 Yelblu Hot
+// 	BlacK_Magenta_Red_gp,         //41-28 Magred
+	
+// 	Analogous_1_gp,               //18-05 Analogous
+// 	Orange_Teal_gp,               //44-31 Orange & Teal	
+// 	toxy_reaf_gp,                 //58-45 Toxy Reaf
+// 	GMT_drywet_gp,                //30-17 Drywet
+// 	Blue_Cyan_Yellow_gp,          //43-30 Yelblu
+// 	Tertiary_01_gp,               //34-21 Tertiary
+// 	Atlantica_gp,                 //51-38 Atlantica
+// 	retro_clown_gp,               //56-43 Retro Clown
+
+// 	Sunset_Real_gp,               //13-00 Sunset
+// 	es_rivendell_15_gp,           //14-01 Rivendell
+// 	es_ocean_breeze_036_gp,       //15-02 Breeze
+// 	rgi_15_gp,                    //16-03 Red & Blue
+// 	es_pinksplash_08_gp,          //19-06 Splash
+// 	Another_Sunset_gp,            //21-08 Sunset2
+// 	Beech_gp,                     //22-09 Beech
+// 	es_vintage_01_gp,             //23-10 Vintage
+// 	departure_gp,                 //24-11 Departure
+// 	es_landscape_64_gp,           //25-12 Landscape
+// 	es_landscape_33_gp,           //26-13 Beach
+// 	rainbowsherbet_gp,            //27-14 Sherbet
+// 	gr65_hult_gp,                 //28-15 Hult
+// 	gr64_hult_gp,                 //29-16 Hult64
+// 	ib_jul01_gp,                  //31-18 Jul
+// 	ib15_gp,                      //33-20 Rewhi
+// 	Colorfull_gp,                 //37-24 Cyane
+// 	Pink_Purple_gp,               //38-25 Light Pink
+// 	es_autumn_19_gp,              //39-26 Autumn
+// 	BlacK_Blue_Magenta_White_gp,  //40-27 Magenta
+// 	BlacK_Red_Magenta_Yellow_gp,  //42-29 Yelmag
+// 	Tiamat_gp,                    //45-32 Tiamat
+// 	April_Night_gp,               //46-33 April Night
+// 	C9_gp,                        //48-35 C9
+// 	Aurora_gp,                    //50-37 Aurora
+// 	C9_2_gp,                      //52-39 C9 2
+// 	C9_new_gp,                    //53-40 C9 New
+// 	Aurora2_gp,                   //55-42 Aurora 2
+// 	candy_gp,                     //57-44 Candy
+// 	fairy_reaf_gp,                //59-46 Fairy Reaf
+// 	semi_blue_gp,                 //60-47 Semi Blue
+// 	pink_candy_gp,                //61-48 Pink Candy
+// 	red_reaf_gp,                  //62-49 Red Reaf
+// 	aqua_flash_gp,                //63-50 Aqua Flash
+// 	lite_light_gp,                //65-52 Lite Light
+// 	red_flash_gp,                 //66-53 Red Flash
+// 	blink_red_gp,                 //67-54 Blink Red
+// 	red_shift_gp,                 //68-55 Red Shift
+// 	red_tide_gp,                  //69-56 Red Tide
+// 	candy2_gp,                     //70-57 Candy2
+// 	RainbowStripeColors_my,
+// 	deepForest_my,
+// 	ForestColors_my
+// };

@@ -78,10 +78,10 @@ void saveEEPROM( bool data)		{ if ( fReadBOOL() != data) fWriteDATA( data);}
 void eepromSaveWaveData( int waveID)
 {
 	waveItem w = mWaves[waveID];
-	EEPROM_CURRENT_ADDR = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * w.indForWeb);		
+	EEPROM_CURRENT_ADDR = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * w.indWeb);		
 
 	saveEEPROM( waveID);
-	saveEEPROM( ++w.savno);		saveEEPROM( w.indForWeb);   saveEEPROM( w.pollCurrent);
+	saveEEPROM( ++w.savno);		saveEEPROM( w.indWeb);   	saveEEPROM( w.palCurrent);
 	saveEEPROM( w.speed);		saveEEPROM( w.temp);		saveEEPROM( w.saturn);
 	saveEEPROM( w.c1.r);		saveEEPROM( w.c1.g);		saveEEPROM( w.c1.b);
 	saveEEPROM( w.c2.r);		saveEEPROM( w.c2.g);		saveEEPROM( w.c2.b);
@@ -116,7 +116,7 @@ void eepromLoadWave()
 
 		if ( waveID > 0 && savno >= mWaves[waveID].savno)
 		{
-			mWaves[waveID].savno	= savno; 			uint8_t placed 			= fReadBYTE();     	mWaves[waveID].pollCurrent 	= fReadBYTE();
+			mWaves[waveID].savno	= savno; 			uint8_t placed 			= fReadBYTE();     	mWaves[waveID].palCurrent 	= fReadBYTE();
 			mWaves[waveID].speed 	= fReadBYTE(); 		mWaves[waveID].temp 	= fReadBYTE(); 		mWaves[waveID].saturn 		= fReadBYTE();
 			mWaves[waveID].c1.r 	= fReadBYTE(); 		mWaves[waveID].c1.g 	= fReadBYTE(); 		mWaves[waveID].c1.b 		= fReadBYTE();
 			mWaves[waveID].c2.r 	= fReadBYTE();		mWaves[waveID].c2.g 	= fReadBYTE();		mWaves[waveID].c2.b 		= fReadBYTE();
@@ -124,10 +124,10 @@ void eepromLoadWave()
 			mWaves[waveID].aux010 	= fReadBYTE();		mWaves[waveID].aux100 	= fReadBYTE();		mWaves[waveID].aux255 		= fReadBYTE(); 
 			mWaves[waveID].aux355 	= fReadBYTE();		mWaves[waveID].aux455 	= fReadBYTE();
 
-			if ( mWaves[waveID].pollCurrent < 1 || mWaves[waveID].pollCurrent > NUM_POLLITR) mWaves[waveID].pollCurrent = 9;
-			if ( placed != mWaves[waveID].indForWeb) 
+			if ( mWaves[waveID].palCurrent < 1 || mWaves[waveID].palCurrent > NUM_POLLITR) mWaves[waveID].palCurrent = 9;
+			if ( placed != mWaves[waveID].indWeb) 
 			{ 	
-				Serial.printf( "-=> Bad 'placed', need total resave [savno=%d (%d)]. WaveID = %d, INDforWeb = %d ( %d) [", mWaves[waveID].savno, savno, waveID, mWaves[waveID].indForWeb, placed);
+				Serial.printf( "-=> Bad 'placed', need total resave [savno=%d (%d)]. WaveID = %d, INDforWeb = %d ( %d) [", mWaves[waveID].savno, savno, waveID, mWaves[waveID].indWeb, placed);
 				Serial.print( mWaves[waveID].name);
 				Serial.println( "].");
 
@@ -144,8 +144,8 @@ void eepromSaveData()
 	yoBugN( "-=> Saver start");
 	EEPROM_CURRENT_ADDR = EEPROM_ADDR_CONFIG;
 
-	saveEEPROM( yo.currentBrightness);
-	saveEEPROM( yo.lastPressed);
+	saveEEPROM( yo.currentBri);
+	saveEEPROM( yo.waveID);
 	saveEEPROM( yo.ONOFF);
 	saveEEPROM( yo.iscandle);
 	saveEEPROM( yo.ishifter);
@@ -164,12 +164,12 @@ void eepromLoadData()
 {
 	EEPROM_CURRENT_ADDR 	= EEPROM_ADDR_CONFIG;
 
-	yo.currentBrightness 	= fReadBYTE();
-	yo.lastPressed 			= fReadINT();	
-	yo.ONOFF 				= fReadBOOL();
-	yo.iscandle				= fReadBOOL();
-	yo.ishifter				= fReadBOOL();
-	yo.lastReceive 			= fReadINT();
+	yo.currentBri 	= fReadBYTE();
+	yo.waveID 		= fReadINT();	
+	yo.ONOFF 		= fReadBOOL();
+	yo.iscandle		= fReadBOOL();
+	yo.ishifter		= fReadBOOL();
+	yo.lastReceive 	= fReadINT();
 }
 
 
@@ -187,13 +187,10 @@ void eepromSaveWaveIND()
 
 void eepromSaveWave()
 {
- 	a.itForSave = a.forSave.begin();
-	// Serial.println( "-=> Begin for save...");
-
-    for (int i = 0; a.itForSave != a.forSave.end(); i++, a.itForSave++) 
+	for ( auto keys : a.forSave)
 	{
-		eepromSaveWaveData( *a.itForSave);
-    }
+		eepromSaveWaveData( keys);
+	}
 
 	a.forSave.clear();
 	eepromSaveWaveIND();
@@ -203,12 +200,11 @@ void eepromSaveWave()
 
 void eepromForceSaveWave()
 {
-	a.itButtons = a.keyButton.begin();	
 	Serial.println( "-=> Force saving wavedata...");
 
-	for (int i = 0; a.itButtons != a.keyButton.end(); a.itButtons++, i++) 
+	for ( auto keys : a.keyButton) 
 	{  			
-		eepromSaveWaveData( *a.itButtons);
+		eepromSaveWaveData( keys);
 	}
 	
 	forceSave = false;
@@ -240,7 +236,7 @@ void requestSave()
 {
 	yo.EEPROMsaveTime 	= yo.now + EEPROM_SAVE_TIME;
 	yo.isNeedSaveEEPROM = true;
-	a.forSave.insert( yo.lastPressed);
+	a.forSave.insert( yo.waveID);
 
 	// Serial.print( "-=> need save: ");
 	// Serial.println( mWaves[yo.lastPressed].name);
@@ -278,6 +274,6 @@ void eepromStartUP()
 	
 	if ( yo.ONOFF == true) led.powerON();
 
-	led.setBrightness( yo.currentBrightness);
-	irdaServer( yo.lastPressed, 666);					// 666 что бы не было запроса на сохранение после ресета 
+	led.setBrightness( yo.currentBri);
+	irdaServer( yo.waveID, 666);					// 666 что бы не было запроса на сохранение после ресета 
 }

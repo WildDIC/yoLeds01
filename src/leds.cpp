@@ -135,7 +135,7 @@ CHSV Ledas::rgb2hsv( const CRGB& rgb)
 
 void Ledas::powerON()
 {  
-	FastLED.setBrightness( yo.currentBrightness);
+	FastLED.setBrightness( yo.currentBri);
 	FastLED.delay( 5);
 	FastLED.show(); 
 }
@@ -170,16 +170,23 @@ void Ledas::OFF()
 	// }
 
 	fill_solid( leds, NUM_LEDS, CRGB::Black); 	
-	delay( 5);
+	delay( 50);
 	FastLED.show();
 }
 
 
 /* Моргаем кратенько черненьким, при достижении края параметров */
-void Ledas::blink()
+void Ledas::blinkLong()
 { 
 	this->powerOFF(); 
-	delay(3); 
+	delay( 6); 
+	this->powerON(); 
+}
+
+void Ledas::blinkShort()
+{ 
+	this->powerOFF(); 
+	delay( 2); 
 	this->powerON(); 
 }
 
@@ -197,12 +204,12 @@ void Ledas::fadeOUT()
 }
 
 
-void Ledas::setSpeed(  int value){ yo.currentSpeed = value;  if ( yo.loadOutside){ mWaves[yo.lastPressed].speed  = value;}}
-void Ledas::setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux010 = value;}}
-void Ledas::setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux100 = value;}}
-void Ledas::setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux255 = value;}}
-void Ledas::setAUX355( int value){ yo.AUX355 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux355 = value;}}
-void Ledas::setAUX455( int value){ yo.AUX455 = value; 		 if ( yo.loadOutside){ mWaves[yo.lastPressed].aux455 = value;}}
+void Ledas::setSpeed(  int value){ yo.currentSpeed = value;  if ( yo.loadOutside){ mWaves[yo.waveID].speed  = value;}}
+void Ledas::setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux010 = value;}}
+void Ledas::setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux100 = value;}}
+void Ledas::setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux255 = value;}}
+void Ledas::setAUX355( int value){ yo.AUX355 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux355 = value;}}
+void Ledas::setAUX455( int value){ yo.AUX455 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux455 = value;}}
 
 
 /*@param force не пишем, так как закинули цвет в мапу с веб-сервера уже*/
@@ -214,9 +221,9 @@ void Ledas::setColors(	const CRGB& c1, const CRGB& c2, const CRGB& c3)
 
 	if ( yo.loadOutside)
 	{
-		mWaves[yo.lastPressed].c1 = c1;
-		mWaves[yo.lastPressed].c2 = c2;
-		mWaves[yo.lastPressed].c3 = c3;
+		mWaves[yo.waveID].c1 = c1;
+		mWaves[yo.waveID].c2 = c2;
+		mWaves[yo.waveID].c3 = c3;
 	}
 }
 
@@ -233,7 +240,7 @@ void Ledas::setSaturation( int value)
 	yo.currentSaturn  = value; 
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 	
-	if ( yo.loadOutside){ mWaves[yo.lastPressed].saturn = value; }	
+	if ( yo.loadOutside){ mWaves[yo.waveID].saturn = value; }	
 }
 
 
@@ -248,7 +255,7 @@ void Ledas::setTemperature( int value)
 	
 	yo.currentTemp = value; 
 	
-	if ( yo.loadOutside){ mWaves[yo.lastPressed].temp = value;}
+	if ( yo.loadOutside){ mWaves[yo.waveID].temp = value;}
 	
 	FastLED.setTemperature( temperList[yo.currentTemp] );	
 	FastLED.show();
@@ -261,11 +268,11 @@ void Ledas::setBrightness( int value)
 	if ( value < 5 ){ 
 		value = 5;
 	}
-	yo.currentBrightness = value; 
+	yo.currentBri = value; 
 	// if ( yo.loadOutside){
 		// mWaves[yo.lastPressed].bright = value;
 	// }
-	FastLED.setBrightness( yo.currentBrightness);
+	FastLED.setBrightness( yo.currentBri);
   	FastLED.show();
 }
 
@@ -278,11 +285,11 @@ void Ledas::changeSpeed( int delta)
 	if ( yo.currentSpeed > 50)
 	{ 
 		yo.currentSpeed = 50; 
-		led.blink();
+		led.blinkLong();
 	} else if ( yo.currentSpeed < 2)
 	{ 
 		yo.currentSpeed = 2;
-		led.blink();
+		led.blinkLong();
 	}
 	Serial.printf( "Speed: %d\n", yo.currentSpeed);
 }
@@ -297,12 +304,12 @@ void Ledas::changeTemperature( int delta)
 	{ 
 		yo.currentTemp = TEMP_IND_MAX; 
 		temperList[yo.currentTemp] = 0xFFFFFF;
-		led.blink();
+		led.blinkLong();
 	} 
 	else if ( yo.currentTemp < 0)
 	{ 
 		yo.currentTemp = 0; 
-		led.blink();
+		led.blinkLong();
 	}  
 	
 	FastLED.setTemperature( temperList[yo.currentTemp] );
@@ -315,19 +322,19 @@ void Ledas::changeTemperature( int delta)
 * @param delta +/- yo.currentBrightness.*/
 void Ledas::changeBrightness( int delta)
 {  
-  	yo.currentBrightness = FastLED.getBrightness() + delta;
-  	if ( yo.currentBrightness > 255)
+  	yo.currentBri = FastLED.getBrightness() + delta;
+  	if ( yo.currentBri > 255)
 	{
-    	yo.currentBrightness = 255;
-		led.blink();
+    	yo.currentBri = 255;
+		led.blinkLong();
   	}
-	else if ( yo.currentBrightness <= 5)
+	else if ( yo.currentBri <= 5)
 	{
-	    yo.currentBrightness = 5;
-		led.blink();
+	    yo.currentBri = 5;
+		led.blinkLong();
   	}  
-  	Serial.printf( "Brightness: %d. \n", yo.currentBrightness);  	
-  	FastLED.setBrightness( yo.currentBrightness);
+  	Serial.printf( "Brightness: %d. \n", yo.currentBri);  	
+  	FastLED.setBrightness( yo.currentBri);
   	FastLED.show();
 }
 
@@ -340,12 +347,12 @@ void Ledas::changeSaturation( int delta)
 	if ( yo.currentSaturn > MAX_SATURATIOIN)
 	{ 
 		yo.currentSaturn = MAX_SATURATIOIN; 
-		led.blink();
+		led.blinkLong();
 	} 
 	else if ( yo.currentSaturn < 0)
 	{ 
 		yo.currentSaturn = 0;
-		led.blink();
+		led.blinkLong();
 	}
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
 	Serial.printf( "Saturation: %d ( anti: %d)\n", yo.currentSaturn, yo.antiSaturn);

@@ -43,43 +43,45 @@
 // typedef enum { ANIME_STATIC=0, ANIME_DYNAMIC=1, ANIME_SETTER=2, ANIME_CHANGER=4 } AnimeType;
 
 struct config{
-	byte currentBrightness = 255;        // Уровень яркости ( 0-255)
-	byte currentTemp = TEMP_IND_MAX;     // Температура ленты (0-255)
+	int waveID;							// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
+	int lastReceive = 0;                // ПОследнее значение с ИР приемника
+	void (*pt2webUpdate)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	void (*pt2webUnsave)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	clock_t now 	= 0;				// текущее время в clock()
+	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
+	uint8_t candle 	= 0;
+	uint8_t shift 	= 0;
+	bool againButton 	= true;			// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
+	bool ONOFF 			= false;        // Включено или выключено питание ленты
+	bool iscandle 		= false;
+	bool ishifter 		= false;
+	bool loadOutside 	= false;		// устанавливаем данные (через сеттер) при их чтении в irda ( false) или оно пришло для устеновки извне ( true) и их надо будет сохранить 
+	bool isNeedSaveEEPROM = false;
+	String rndStyle;					// строка для подмены переменных стиля случайных палитр через json на веб-клиент ( reseter)
+	String name010 = "AUX010";			// AUX010 name string for web range
+	String name100 = "AUX100";			// AUX100 name string for web range
+	String name255 = "AUX255";			// AUX255 name string for web range
+	String name355 = "AUX355";			// AUX355 name string for web range
+	String name455 = "AUX455";			// AUX455 name string for web range
+	String nameSpeed = "Speed";			// Speed name string for web range
+	byte currentBri = 255;      		// Уровень яркости ( 0-255)
+	byte currentTemp = TEMP_IND_MAX;    // Температура ленты (0-255)
 	byte currentSpeed = 10;      	    // Скорость анимации ( задержка)
 	byte currentSaturn = MAX_SATURATIOIN;// Сатурация цвета ( 0-255)
 	byte antiSaturn = 0;             	// Обратная величина сатурации ( 255-0)
-	bool ONOFF = false;                 // Включено или выключено питание ленты
-	bool isNeedSaveEEPROM = false;
-	bool againButton = 1;				// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
-	clock_t now = 0;					// текущее время в clock()
-	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
-	int lastReceive = 0;                // ПОследнее значение с ИР приемника
-	int lastPressed;					// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
-	void (*pt2webUpdate)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
-	void (*pt2webUnsave)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
-	String rndStyle;					// строка для подмены переменных стиля случайных палитр через json на веб-клиент ( reseter)
-	CRGB c1 = CRGB( 255, 0, 0);
-	CRGB c2 = CRGB( 0,  255, 0);
-	CRGB c3 = CRGB( 0, 0, 255);
-	byte lastCustPal = 0;
-	uint8_t candle = 0;
-	uint8_t shift = 0;
-	bool iscandle = false;
-	bool ishifter = false;
 	byte AUX010;
 	byte AUX100;
 	byte AUX255;
 	byte AUX355;
 	byte AUX455;
-	byte pollDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
-	byte pollCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
-	bool loadOutside = false;			// устанавливаем данные (через сеттер) при их чтении в irda ( false) или оно пришло для устеновки извне ( true) и их надо будет сохранить 
-	String name010 = "AUX010";			// AUX010 name string for web range
-	String name100 = "AUX100";			// AUX100 name string for web range
-	String name255 = "AUX255";			// AUX255 name string for web range
-	String name355 = "AUX355";			// AUX255 name string for web range
-	String name455 = "AUX455";			// AUX255 name string for web range
-	String nameSpeed = "Speed";			// Speed name string for web range
+	byte palDefault;					// ID код поллитры по-умолчанию из myPollitra[]	
+	byte palCurrent;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
+	byte palRandom 	= 0;					// количество самодельных ( рэндомных + колоро-палитровых) самодельных палитр
+	byte palTotal 	= 0;					// количество палитр из верхней части списка палитр ( после самосборных до "ВЛЕД-овских")
+	byte palCust 	= 0;					// общее количество палитр
+	CRGB c1 = CRGB( 255, 0, 0);
+	CRGB c2 = CRGB( 0,  255, 0);
+	CRGB c3 = CRGB( 0, 0, 255);
 };
 extern config yo;						// конфиг, самое главное здесь
 extern void (*pt2Func)();				// ссылка на анима-функция
@@ -90,7 +92,7 @@ struct waveItem{
     int code = 0;							// IR code
     String name;						// Web button name
 	byte typeWeb = 0;						// 0 = None, 1 = bList, 2 = rList 
-	byte indForWeb = 0;						// IND in web list 
+	byte indWeb = 0;						// IND in web list 
 	bool leadOFF = false;						// fill black and save LastPressed
 	bool isEffect = false;						// is pt2 change ( ON/OF)
 	void (*pt2Funca)(void) = nullptr;				// point to amination function
@@ -99,7 +101,7 @@ struct waveItem{
 	void (*pt2changer)(int) = nullptr;			// point to pre-wave function
 	int min = 0;							// min value for web-range
 	int max = 255;							// max value for web-range
-	byte pollDefault = 9;					// ID код поллитры по-умолчанию из myPollitra[]	
+	byte palDefault = 9;					// ID код поллитры по-умолчанию из myPollitra[]	
 	byte bright = 128;
 	byte temp = TEMP_IND_MAX;
 	byte speed = 5;
@@ -112,7 +114,7 @@ struct waveItem{
 	CRGB c1 = CRGB{ 255, 0, 0};
 	CRGB c2 = CRGB( 0, 255, 0);
 	CRGB c3 = CRGB{ 0, 0, 255};
-	byte pollCurrent = 9;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
+	byte palCurrent = 9;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
 	uint16_t savno = 0; 					// количество записей вавы в память [Save No]
 	// uint8_t minSpeed;
 	// uint8_t maxSpeed;
@@ -122,7 +124,7 @@ struct waveItem{
 typedef std::map<int, waveItem> mapWAVES;
 extern mapWAVES mWaves; 							// list for: IRDA - function - WEB
 extern std::map<int, waveItem>::iterator mbIter;	// итератор для этого
-
+extern waveItem c;
 
 struct pollitraZ{
 	String name;						// Имя палитры
@@ -163,9 +165,6 @@ class varStorage
 		// CHSV hOUT_LEDS[NUM_LEDS];
 };
 extern varStorage v;
-
-// extern animeClass a;
-
 extern int temperList[NUM_TEMPS];
 
 int powInt(int x, int y);

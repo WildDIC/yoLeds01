@@ -1,10 +1,11 @@
 #include "config.h"
 
-config yo;								// Конфиг со всякой шнягой полезной внутри
+config yo;									// Конфиг со всякой шнягой полезной внутри
 varStorage v;
-void (*pt2Func)() = nullptr; 						// Указатель на функцию для CASE
+void (*pt2Func)() = nullptr; 				// Указатель на функцию для CASE
 
-mapWAVES mWaves; 					// list for: IRDA - function - WEB
+mapWAVES mWaves; 							// list for: IRDA - function - WEB
+waveItem c; 								// копия данных в оперативной работе вытащенная из откуда-то ( мапы м вавами или из  сейвника)
 std::map<int, waveItem>::iterator mbIter;
 
 

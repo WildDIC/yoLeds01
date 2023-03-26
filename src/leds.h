@@ -15,7 +15,8 @@ class Ledas{
 
 		static void reset();
 		void OFF();
-		void blink();
+		void blinkLong();
+		void blinkShort();
 		void fadeOUT();
 
 		static void setSpeed( 	int value);

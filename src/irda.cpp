@@ -32,8 +32,21 @@ void irdaStartUP()
 		{551485695, IR_MENU_UP},	
 		{551518335, IR_MENU_DN},	
 		// {127026699, IR_MENU_DN},	
-		// {127026699, IR_MENU_LEFT},	
-		// {127026699, IR_MENU_RIGHT},	
+		
+		{1240493167, IR_MENU_LEFT},	
+		{1118950049, IR_MENU_LEFT},	
+		{1864947811, IR_MENU_LEFT},	
+		{481457630, IR_MENU_LEFT},	
+		{1576443506, IR_MENU_LEFT},	
+		{1274544202, IR_MENU_LEFT},	
+		{184755576, IR_MENU_LEFT},	
+
+		{449300946, IR_MENU_RIGHT},	
+		{1302542546, IR_MENU_RIGHT},	
+		{528721466, IR_MENU_RIGHT},	
+		{1374020412, IR_MENU_RIGHT},	
+		{1274544330, IR_MENU_RIGHT},	
+		{873323003, IR_MENU_RIGHT},	
 		// {127026699, IR_MENU_OK},
 
 		// {127026699, IR_BACK},	
@@ -105,60 +118,38 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 	else{
 		resValue = getIRcode();
 	}		
-
-	if ( keyCodes[resValue]){	resValue = keyCodes[resValue]; }
 	
 	if ( resValue)
 	{		
-		yoBugF( "-=>> IR receive: %d\n", resValue);
-		// Serial.printf( "Code [%d] from web: (%d). resValue: %d\n", codeFromWeb, webValue, resValue);
+		Serial.printf( "Code from web [%d]. webValue: %d. resValue: [%d]", codeFromWeb, webValue, resValue);
+		
+		if ( keyCodes[resValue])
+		{	
+			resValue = keyCodes[resValue]; 
+			Serial.printf( " -> [%d].", resValue);
+		}
 		
 		mbIter = mWaves.find( resValue);
 		if ( mbIter != mWaves.end())
 		{
-			a.changed = true;
-			
-			yoBug( "-=>> Наш выбор: ");			
-			yoBugN( mbIter->second.name);			
+			a.changed = true;			
+			c = mWaves[resValue];
 
-			if ( mbIter->second.isEffect)
-			{	               													// если это эффект и надо применить цвета, палитры и прочее
-				if ( mbIter->second.pollCurrent < 1 || mbIter->second.pollCurrent > NUM_POLLITR) 
-				{ 																// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
-					mbIter->second.pollCurrent = mbIter->second.pollDefault; 	// если текущая палитра не определена - ставим дефолтную
-				}
-				
-				yo.loadOutside 	= false;
-				yo.lastPressed 	= resValue;
-				yo.name010 		= "AUX010";
-				yo.name100 		= "AUX100";
-				yo.name255 		= "AUX255";
-				yo.name355 		= "AUX355";
-				yo.name455 		= "AUX455";
-				yo.nameSpeed	= "Speed";
+			Serial.print( " И наш выбор: '" + c.name + "'.\n");
 
-				led.setColors(		mbIter->second.c1, 	mbIter->second.c2,	 mbIter->second.c3);
-				// setBrightness( 	mbIter->second.bright);
-				led.setSpeed( 		mbIter->second.speed);
-				led.setSaturation( 	mbIter->second.saturn);
-				led.setTemperature( mbIter->second.temp);
-				led.setAUX010( 		mbIter->second.aux010);
-				led.setAUX100( 		mbIter->second.aux100);
-				led.setAUX255( 		mbIter->second.aux255);
-				led.setAUX355( 		mbIter->second.aux355);
-				led.setAUX455( 		mbIter->second.aux455);
-				paletteSetActive( 	mbIter->second.pollCurrent, false);
+			if ( c.isEffect)
+			{	 													// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
+																	// если текущая палитра не определена - ставим дефолтную				
+				if ( !isBetween( c.palCurrent, 1, yo.palTotal)) c.palCurrent = c.palDefault;
+				a.applyWaveData( c);				
+				paletteSetActive( 	c.palCurrent, false);
 				led.OFF();
-				// Serial.println( "-==> Vars applied.");
-				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", resValue, mbIter->second.pollCurrent,	mbIter->second.bright, mbIter->second.speed, mbIter->second.saturn, mbIter->second.temp, mbIter->second.aux010, mbIter->second.aux100, mbIter->second.aux255);
-				// Serial.printf("ind=%d, pol=%d, bri=%d, speed=%d, sat=%d, temp=%d, a010=%d, a100=%d, a255=%d\n", yo.lastPressed, mbIter->second.pollCurrent,	yo.currentBrightness, yo.currentSpeed, yo.currentSaturn, yo.currentTemp, yo.AUX010, yo.AUX100, yo.AUX255);
-				yo.loadOutside = true;
 			}
 
-			if ( mbIter->second.pt2static) 	mbIter->second.pt2static();
-			if ( mbIter->second.pt2setter) 	mbIter->second.pt2setter(  webValue);
-			if ( mbIter->second.pt2changer) mbIter->second.pt2changer( mbIter->second.delta);
-			if ( mbIter->second.isEffect)	pt2Func = mbIter->second.pt2Funca;
+			if ( c.pt2static) 	c.pt2static();
+			if ( c.pt2setter) 	c.pt2setter(  webValue);
+			if ( c.pt2changer) 	{ led.blinkShort(); c.pt2changer( c.delta);}
+			if ( c.isEffect)	pt2Func = c.pt2Funca;
 
 			#ifdef EERPROM_ENABLE
 				if ( webValue != 666) requestSave();
@@ -166,5 +157,6 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 			
 			yo.pt2webUpdate();
 		}		
+		// Serial.println( "");
 	}   
 }
