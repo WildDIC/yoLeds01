@@ -260,7 +260,7 @@ void paletteSetActive( byte pollitraID, bool force)
 	#endif
 
 	#ifdef DEBUG_ENABLE
-		Serial.printf( "-=> Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
+		Serial.printf( "pall| -=> Поллитра ID: %d ( %s) for %d ( %s)\n", pollitraID, myPal[pollitraID].name, yo.lastPressed, mWaves[yo.lastPressed].name);	
 	#endif
 }
 

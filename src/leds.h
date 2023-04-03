@@ -46,12 +46,16 @@ class Ledas{
 		uint8_t beat(  uint8_t bpm = 4);
 		uint8_t beat8( uint8_t bpm, uint8_t timeScale = 8);
 
+		uint8_t saw8(uint8_t in);
 		uint8_t circle8(uint8_t in);
 		uint8_t circle( uint8_t ind, uint8_t total, uint8_t ts = 0);
 
 		uint8_t beatCircle(   accum88 bpm = 8, uint8_t timeShift = 0, 	uint8_t timeScale = 8);
 		uint8_t beatCircle8(  accum88 bpm = 8, uint8_t highest = 255, 	uint8_t timeShift = 0, 	 uint8_t timeScale = 8);
 		uint8_t beatCircle88( accum88 bpm = 8, uint8_t lowest 	= 0, 	uint8_t highest   = 255, uint8_t timeShift = 0, uint8_t timeScale = 8);
+	
+		uint8_t valueChange( uint8_t value, int delta = 1, uint8_t min = 0, uint8_t max = 255);
+	private:
 };
 
 extern Ledas led;

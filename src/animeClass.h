@@ -33,7 +33,8 @@ class animeClass
 
 		/*		Какая-то функция, которая запускается после всего для чего-то, что надо сделать потом.*/
 		void makeWebLists();
-
+		void changeWave( int resValue, int webValue);		
+		// void applyWaveData();
 		void applyWaveData( const waveItem &c);
 
 		/*Возвращает true ( bool Ledas.changed), 
@@ -76,7 +77,7 @@ class animeClass
 		@param name Animation name ( Here - Nah), просто для понимания, что это такое.
 		@param ptChanger pointer to changer function = &staticFuuctionName
 		@param delta +/- add/sub, передаем это значение в функцию*/
-		void addChanger( 	int id, const String& name, void (*ptChanger)(int),	byte delta 	= 1);		
+		void addChanger( 	int id, const String& name, void (*ptChanger)(int),	signed char delta 	= 1);		
 		bool isInID( 		int id);
 
 		static void nextWave( int delta = 1);

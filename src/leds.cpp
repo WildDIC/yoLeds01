@@ -156,7 +156,7 @@ void Ledas::powerONOFF()
 	else {			led.powerON(); 	}
 
 	yo.ONOFF = !yo.ONOFF;
-	Serial.printf( "State: %d\n", yo.ONOFF);  	
+	Serial.printf( "set | State: %d\n", yo.ONOFF);  	
 }
 
 
@@ -204,12 +204,12 @@ void Ledas::fadeOUT()
 }
 
 
-void Ledas::setSpeed(  int value){ yo.currentSpeed = value;  if ( yo.loadOutside){ mWaves[yo.waveID].speed  = value;}}
-void Ledas::setAUX010( int value){ yo.AUX010 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux010 = value;}}
-void Ledas::setAUX100( int value){ yo.AUX100 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux100 = value;}}
-void Ledas::setAUX255( int value){ yo.AUX255 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux255 = value;}}
-void Ledas::setAUX355( int value){ yo.AUX355 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux355 = value;}}
-void Ledas::setAUX455( int value){ yo.AUX455 = value; 		 if ( yo.loadOutside){ mWaves[yo.waveID].aux455 = value;}}
+void Ledas::setSpeed(  int value){ yo.currentSpeed = value; yo.pt2webUpRange( "Speed", value); 	if ( yo.loadOutside){ mWaves[yo.waveID].speed  = value;}}
+void Ledas::setAUX010( int value){ yo.AUX010 = value; 		yo.pt2webUpRange( "AUX010", value); if ( yo.loadOutside){ mWaves[yo.waveID].aux010 = value;}}
+void Ledas::setAUX100( int value){ yo.AUX100 = value; 		yo.pt2webUpRange( "AUX100", value); if ( yo.loadOutside){ mWaves[yo.waveID].aux100 = value;}}
+void Ledas::setAUX255( int value){ yo.AUX255 = value; 		yo.pt2webUpRange( "AUX255", value); if ( yo.loadOutside){ mWaves[yo.waveID].aux255 = value;}}
+void Ledas::setAUX355( int value){ yo.AUX355 = value; 		yo.pt2webUpRange( "AUX355", value); if ( yo.loadOutside){ mWaves[yo.waveID].aux355 = value;}}
+void Ledas::setAUX455( int value){ yo.AUX455 = value; 		yo.pt2webUpRange( "AUX455", value); if ( yo.loadOutside){ mWaves[yo.waveID].aux455 = value;}}
 
 
 /*@param force не пишем, так как закинули цвет в мапу с веб-сервера уже*/
@@ -225,6 +225,11 @@ void Ledas::setColors(	const CRGB& c1, const CRGB& c2, const CRGB& c3)
 		mWaves[yo.waveID].c2 = c2;
 		mWaves[yo.waveID].c3 = c3;
 	}
+
+	yo.pt2webUpColor();
+	// yo.pt2webUpColor( "vC1", "rgb("	+ String( yo.c1.r) + "," + String( yo.c1.g) + "," + String( yo.c1.b) + ")");
+	// yo.pt2webUpColor( "vC2", "rgb("	+ String( yo.c2.r) + "," + String( yo.c2.g) + "," + String( yo.c2.b) + ")");
+	// yo.pt2webUpColor( "vC3", "rgb("	+ String( yo.c3.r) + "," + String( yo.c3.g) + "," + String( yo.c3.b) + ")");
 }
 
 
@@ -239,7 +244,8 @@ void Ledas::setSaturation( int value)
 
 	yo.currentSaturn  = value; 
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
-	
+	yo.pt2webUpRange( "Saturations", value);
+
 	if ( yo.loadOutside){ mWaves[yo.waveID].saturn = value; }	
 }
 
@@ -256,7 +262,8 @@ void Ledas::setTemperature( int value)
 	yo.currentTemp = value; 
 	
 	if ( yo.loadOutside){ mWaves[yo.waveID].temp = value;}
-	
+	yo.pt2webUpRange( "Temperature", value);
+
 	FastLED.setTemperature( temperList[yo.currentTemp] );	
 	FastLED.show();
 	// Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
@@ -272,26 +279,33 @@ void Ledas::setBrightness( int value)
 	// if ( yo.loadOutside){
 		// mWaves[yo.lastPressed].bright = value;
 	// }
+	yo.pt2webUpRange( "Brightness", value);
+
 	FastLED.setBrightness( yo.currentBri);
   	FastLED.show();
 }
 
+uint8_t Ledas::valueChange( uint8_t value, int delta, uint8_t min, uint8_t max)
+{
+	int out = value;  // int что бы перекрыть сложение/вычитаение
+	out = (int)out + delta;
+
+	if ( out < min) out = min;
+	if ( out > max) out = max;
+	
+	led.blinkShort();
+	
+	return out;
+}
 
 /* Меняем общуу срость анимации (0-...)
 * @param delta +/- yo.currentSpeed.*/
 void Ledas::changeSpeed( int delta)
 {
-	yo.currentSpeed += delta;
-	if ( yo.currentSpeed > 50)
-	{ 
-		yo.currentSpeed = 50; 
-		led.blinkLong();
-	} else if ( yo.currentSpeed < 2)
-	{ 
-		yo.currentSpeed = 2;
-		led.blinkLong();
-	}
-	Serial.printf( "Speed: %d\n", yo.currentSpeed);
+	uint8_t value = led.valueChange( yo.currentSpeed, delta, 1, 50);
+	led.setSpeed( value);
+
+	Serial.printf( "chng| Speed [%d]: %d\n", delta, yo.currentSpeed);
 }
 
 
@@ -299,22 +313,16 @@ void Ledas::changeSpeed( int delta)
 * @param delta +/- yo.currentTemp.*/
 void Ledas::changeTemperature( int delta)
 {
-	yo.currentTemp += delta;
+	uint8_t value = led.valueChange( yo.currentTemp, delta, 0, TEMP_IND_MAX);
+
 	if ( yo.currentTemp > TEMP_IND_MAX)
 	{ 
-		yo.currentTemp = TEMP_IND_MAX; 
 		temperList[yo.currentTemp] = 0xFFFFFF;
-		led.blinkLong();
 	} 
-	else if ( yo.currentTemp < 0)
-	{ 
-		yo.currentTemp = 0; 
-		led.blinkLong();
-	}  
-	
-	FastLED.setTemperature( temperList[yo.currentTemp] );
-	FastLED.show();
-	Serial.printf( "Temperature: #%d (%x)\n", yo.currentTemp, temperList[yo.currentTemp]);
+
+	led.setTemperature( value);
+
+	Serial.printf( "chng| Temperature [%d]: #%d (%x)\n", delta, yo.currentTemp, temperList[yo.currentTemp]);
 }
 
 
@@ -322,20 +330,10 @@ void Ledas::changeTemperature( int delta)
 * @param delta +/- yo.currentBrightness.*/
 void Ledas::changeBrightness( int delta)
 {  
-  	yo.currentBri = FastLED.getBrightness() + delta;
-  	if ( yo.currentBri > 255)
-	{
-    	yo.currentBri = 255;
-		led.blinkLong();
-  	}
-	else if ( yo.currentBri <= 5)
-	{
-	    yo.currentBri = 5;
-		led.blinkLong();
-  	}  
-  	Serial.printf( "Brightness: %d. \n", yo.currentBri);  	
-  	FastLED.setBrightness( yo.currentBri);
-  	FastLED.show();
+	uint8_t value = led.valueChange( FastLED.getBrightness(), delta, 5);
+	led.setBrightness( value);
+
+  	Serial.printf( "chng| Brightness [%d]: %d. \n", delta, yo.currentBri);  	
 }
 
 
@@ -343,19 +341,12 @@ void Ledas::changeBrightness( int delta)
 * @param delta +/- yo.currentSaturn.*/
 void Ledas::changeSaturation( int delta)
 {
-	yo.currentSaturn += delta;	
-	if ( yo.currentSaturn > MAX_SATURATIOIN)
-	{ 
-		yo.currentSaturn = MAX_SATURATIOIN; 
-		led.blinkLong();
-	} 
-	else if ( yo.currentSaturn < 0)
-	{ 
-		yo.currentSaturn = 0;
-		led.blinkLong();
-	}
+	uint8_t value = led.valueChange( yo.currentSaturn, delta, 0, MAX_SATURATIOIN);
+	led.setSaturation( value);
+
 	yo.antiSaturn = MAX_SATURATIOIN - yo.currentSaturn;
-	Serial.printf( "Saturation: %d ( anti: %d)\n", yo.currentSaturn, yo.antiSaturn);
+
+	Serial.printf( "chng| Saturation [%d]: %d ( anti: %d)\n", delta, yo.currentSaturn, yo.antiSaturn);
 }
 
 
@@ -429,14 +420,14 @@ uint8_t Ledas::beat( uint8_t timeScale)
 	@param in index 0-255
 	@return in-out full circle 0-255-0
 */
-// uint8_t Ledas::circle8(uint8_t in)
-// {
-//     if( in & 0x80) 
-// 	{
-//         in = 255 - in;
-//     }
-//     return scale8( in, in) << 2;
-// }
+uint8_t Ledas::saw8(uint8_t in)
+{
+    if( in & 0x80) 
+	{
+        in = 255 - in;
+    }
+    return in << 1;
+}
 
 /*
 	Псево sin8(), выдает 0-255-0 с замедлением на вершинах
@@ -519,7 +510,6 @@ uint8_t Ledas::beatCircle88( accum88 bpm, uint8_t lowest, uint8_t highest, uint8
 {
 	uint8_t beat 	= this->beatCircle8( bpm, ( highest - lowest), timeShift, timeScale);
     uint8_t result 	= lowest + beat;
-	CRGB(0,0,0) = CHSV( 0,0,0);
     return result;
 }
 

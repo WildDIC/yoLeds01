@@ -12,6 +12,7 @@ void aCreepingPre(){
 	yo.name010 		= "Anime scale";
 	yo.name100		= "Color count";
 	yo.name255		= "Color Begin";
+	yo.isNeedUpWeb = true;
 }
 
 void aCreeping()

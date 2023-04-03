@@ -12,6 +12,7 @@
 void webServerUpdate();
 void webServerUnsave();
 void webServerStartUP();
+void webServerUpRange( const String &name, uint8_t value);
 
 #endif
 

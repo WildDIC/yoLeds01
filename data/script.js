@@ -28,7 +28,7 @@ $( "#pollitres" ).selectmenu({
 		if ( localSelect){											// только, елси селект был сделан с мышки на клиенте, фэлсится, при получении ресета от сервера
 			var select = $('#pollitres option:selected').val();
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/select?funcID="+select+ "&value=" +value, true); 
+			xhr.open("GET", "/select?id="+select+ "&v=" +value, true); 
 			xhr.send();	  
 
 			// if ( event.originalEvent) { updateDate();}					// если сделаи выбор палитры мышкой сами, то надо обновить цвет кнопки, стригерив "ресет" 
@@ -42,11 +42,16 @@ $( "#pollitres" ).selectmenu({
 if (!!window.EventSource) {
 	var source = new EventSource('/events');
 
-	source.addEventListener('open',   function(e) { updateDate( true); console.log("Events Connected"); }, false);
-	source.addEventListener('unsave', function(e) { unsave( e.data);}, false);
-	source.addEventListener('update', function(e) { reseter( e.data); }, false);
-	source.addEventListener('error',  function(e) { 
-		if (e.target.readyState != EventSource.OPEN) { console.log("Events Disconnected"); } }, false);	
+	source.addEventListener('open', function(e) { 
+		requestNewData( true); 	
+		requestNewRanger( ); 
+		console.log("Events Connected. Несите medovuha!"); }, false);
+	source.addEventListener('haveNewData', 	function(e) { reseter( e.data);   }, false);
+	source.addEventListener('haveRanges', 	function(e) { setRanges( e.data); }, false);
+	source.addEventListener('upRange', 		function(e) { setRange( e.data);  }, false);
+	source.addEventListener('unsave', 		function(e) { unsave( e.data);    }, false);
+	source.addEventListener('error',  		function(e) { if (e.target.readyState != EventSource.OPEN) { console.log("Events Disconnected"); } }, false); 
+	// source.addEventListener('update', 		function(e) { reseter( e.data); }, false);
 }
 
 
@@ -62,14 +67,16 @@ function raiserFunc( elemnt, raiser){
 	}
 }
 
+
 function unsave( request){
-	if ( request == 1){ 
+	if ( request == true){ 
 		document.querySelector(".isave").classList.add( 'unsave');
 	}
 	else{ 			    
 		document.querySelector(".isave").classList.remove('unsave'); 
 	}
 }
+
 
 function pButtonClick( element) {
 	// var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
@@ -106,12 +113,12 @@ function fButtonClick( element) {
 
 
 function buttonClick( element) {
-	var value = "&value=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
+	var value = "&v=0"; 													// 0 - если кнопку активности нажал новую ты, обновления палитры что бы не обновлять случайные цвета
 	// if ( element.classList.contains("powerbutton")) { element.classList.toggle("active"); };
-	if ( element.classList.contains("active")) { value = "&value=1"; };			// 1 - нажал нопку опять ты для цветов обновления случайных
+	if ( element.classList.contains("active")) { value = "&v=1"; };			// 1 - нажал нопку опять ты для цветов обновления случайных
 	
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/update?funcID="+element.id + value, true); 
+	xhr.open("GET", "/update?id="+element.id + value, true); 
 	xhr.send();
 }
 
@@ -125,9 +132,37 @@ function rInput( element) {
 	target.innerHTML = value;
 
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/update?funcID="+element.id+"&value="+value, true); 
+	xhr.open("GET", "/update?id="+element.id+"&v="+value, true); 
 	xhr.send();
 }  
+
+
+
+function setRange( data){
+	var json = JSON.parse( data);
+	
+	if ( json.name)
+	{
+		document.querySelector( "." + json.name).value					= json.value;
+		document.querySelector( "." + json.name + "-value").innerHTML 	= json.value;	
+	}
+
+	if ( json.vC1){ var c1 = new iro.Color( json.vC1); colorPicker.colors[0].set(c1);}
+	if ( json.vC2){ var c2 = new iro.Color( json.vC2); colorPicker.colors[1].set(c2);}
+	if ( json.vC3){ var c3 = new iro.Color( json.vC3); colorPicker.colors[2].set(c3);}
+}
+
+
+function setRanges( data){
+	var json = JSON.parse( data);
+
+	document.querySelector( ".AUX010-name").innerHTML 		= json.n010 + ": ";
+	document.querySelector( ".AUX100-name").innerHTML	 	= json.n100 + ": ";
+	document.querySelector( ".AUX255-name").innerHTML	 	= json.n255 + ": ";
+	document.querySelector( ".AUX355-name").innerHTML	 	= json.n355 + ": ";
+	document.querySelector( ".AUX455-name").innerHTML	 	= json.n455 + ": ";
+	document.querySelector( ".Speed-name" ).innerHTML	 	= json.nSpd + ": ";
+}
 
 
 
@@ -141,38 +176,36 @@ function reseter( data){
 	item = document.querySelector( ".opt-active");			// очищаем класс в списке палитр
 	if ( item){ item.classList.remove( 'opt-active'); }			
 
-	document.getElementById( 10000003).value 				= json.vBri;
-	document.getElementById( 10000004).value 				= json.vSpd;
-	document.getElementById( 10000005).value 				= json.vTmp;
-	document.getElementById( 10000006).value 				= json.vSat;	
-	
-	document.getElementById( 10000007).value 				= json.v010;
-	document.getElementById( 10000008).value 				= json.v100;
-	document.getElementById( 10000009).value 				= json.v255;
-	document.getElementById( 10000099).value 				= json.v355;
-	document.getElementById( 10000100).value 				= json.v455;
+	if ( json.vIsFull == true)
+	{
+		document.querySelector( ".Brightness").value			= json.vBri;
+		document.querySelector( ".Speed").value					= json.vSpd;
+		document.querySelector( ".Temperature").value 			= json.vTmp;
+		document.querySelector( ".Saturations").value 			= json.vSat;	
+		document.querySelector( ".AUX010").value 				= json.v010;
+		document.querySelector( ".AUX100").value 				= json.v100;
+		document.querySelector( ".AUX255").value 				= json.v255;
+		document.querySelector( ".AUX355").value 				= json.v355;
+		document.querySelector( ".AUX455").value 				= json.v455;
 
-	document.querySelector( ".Brightness-value").innerHTML 	= json.vBri;
-	document.querySelector( ".Saturations-value").innerHTML = json.vSat;
-	document.querySelector( ".Temperature-value").innerHTML = json.vTmp;
-	document.querySelector( ".Speed-value").innerHTML 		= json.vSpd;	
-	
-	document.querySelector( ".AUX010-value").innerHTML 		= json.v010;	
-	document.querySelector( ".AUX100-value").innerHTML	 	= json.v100;	
-	document.querySelector( ".AUX255-value").innerHTML	 	= json.v255;	
-	document.querySelector( ".AUX355-value").innerHTML	 	= json.v355;	
-	document.querySelector( ".AUX455-value").innerHTML	 	= json.v455;	
+		document.querySelector( ".Brightness-value").innerHTML 	= json.vBri;
+		document.querySelector( ".Saturations-value").innerHTML = json.vSat;
+		document.querySelector( ".Temperature-value").innerHTML = json.vTmp;
+		document.querySelector( ".Speed-value").innerHTML 		= json.vSpd;		
+		document.querySelector( ".AUX010-value").innerHTML 		= json.v010;	
+		document.querySelector( ".AUX100-value").innerHTML	 	= json.v100;	
+		document.querySelector( ".AUX255-value").innerHTML	 	= json.v255;	
+		document.querySelector( ".AUX355-value").innerHTML	 	= json.v355;	
+		document.querySelector( ".AUX455-value").innerHTML	 	= json.v455;	
 
-	document.querySelector( ".AUX010-name").innerHTML 		= json.n010 + ": ";
-	document.querySelector( ".AUX100-name").innerHTML	 	= json.n100 + ": ";
-	document.querySelector( ".AUX255-name").innerHTML	 	= json.n255 + ": ";
-	document.querySelector( ".AUX355-name").innerHTML	 	= json.n355 + ": ";
-	document.querySelector( ".AUX455-name").innerHTML	 	= json.n455 + ": ";
-	document.querySelector( ".Speed-name").innerHTML	 	= json.nSpd + ": ";
+		if ( json.vC1){ var c1 = new iro.Color( json.vC1); colorPicker.colors[0].set(c1);}
+		if ( json.vC2){ var c2 = new iro.Color( json.vC2); colorPicker.colors[1].set(c2);}
+		if ( json.vC3){ var c3 = new iro.Color( json.vC3); colorPicker.colors[2].set(c3);}
+	}
 
 	unsave( json.vUnsave);
-
-	if ( json.vStyle){  document.documentElement.setAttribute("style", json.vStyle);} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
+	
+	if ( json.vStyle)  { document.documentElement.setAttribute("style", json.vStyle);} 	// обновляем переменные стиля кнопки селекта для "случайных" палитр
 
 	item = document.getElementById( "pollitres-button"); 						// обновляем стиля для кнопки выбора палитр
 	if ( json.vPCur > 1) {			
@@ -201,37 +234,41 @@ function reseter( data){
 	if ( item){	item.classList.add('active');}	
 
 	item = document.getElementById( 'ishift');									// кнопка ыршаеf YCD pyufxtybq
-	if ( json.vIsShft == 1 && item){ item.classList.add('active');}
-	else{ 							 item.classList.remove('active'); }
+	if ( json.vIsShft && item){ item.classList.add('active');}
+	else{ 						item.classList.remove('active'); }
 
 	item = document.getElementById( 'icandl');									// кнопка тряски свечки
-	if ( json.vIsCndl == 1 && item){ item.classList.add('active');}
-	else{ 							 item.classList.remove('active'); }
+	if ( json.vIsCndl && item){ item.classList.add('active');}
+	else{ 						item.classList.remove('active'); }
 
 	item = document.getElementById( 551489775);									// кнопка питания он-оффф
-	if ( json.vONOFF == 1 && item){ item.classList.add('active');}
-	else{ 					 		item.classList.remove('active'); }
-
-	if ( json.vC1){ var c1 = new iro.Color( json.vC1); colorPicker.colors[0].set(c1);}
-	if ( json.vC2){ var c2 = new iro.Color( json.vC2); colorPicker.colors[1].set(c2);}
-	if ( json.vC3){ var c3 = new iro.Color( json.vC3); colorPicker.colors[2].set(c3);}
+	if ( json.vONOFF && item){ item.classList.add('active');}
+	else{ 				 	   item.classList.remove('active'); }
 }
 
 
 
 // запрашиваем обновление данных с сервера и устанавливаем листенер = reseter()
-function updateDate( fullUpdate){
+function requestNewData( fullUpdate){
 	var xhr = new XMLHttpRequest();
 	var fullStr = "";            
 	xhr.onreadystatechange = function() {
-		if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) { 
-			reseter( xhr.responseText);  
-		}
+		if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) { reseter( xhr.responseText);  }
 	};
-	if ( fullUpdate){
-		fullStr = "?full=true";
-	}
-	xhr.open("GET", "/reset" + fullStr, true); 
+	if ( fullUpdate){ fullStr = "?full=true";}
+
+	xhr.open("GET", "/giveData" + fullStr, true); 
+	xhr.send();
+}
+
+
+function requestNewRanger(){
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function() {
+		if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) { setRanges( xhr.responseText);  }
+	};
+
+	xhr.open("GET", "/giveRanger", true); 
 	xhr.send();
 }
 

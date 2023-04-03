@@ -22,7 +22,8 @@ int fpsCount = 0;
 
 // заглушка на пустую функцию, если/пока нет вебсервеа.
 void fooFunc(){}
-
+void fooFunc( const String& name, uint8_t vaue){}
+void fooFunc( const String& name, const String& vaue){}
 
 //********************************************************************
 // 						SETUP
@@ -34,8 +35,11 @@ void setup() {
 	irdaStartUP();
 	led.startUP();
 	paletteStartUP();
-	yo.pt2webUpdate = &fooFunc;  
-	yo.pt2webUnsave = &fooFunc;  
+	yo.pt2webUpdate 	= &fooFunc;  
+	yo.pt2webUnsave 	= &fooFunc;  
+	yo.pt2webUpRange	= &fooFunc;  
+	yo.pt2webUpRanges	= &fooFunc;  
+	yo.pt2webUpColor 	= &fooFunc;
 
 	animmeStartUP();
 
@@ -62,7 +66,7 @@ void loop()
 		if ( yo.ishifter) 	yo.shift  = led.beat( yo.AUX455);
 		if ( yo.iscandle) 	yo.candle = 255 - qsub8( inoise8( millis() >> 3, millis()), yo.AUX355);
 
-		pt2Func();
+		pt2Func();			// БАТЯ всех функцийю КОРОЛЬ анимаций! ВСЕ РАДИ ЭТОГО!!!
 
 		delay( 1);			
 		FastLED.show();
@@ -90,7 +94,7 @@ void loop()
 	fpsCount++;
 	if ( yo.now >= startFPS)
 	{
-		Serial.println( fpsCount);
+		Serial.printf( "fps | %d\n", fpsCount);
 		startFPS = yo.now + 1000;
 		fpsCount = 0;
 	}

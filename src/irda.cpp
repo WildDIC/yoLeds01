@@ -8,10 +8,6 @@ IRrecv irrecv(RECV_PIN);
 
 decode_results results;
 
-extern void paletteSetActive( byte pollitraID, bool force);
-extern void requestSave();
-
-extern animeClass a;
 
 /*мапа нескольких кодов пультов на один код действия
 	int codeNew = int codeOld*/ 
@@ -121,42 +117,23 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 	
 	if ( resValue)
 	{		
-		Serial.printf( "Code from web [%d]. webValue: %d. resValue: [%d]", codeFromWeb, webValue, resValue);
+		Serial.printf( "irda| Code from web [%d]. webValue: %d. resValue #%d.", codeFromWeb, webValue, resValue);
 		
 		if ( keyCodes[resValue])
 		{	
 			resValue = keyCodes[resValue]; 
-			Serial.printf( " -> [%d].", resValue);
+			Serial.printf( " -=> [%d].", resValue);
 		}
-		
+
 		mbIter = mWaves.find( resValue);
 		if ( mbIter != mWaves.end())
 		{
-			a.changed = true;			
-			c = mWaves[resValue];
-
-			Serial.print( " И наш выбор: '" + c.name + "'.\n");
-
-			if ( c.isEffect)
-			{	 													// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
-																	// если текущая палитра не определена - ставим дефолтную				
-				if ( !isBetween( c.palCurrent, 1, yo.palTotal)) c.palCurrent = c.palDefault;
-				a.applyWaveData( c);				
-				paletteSetActive( 	c.palCurrent, false);
-				led.OFF();
-			}
-
-			if ( c.pt2static) 	c.pt2static();
-			if ( c.pt2setter) 	c.pt2setter(  webValue);
-			if ( c.pt2changer) 	{ led.blinkShort(); c.pt2changer( c.delta);}
-			if ( c.isEffect)	pt2Func = c.pt2Funca;
-
-			#ifdef EERPROM_ENABLE
-				if ( webValue != 666) requestSave();
-			#endif
-			
-			yo.pt2webUpdate();
-		}		
-		// Serial.println( "");
+			Serial.print( " И наш выбор: '" + mWaves[resValue].name + "'.\n");
+			a.changeWave( resValue, webValue);		
+		} 	
+		else
+		{
+			Serial.print( "\n");
+		}
 	}   
 }

@@ -45,8 +45,13 @@
 struct config{
 	int waveID;							// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
 	int lastReceive = 0;                // ПОследнее значение с ИР приемника
+
 	void (*pt2webUpdate)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	void (*pt2webUpRanges)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
 	void (*pt2webUnsave)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	void (*pt2webUpRange)( const String&, uint8_t); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+	void (*pt2webUpColor)( void);	// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
+
 	clock_t now 	= 0;				// текущее время в clock()
 	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
 	uint8_t candle 	= 0;
@@ -57,6 +62,7 @@ struct config{
 	bool ishifter 		= false;
 	bool loadOutside 	= false;		// устанавливаем данные (через сеттер) при их чтении в irda ( false) или оно пришло для устеновки извне ( true) и их надо будет сохранить 
 	bool isNeedSaveEEPROM = false;
+	bool isNeedUpWeb	= false;
 	String rndStyle;					// строка для подмены переменных стиля случайных палитр через json на веб-клиент ( reseter)
 	String name010 = "AUX010";			// AUX010 name string for web range
 	String name100 = "AUX100";			// AUX100 name string for web range
@@ -118,13 +124,13 @@ struct waveItem{
 	uint16_t savno = 0; 					// количество записей вавы в память [Save No]
 	// uint8_t minSpeed;
 	// uint8_t maxSpeed;
-	byte delta = 1;							// 
+	signed char delta = 1;							// 
 	// AnimeType animeType;
 };										// list for: IRDA - function - WEB
 typedef std::map<int, waveItem> mapWAVES;
 extern mapWAVES mWaves; 							// list for: IRDA - function - WEB
 extern std::map<int, waveItem>::iterator mbIter;	// итератор для этого
-extern waveItem c;
+// extern waveItem c;
 
 struct pollitraZ{
 	String name;						// Имя палитры
@@ -172,6 +178,7 @@ int parseInt(char* chars);
 bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher);
 
 // CRGB& CRGB::operator=(const CHSV& rhs) = delete;
+
 
 inline void hsv2rgb_rainbow( const CHSV& hsv, CRGB& rgb) 
 {

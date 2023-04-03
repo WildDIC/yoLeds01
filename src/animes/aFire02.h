@@ -16,7 +16,8 @@ void aFire02pre()
 	yo.name255 = "Cooldown ticks";
 	yo.name355 = "Candle blink value";
 	yo.nameSpeed = "Active phase ticks x30";
-
+	yo.isNeedUpWeb = true;
+	
 	for ( int ind = 0; ind < NUM_LEDS; ind++)
 	{
 		v.aSTATUS[ind] = random8( 6);

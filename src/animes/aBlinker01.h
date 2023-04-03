@@ -36,17 +36,19 @@ void aBlinkerPreCum()
 		v.aVALUE[i]  = yo.AUX100 + random8( 5);
 		v.aFADER[i]  = ( i << 8) / v.var01;		// предрасчет таймшифта для битсина для бегущих полосок. просто, потому, что могу это сделать здесь, а не в цикле.
 	}
+	
 	fill_solid( leds, NUM_LEDS, CRGB::Black);		
 	fill_solid( v.cIN_LEDS, NUM_LEDS, CRGB::Black);		
 	fill_solid( v.cOUT_LEDS, NUM_LEDS, CRGB::Black);			
-	Serial.printf( "i=%d, au=%d\n", v.var01, yo.AUX255);	
 }
 
 
-void aBlinken02Pre(){  
+void aBlinken02Pre()
+{  
 	yo.name010 = "Color speed";
 	yo.name100 = "Blink speed";
-	yo.name255 = "Leds count";
+	yo.name255 = "Leds distance";
+	yo.isNeedUpWeb = true;
 	v.status = 0;
 	aBlinkerPreCum();
 }
@@ -54,13 +56,9 @@ void aBlinken02Pre(){
 void aBllinker02anime( uint8_t base, uint8_t force){
 	CRGB *ptLEDS;
 	
-	if ( force == 0){  
-		ptLEDS = v.cOUT_LEDS;
-	}else if( force == 1){ 
-		ptLEDS = v.cIN_LEDS;	
-	// }else if( force == 2){
-	// 	ptLEDS = outLeds;	
-	}
+	if      ( force == 0) ptLEDS = v.cOUT_LEDS;
+	else if ( force == 1) ptLEDS = v.cIN_LEDS;	
+	else	 			  ptLEDS = leds;	
 	
 	// base = 1;
 
@@ -151,13 +149,11 @@ void aBlinken02(){
 	{	
 		v.count = random8( 1, 6);  // +1 becoz THIS IS RANDOM!!!
 
-		if ( v.count != v.baza)	{
-			v.status = 1;  
-		}
+		if ( v.count != v.baza)	v.status = 1;  
 	} 	
 	
 	//перерасчет при смене настроек с сайта
-	if ( a.isChanged()) { aBlinkerPreCum(); }
+	if ( a.isChanged()) aBlinkerPreCum(); 
 
 	// фиксики	
 	if ( yo.currentSpeed < 4)
@@ -197,12 +193,15 @@ void aBlinken02(){
 				}
 			}
 		}
-		else{
+		else
+		{
 			aBllinker02anime( v.baza, 0); 
 		}
 		
-		for ( uint8_t i = 0; i < v.var01; i++){ 
-			leds[i * yo.AUX255] = v.cOUT_LEDS[i];	}   // собсна переносим в ЛЕD из OUTLEDS попиксельно	
+		for ( uint8_t i = 0; i < v.var01; i++)
+		{ 
+			leds[i * yo.AUX255] = v.cOUT_LEDS[i];	
+		}   // собсна переносим в ЛЕD из OUTLEDS попиксельно	
 	}
 }
 

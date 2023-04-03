@@ -20,54 +20,55 @@
 #define INIT_KEY 			50     						// ключ первого запуска. 0-254, на выбор
 
 
-int EEPROM_CURRENT_ADDR = EEPROM_ADDR_START;			// указывает на адрес последней считанной ячейки памяти функциями фРидХХХХ, 
-int EEPROM_CURRENT_BYTE = EEPROM_ADDR_START;			// именно в туда мы будем потом, если надо (записываемые данные не совпали с сохраненными ранее),
-int EEPROM_CURRENT_INT  = EEPROM_ADDR_START;			// записывать проверяемые данные.
+int eepromCurrentAddr = EEPROM_ADDR_START;				// указывает на адрес последней считанной ячейки памяти функциями фРидХХХХ, 
+int eepromCurrentByte = EEPROM_ADDR_START;				// именно в туда мы будем потом, если надо (записываемые данные не совпали с сохраненными ранее),
+int eepromCurrentInt  = EEPROM_ADDR_START;				// записывать проверяемые данные.
 
 int readINT;
 uint16_t read16t;
 byte readBYTE;
 bool readBOOL;
 bool forceSave = false;
+int saveCounter = 0;
 byte ind;
 
 
 uint16_t fRead16t()
 {
-	EEPROM_CURRENT_INT = EEPROM_CURRENT_ADDR;
-	EEPROM.get( EEPROM_CURRENT_ADDR, read16t);
-	EEPROM_CURRENT_ADDR += 2;	
+	eepromCurrentInt = eepromCurrentAddr;
+	EEPROM.get( eepromCurrentAddr, read16t);
+	eepromCurrentAddr += 2;	
 	return read16t;
 }
 
 int fReadINT()
 {
-	EEPROM_CURRENT_INT = EEPROM_CURRENT_ADDR;
-	EEPROM.get( EEPROM_CURRENT_ADDR, readINT);
-	EEPROM_CURRENT_ADDR += 4;	
+	eepromCurrentInt = eepromCurrentAddr;
+	EEPROM.get( eepromCurrentAddr, readINT);
+	eepromCurrentAddr += 4;	
 	return readINT;
 }
 
 byte fReadBYTE()
 {
-	EEPROM_CURRENT_BYTE = EEPROM_CURRENT_ADDR;
-	EEPROM.get( EEPROM_CURRENT_ADDR, readBYTE);
-	EEPROM_CURRENT_ADDR += 1;	
+	eepromCurrentByte = eepromCurrentAddr;
+	EEPROM.get( eepromCurrentAddr, readBYTE);
+	eepromCurrentAddr += 1;	
 	return readBYTE;
 }
 
 bool fReadBOOL()
 {
-	EEPROM_CURRENT_BYTE = EEPROM_CURRENT_ADDR;
-	EEPROM.get( EEPROM_CURRENT_ADDR, readBOOL);
-	EEPROM_CURRENT_ADDR += 1;	
+	eepromCurrentByte = eepromCurrentAddr;
+	EEPROM.get( eepromCurrentAddr, readBOOL);
+	eepromCurrentAddr += 1;	
 	return readBOOL;
 }
 
-void fWriteDATA( uint16_t data)	{ EEPROM.put( EEPROM_CURRENT_INT, data); }
-void fWriteDATA( int data)		{ EEPROM.put( EEPROM_CURRENT_INT, data); }
-void fWriteDATA( byte data)		{ EEPROM.put( EEPROM_CURRENT_BYTE, data); }
-void fWriteDATA( bool data)		{ EEPROM.put( EEPROM_CURRENT_BYTE, data); }
+void fWriteDATA( uint16_t data)	{ EEPROM.put( eepromCurrentInt,  data); ++saveCounter; }
+void fWriteDATA( int data)		{ EEPROM.put( eepromCurrentInt,  data); ++saveCounter; }
+void fWriteDATA( byte data)		{ EEPROM.put( eepromCurrentByte, data); ++saveCounter; }
+void fWriteDATA( bool data)		{ EEPROM.put( eepromCurrentByte, data); ++saveCounter; }
 
 void saveEEPROM( uint16_t data) { if ( fRead16t()  != data) fWriteDATA( data);}
 void saveEEPROM( int data) 		{ if ( fReadINT()  != data) fWriteDATA( data);}
@@ -78,7 +79,7 @@ void saveEEPROM( bool data)		{ if ( fReadBOOL() != data) fWriteDATA( data);}
 void eepromSaveWaveData( int waveID)
 {
 	waveItem w = mWaves[waveID];
-	EEPROM_CURRENT_ADDR = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * w.indWeb);		
+	eepromCurrentAddr = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * w.indWeb);		
 
 	saveEEPROM( waveID);
 	saveEEPROM( ++w.savno);		saveEEPROM( w.indWeb);   	saveEEPROM( w.palCurrent);
@@ -89,9 +90,11 @@ void eepromSaveWaveData( int waveID)
 	saveEEPROM( w.aux010);		saveEEPROM( w.aux100);		saveEEPROM( w.aux255);
 	saveEEPROM( w.aux355);		saveEEPROM( w.aux455);				
 
-	// Serial.printf( "-=> %d Save [savno=%d] ID=%d INDforWeb=%d, Pal=%d [", EEPROM_CURRENT_ADDR, w.savno, waveID, w.indForWeb, w.pollCurrent);
-	// Serial.print( w.name);
-	// Serial.println( "].");
+	Serial.printf( "eepr| Saved [%d write] wave #%d, [infWeb = %d], [savNO = %d], ['", saveCounter, waveID, w.indWeb, w.savno );
+	Serial.print( w.name);
+	Serial.println( "'].");
+
+	saveCounter = 0;
 }
 
 
@@ -103,7 +106,7 @@ void eepromLoadWave()
 
 	for (int i = 1; i < ind + 1; i++) 
 	{ 		
-		EEPROM_CURRENT_ADDR = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * i);			// перекидываем чтение данных на аждрксс с палитрами
+		eepromCurrentAddr = EEPROM_ADDR_WAVES + ( EEPROM_WAVE_SIZE * i);			// перекидываем чтение данных на аждрксс с палитрами
 		
 		int waveID 		= fReadINT();		// read irdaID		
 		/*
@@ -127,7 +130,7 @@ void eepromLoadWave()
 			if ( mWaves[waveID].palCurrent < 1 || mWaves[waveID].palCurrent > NUM_POLLITR) mWaves[waveID].palCurrent = 9;
 			if ( placed != mWaves[waveID].indWeb) 
 			{ 	
-				Serial.printf( "-=> Bad 'placed', need total resave [savno=%d (%d)]. WaveID = %d, INDforWeb = %d ( %d) [", mWaves[waveID].savno, savno, waveID, mWaves[waveID].indWeb, placed);
+				Serial.printf( "eepr| -=> Bad 'placed', need total resave [savno=%d (%d)]. WaveID = %d, INDforWeb = %d ( %d) [", mWaves[waveID].savno, savno, waveID, mWaves[waveID].indWeb, placed);
 				Serial.print( mWaves[waveID].name);
 				Serial.println( "].");
 
@@ -142,7 +145,7 @@ void eepromLoadWave()
 void eepromSaveData()
 {		
 	yoBugN( "-=> Saver start");
-	EEPROM_CURRENT_ADDR = EEPROM_ADDR_CONFIG;
+	eepromCurrentAddr = EEPROM_ADDR_CONFIG;
 
 	saveEEPROM( yo.currentBri);
 	saveEEPROM( yo.waveID);
@@ -155,14 +158,15 @@ void eepromSaveData()
 	EEPROM.put( EEPROM_ADDR_WRITER, ++readINT);		
 	EEPROM.commit();
 
-	Serial.printf( "Saved something to EEPROM [%d] times. Size of yo = %db\n", readINT, sizeof(yo));
+	Serial.printf( "eepr| Saved [%d write] data [%d] times. Size of yo = %db\n", saveCounter, readINT, sizeof(yo));
+	saveCounter = 0;
 }
 
 
 /*Загружаем конфиг из еепромы, вэйвы ложим из ддругой процеуры*/
 void eepromLoadData()
 {
-	EEPROM_CURRENT_ADDR 	= EEPROM_ADDR_CONFIG;
+	eepromCurrentAddr 	= EEPROM_ADDR_CONFIG;
 
 	yo.currentBri 	= fReadBYTE();
 	yo.waveID 		= fReadINT();	
@@ -200,7 +204,7 @@ void eepromSaveWave()
 
 void eepromForceSaveWave()
 {
-	Serial.println( "-=> Force saving wavedata...");
+	Serial.println( "eepr| -=> Force saving wavedata...");
 
 	for ( auto keys : a.keyButton) 
 	{  			
@@ -218,7 +222,7 @@ void eepromForceSaveWave()
 /* Проверяем необходимость сохранения данных в ЕЕПРОМ и таймер > SAVE_DELAY*/
 void eepromSaveHandler()
 {
-	if ( yo.isNeedSaveEEPROM == true && yo.now >= yo.EEPROMsaveTime)
+	if ( yo.isNeedSaveEEPROM && yo.now >= yo.EEPROMsaveTime)
 	{
 		yoBugN( "-=> SaveHandles");
 		eepromSaveData();
@@ -235,9 +239,13 @@ void eepromSaveHandler()
 void requestSave()
 {
 	yo.EEPROMsaveTime 	= yo.now + EEPROM_SAVE_TIME;
-	yo.isNeedSaveEEPROM = true;
 	a.forSave.insert( yo.waveID);
 
+	if ( !yo.isNeedSaveEEPROM)
+	{
+		yo.isNeedSaveEEPROM = true;
+		yo.pt2webUnsave();
+	}
 	// Serial.print( "-=> need save: ");
 	// Serial.println( mWaves[yo.lastPressed].name);
 	// Serial.printf( "a.forSave set size: %d.\n", a.forSave.size());
@@ -252,7 +260,7 @@ void eepromStartUP()
 
 	if ( EEPROM.read( EEPROM_ADDR_INIT) != INIT_KEY)  	// первый запуск, если не нашли "резевный" ключь в тут		
 	{ 
-    	Serial.println( "\nFirst run. EEPROM initialization...");	
+    	Serial.println( "\neepr| First run. EEPROM initialization...");	
 
 		EEPROM.write( EEPROM_ADDR_INIT, INIT_KEY);    	// записали ключ
     	EEPROM.write( EEPROM_ADDR_WAVEIND, 0);    		// записали нулевое количество волнов ( ind = 0)
@@ -270,7 +278,7 @@ void eepromStartUP()
 	EEPROM.get( EEPROM_ADDR_WRITER, readINT);
 	EEPROM.get( EEPROM_ADDR_WAVEIND, ind);
 	
-	Serial.printf( "\nRead config from EEPROM [%d times]. EEPROM: used = %db, reserved = %db. waves ind = %d. yo size = %db. \n", readINT, EEPROM_CURRENT_ADDR - 0, eepromSize, ind, sizeof(yo));
+	Serial.printf( "\neepr| Read config from EEPROM [%d times]. EEPROM: used = %db, reserved = %db. waves ind = %d. yo size = %db. \n", readINT, eepromCurrentAddr - 0, eepromSize, ind, sizeof(yo));
 	
 	if ( yo.ONOFF == true) led.powerON();
 

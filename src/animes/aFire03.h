@@ -10,6 +10,7 @@ void aFire03pre()
 	yo.name255 = "Cooldown ticks";
 	// yo.name355 = "Blured amount";
 	yo.nameSpeed = "Speed x2";
+	yo.isNeedUpWeb = true;
 
 	for ( int ind = 0; ind < NUM_LEDS; ind++)
 	{

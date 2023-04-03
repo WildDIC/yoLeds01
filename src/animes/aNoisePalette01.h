@@ -25,6 +25,7 @@ void aNoiseMordor()
 	yo.name255 	= "Palette scale";
 	yo.name455 	= "Color shift speed";
 	yo.nameSpeed = "Anime speed";
+	yo.isNeedUpWeb = true;
 }
 
 void aNoiseFires()
@@ -37,6 +38,7 @@ void aNoiseFires()
 	yo.name255 	= "Palette scale";
 	yo.name455 	= "Color shift speed";
 	yo.nameSpeed = "Anime speed";
+	yo.isNeedUpWeb = true;
 }
 
 

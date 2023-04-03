@@ -1,6 +1,11 @@
 #include "animeClass.h"
 
+extern void paletteSetActive( byte pollitraID, bool force);
+extern void requestSave();
+
+
 animeClass a;
+// waveItem c; 								// копия данных в оперативной работе вытащенная из откуда-то ( мапы м вавами или из  сейвника)
 
 bool animeClass::isInID( int id)
 {
@@ -8,7 +13,7 @@ bool animeClass::isInID( int id)
     // } else { this->keys.insert( id); }
 	itKeys = keysAll.insert( id);
 	if ( !itKeys.second){	
-		Serial.printf( "\n-=> Error with ID: %d\n", id);
+		Serial.printf( "\nanim| -=> Error with ID: %d\n", id);
 	}
 	return !itKeys.second;
 }
@@ -73,7 +78,7 @@ void animeClass::addSetter( int id, const String& name,  void (*ptSetter)(int), 
 }
 
 
-void animeClass::addChanger( int id, const String& name, void (*ptChanger)( int), byte delta )
+void animeClass::addChanger( int id, const String& name, void (*ptChanger)( int), signed char delta )
 {	
 	mWaves[id]	 			= *a.addDefault( id);
 	mWaves[id].code 		= id;
@@ -99,6 +104,7 @@ void animeClass::makeWebLists()
 }
 
 
+// void animeClass::applyWaveData()
 void animeClass::applyWaveData( const waveItem &c)
 {
 	yo.loadOutside 	= false;
@@ -133,6 +139,33 @@ void animeClass::applyWaveData( const waveItem &c)
 }
 
 
+void animeClass::changeWave( int resValue, int webValue)
+{
+	a.changed  = true;			
+	waveItem c = mWaves[resValue];
+
+	if ( c.isEffect)
+	{	 													// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
+															// если текущая палитра не определена - ставим дефолтную				
+		if ( !isBetween( c.palCurrent, 1, yo.palTotal)) c.palCurrent = c.palDefault;
+		a.applyWaveData( c);
+		paletteSetActive( 	c.palCurrent, false);
+		led.OFF();
+	}
+
+	#ifdef EERPROM_ENABLE
+		if ( webValue != 666) requestSave();
+	#endif			
+
+	if ( c.pt2static) 			c.pt2static();	
+	if ( c.isEffect){			pt2Func = c.pt2Funca;			// <==- все ради этого
+								yo.pt2webUpRanges();
+								yo.pt2webUpdate();}
+	else if ( c.pt2setter) 		c.pt2setter(  webValue);			
+	else if ( c.pt2changer) 	c.pt2changer( c.delta);
+}
+
+
 void animeClass::nextWave( int delta)
 {
 	a.currentNoWaves += delta;
@@ -140,7 +173,7 @@ void animeClass::nextWave( int delta)
 	if ( a.currentNoWaves < 0) a.currentNoWaves = a.countWaves;
 	if ( a.currentNoWaves > a.countWaves) a.currentNoWaves = 0;
 
-	Serial.printf( "Wave switch to: a.curIND = %d, size = %d, nextWave = %d \n", a.currentNoWaves, a.vButton.size(), a.vButton[a.currentNoWaves]);
+	Serial.printf( "anim| Wave switch to: a.curIND = %d, size = %d, nextWave = %d \n", a.currentNoWaves, a.vButton.size(), a.vButton[a.currentNoWaves]);
 
 	irdaServer( a.vButton[a.currentNoWaves], 0);
 }

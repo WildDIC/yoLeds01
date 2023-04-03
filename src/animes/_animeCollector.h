@@ -62,7 +62,7 @@ void animmeStartUP()
 	a.addSetter(10000100, 	"AUX455", 					&led.setAUX455,			0,		255);
 	
 	a.addChanger(IR_MENU_UP, 	"Brightness +", 		&led.changeBrightness,	 5);
-	a.addChanger(IR_MENU_DN, 	"Brightness -", 		&led.changeBrightness, 	-5);
+	a.addChanger(IR_MENU_DN, 	"Brightness -", 		&led.changeBrightness, 	-4);
 	a.addChanger(IR_TVCHANL_UP, "Temperature +", 		&led.changeTemperature);
 	a.addChanger(IR_TVCHANL_DN, "Temperature -",		&led.changeTemperature, -1);
 	a.addChanger(IR_VOLUME_UP, 	"Speed +",				&led.changeSpeed);

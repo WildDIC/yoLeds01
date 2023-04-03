@@ -5,7 +5,7 @@ varStorage v;
 void (*pt2Func)() = nullptr; 				// Указатель на функцию для CASE
 
 mapWAVES mWaves; 							// list for: IRDA - function - WEB
-waveItem c; 								// копия данных в оперативной работе вытащенная из откуда-то ( мапы м вавами или из  сейвника)
+// waveItem c; 								// копия данных в оперативной работе вытащенная из откуда-то ( мапы м вавами или из  сейвника)
 std::map<int, waveItem>::iterator mbIter;
 
 
@@ -35,5 +35,5 @@ int parseInt(char* chars)
 bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher)
 {
 		// yo.c1 = CHSV( 0,0,0);	
-	return (( lowwer < number) && ( number < higher));	
+	return lowwer <= number &&  number <= higher;	
 }

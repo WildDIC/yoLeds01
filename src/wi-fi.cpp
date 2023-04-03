@@ -20,7 +20,7 @@ void wifiCheckConnect(){
 		if ( wifiConnecting){
 			wifiConnecting = false;
 			wifiChecks = 0;
-			Serial.print( "\nConnection connect.\nIP address: ");
+			Serial.print( "\nwifi| Connection connect.\nIP address: ");
 			Serial.println( WiFi.localIP()); 
 		}		
 		return;
@@ -33,7 +33,7 @@ void wifiCheckConnect(){
 		}
 		if ( yo.now > startTimeWF){
 			WiFi.disconnect();
-			Serial.println( "\nConnection time out error.");
+			Serial.println( "\nwifi| Connection time out error.");
 			wifiConnecting = false;
 		}
 		return;
@@ -47,7 +47,7 @@ void wifiCheckConnect(){
 		wifiChecks++;
 		wifiConnecting = true;
 
-		Serial.printf( "\n[%d] Connecting to: %s ", wifiChecks, WIFI_SSID);
+		Serial.printf( "\nwifi| [%d] Connecting to: %s ", wifiChecks, WIFI_SSID);
 	}
 
 	// if ( yo.now - startTimeWF > WIFI_CHECK_DELAY){		
