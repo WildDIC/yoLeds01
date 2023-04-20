@@ -187,6 +187,8 @@ function reseter( data){
 		document.querySelector( ".AUX255").value 				= json.v255;
 		document.querySelector( ".AUX355").value 				= json.v355;
 		document.querySelector( ".AUX455").value 				= json.v455;
+		document.querySelector( ".shift").valuue	 			= json.vShift;	
+		document.querySelector( ".candle").value		 		= json.vCandle;	
 
 		document.querySelector( ".Brightness-value").innerHTML 	= json.vBri;
 		document.querySelector( ".Saturations-value").innerHTML = json.vSat;
@@ -197,6 +199,8 @@ function reseter( data){
 		document.querySelector( ".AUX255-value").innerHTML	 	= json.v255;	
 		document.querySelector( ".AUX355-value").innerHTML	 	= json.v355;	
 		document.querySelector( ".AUX455-value").innerHTML	 	= json.v455;	
+		document.querySelector( ".shift-value").innerHTML	 	= json.vShift;	
+		document.querySelector( ".candle-value").innerHTML	 	= json.vCandle;	
 
 		if ( json.vC1){ var c1 = new iro.Color( json.vC1); colorPicker.colors[0].set(c1);}
 		if ( json.vC2){ var c2 = new iro.Color( json.vC2); colorPicker.colors[1].set(c2);}
@@ -311,7 +315,7 @@ colorPicker.on(["input:end"], function()
 	console.log( "kek: " + ret);	
 	
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", "/colorset?funcID="+ret, true); 
+	xhr.open("GET", "/colorset?id="+ret, true); 
 	xhr.send();
 });
 

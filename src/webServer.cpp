@@ -84,6 +84,8 @@ String webServerMakeJSON( bool fullUp)
 		out += "\"v255\":"		+ String( yo.AUX255)			+",";
 		out += "\"v355\":"		+ String( yo.AUX355)			+",";
 		out += "\"v455\":"		+ String( yo.AUX455)			+",";	
+		out += "\"vShift\":"	+ String( yo.shiftServ) 		+",";
+		out += "\"vCandle\":"	+ String( yo.candleServ) 		+",";
 		out += makeColorString();
 	}
 	
@@ -206,6 +208,7 @@ void webServerStartUP()
 	server.on( "/", 			HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/index.htm", "text/html", false, webServerProcessor); });
   	server.on( "/style.css",	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/style.css", "text/css"); });
   	server.on( "/script.js",	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/script.js", "text/css"); });
+  	server.on( "/favicon.ico",	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/favicon.ico", "image/vnd.microsoft.icon"); });
 
 	server.on( "/giveRanger",	HTTP_GET, [](AsyncWebServerRequest *request){ request->send( 200,    "application/json", webServerMakeJSONForRanges());});
 	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
@@ -267,20 +270,20 @@ void webServerStartUP()
 			uint8_t colors[9];
 			int ind = 0;
 			char * cstr = new char [inputMessage01.length()+1];
-			strcpy (cstr, inputMessage01.c_str());
+			strcpy( cstr, inputMessage01.c_str());
 
 			char * pch;
-			pch = strtok ( cstr, "-");
-			while (pch != NULL)	
+			pch = strtok( cstr, "-");
+			while ( pch != NULL)	
 			{				
 				colors[ind] = parseInt( pch);
 				ind++;
-				pch = strtok (NULL, "-");	
+				pch = strtok( NULL, "-");	
 			}
 
 			led.setColors( CRGB( colors[0], colors[1], colors[2]), CRGB( colors[3], colors[4], colors[5]), CRGB( colors[6], colors[7], colors[8]));
 			paletteSetActive( yo.palCurrent, false);
-			webServerUpdate();
+			webServerUpdate();								// todo check non color pall
 		}
 		request->send(200, "text/plain", "OK");
 	});

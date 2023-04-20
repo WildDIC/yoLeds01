@@ -10,7 +10,7 @@
 
 #define EEPROM_ADDR_START 						 100 	// зачем-то свинул на +100, не помню.
 #define EEPROM_ADDR_INIT 	EEPROM_ADDR_START  + 1		// номер контрольной ячейки (byte)
-#define EEPROM_ADDR_WAVEIND	EEPROM_ADDR_START  + 2		// ячейка для индекса количества waves = a.keysWeb.size() ( byte)
+#define EEPROM_ADDR_WAVEIND	EEPROM_ADDR_START  + 2		// ячейка для индекса количества waves = a.keyButton.size() ( byte)
 #define EEPROM_ADDR_WRITER 	EEPROM_ADDR_START  + 3		// записываем количество актов записей (int)
 #define EEPROM_ADDR_CONFIG 	EEPROM_ADDR_START  + 10		// адрес начала записи конфига yo
 #define EEPROM_ADDR_WAVES 	EEPROM_ADDR_CONFIG + 50 	// начальная запись массива waves ( +резерв под конфиг)
@@ -153,6 +153,8 @@ void eepromSaveData()
 	saveEEPROM( yo.iscandle);
 	saveEEPROM( yo.ishifter);
 	saveEEPROM( yo.lastReceive);
+	saveEEPROM( yo.candleServ);
+	saveEEPROM( yo.shiftServ);
 	
 	EEPROM.get( EEPROM_ADDR_WRITER, readINT);   // щёчик записей, чиста поржать над числом
 	EEPROM.put( EEPROM_ADDR_WRITER, ++readINT);		
@@ -174,6 +176,8 @@ void eepromLoadData()
 	yo.iscandle		= fReadBOOL();
 	yo.ishifter		= fReadBOOL();
 	yo.lastReceive 	= fReadINT();
+	yo.candleServ	= fReadBYTE();
+	yo.shiftServ	= fReadBYTE();
 }
 
 
@@ -222,6 +226,7 @@ void eepromForceSaveWave()
 /* Проверяем необходимость сохранения данных в ЕЕПРОМ и таймер > SAVE_DELAY*/
 void eepromSaveHandler()
 {
+
 	if ( yo.isNeedSaveEEPROM && yo.now >= yo.EEPROMsaveTime)
 	{
 		yoBugN( "-=> SaveHandles");

@@ -7,7 +7,7 @@ void aRainbow()
 	uint8_t len = yo.AUX100;
 	uint8_t ind = 0;
 	uint8_t bri = 255;
-	uint8_t pix = led.beatCircle88( yo.AUX355, len, NUM_LEDS);
+	uint8_t pix = led.beatSinHiLo( yo.AUX355, len, NUM_LEDS);
 	v.color = led.beat( 4);
 
 	// fadeToBlackBy(leds, NUM_LEDS, 1);
@@ -17,7 +17,7 @@ void aRainbow()
 	{
 		if ( isBetween( i, pix - len, pix))
 		{
-			bri = led.circle( ind++, len, yo.AUX255);
+			bri = led.sinHigh( ind++, len, yo.AUX255);
 			// leds[i] = CHSV( color, 255, bri);			
 
 			// leds[i] = ledGCfP( i, true, ledHCircle( ind, len));

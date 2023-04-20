@@ -34,7 +34,7 @@ void animmeStartUP()
 	a.addAmine(	10000002, 	"inoise8 palette",			&aNoise, 			true, 	20, 	&aNoiseFires);
 	a.addAmine(	10000012, 	"Моргалочка v2.0",			&aBlinken02, 		true, 	9, 		&aBlinken02Pre);
 	a.addAmine(	IR_NUM_4, 	"VIII (IIX) beatSIN waves",	&aBeatSINAgain, 	true,	9);
-	a.addAmine(	IR_NUM_5, 	"#.VI.WAVES.I.BEATSIN.#",	&aWavesBeat,  		true,	15, 		&aWavesBeatPre);
+	a.addAmine(	IR_NUM_5, 	"#.VI.WAVES.I.BEATSIN.#",	&aWavesBeat,  		true,	15, 	&aWavesBeatPre);
 	a.addAmine(	10000011, 	"Огни Мордора ©",			&aNoise,	 		true, 	21, 	&aNoiseMordor);
 	a.addAmine(	10000013, 	"inoise8 hue",		 		&aCreeping,  		true,	9, 		&aCreepingPre);
 	a.addAmine(	IR_NUM_6, 	"4 beatSINs waves",			&aBeatSIN8,			true);
@@ -53,16 +53,18 @@ void animmeStartUP()
 	
 	a.addSetter(10000003, 	"Brightness",	 			&led.setBrightness,		5,		255);		
 	a.addSetter(10000004, 	"Speed", 					&led.setSpeed, 			1,		10);
-	a.addSetter(10000005, 	"Temperature",				&led.setTemperature,	1,		TEMP_IND_MAX);
-	a.addSetter(10000006, 	"Saturations",				&led.setSaturation, 	0,		100);
+	a.addSetter(10000005, 	"Temperature",				&led.setTemperature,	1,		TEMP_IND_MAX, false);
+	a.addSetter(10000006, 	"Saturations",				&led.setSaturation, 	0,		100, false);
 	a.addSetter(10000007, 	"AUX010", 					&led.setAUX010,			0,		10);
 	a.addSetter(10000008, 	"AUX100", 					&led.setAUX100,			0,		100);
 	a.addSetter(10000009, 	"AUX255", 					&led.setAUX255,			0,		255);
 	a.addSetter(10000099, 	"AUX355", 					&led.setAUX355,			0,		255);
 	a.addSetter(10000100, 	"AUX455", 					&led.setAUX455,			0,		255);
+	a.addSetter(10000101, 	"shift", 					&led.setShift,			0,		20,  false);
+	a.addSetter(10000102, 	"candle", 					&led.setCandle,			0,		255, false);
 	
 	a.addChanger(IR_MENU_UP, 	"Brightness +", 		&led.changeBrightness,	 5);
-	a.addChanger(IR_MENU_DN, 	"Brightness -", 		&led.changeBrightness, 	-4);
+	a.addChanger(IR_MENU_DN, 	"Brightness -", 		&led.changeBrightness, 	-5);
 	a.addChanger(IR_TVCHANL_UP, "Temperature +", 		&led.changeTemperature);
 	a.addChanger(IR_TVCHANL_DN, "Temperature -",		&led.changeTemperature, -1);
 	a.addChanger(IR_VOLUME_UP, 	"Speed +",				&led.changeSpeed);
@@ -75,6 +77,9 @@ void animmeStartUP()
 
 	a.addStatic(IR_MENU_OK,		"Leds reset",			&led.reset);	
 	a.addStatic(IR_TV_ON, 		"Power ON/OFF",			&led.powerONOFF);
+
+
+
 
 	a.makeWebLists();
 }

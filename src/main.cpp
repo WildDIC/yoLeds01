@@ -63,18 +63,15 @@ void loop()
 
 	if ( yo.ONOFF && pt2Func)
 	{		
-		if ( yo.ishifter) 	yo.shift  = led.beat( yo.AUX455);
-		if ( yo.iscandle) 	yo.candle = 255 - qsub8( inoise8( millis() >> 3, millis()), yo.AUX355);
+		if ( yo.ishifter) 	yo.shift  = led.beat( yo.shiftServ);
+		if ( yo.iscandle) 	yo.candle = 255 - qsub8( inoise8( millis() >> 3, millis()), yo.candleServ);
 
 		pt2Func();			// БАТЯ всех функцийю КОРОЛЬ анимаций! ВСЕ РАДИ ЭТОГО!!!
 
 		delay( 1);			
 		FastLED.show();
-	}	
-	else 
-	{ 
-		delay( 500); 
-	}  	
+	}
+	else delay( 500);   	
 
 
 	EVERY_N_MILLISECONDS( 250)

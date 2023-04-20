@@ -34,17 +34,17 @@ void aWavesBeatPre(){
 void aWavesBeat() 
 {
  	if ( ++v.baza > NUM_LEDS) { v.baza = 0; }
-    fadeToBlackBy(leds, NUM_LEDS, 4);
+    fadeToBlackBy(leds, NUM_LEDS, 6);
 
     for ( int ind = 0; ind < v.count; ind++)
 	{
         int pos = ( v.baza + ind * v.var00) % NUM_LEDS;
 
-        leds[pos] 			  |= led.GCfP( v.aVALUE[ind]++, false, 255, 20);
-        leds[NUM_LEDS - pos]  |= led.GCfP( v.aVALUE[ind]++, false, 255, 20);
+        leds[pos] 			  |= led.GCfPH( v.aVALUE[ind]++, false, 255, 20);
+        leds[NUM_LEDS - pos]  |= led.GCfPH( v.aVALUE[ind]++, false, 255, 20);
     }
-	leds[beatsin8( 12, 0, NUM_LEDS - 1)] |=  led.GCfP( myPal[9].palette, led.beat( 5), false);
-     
+
+	leds[led.beatSinHi( 13, NUM_LEDS - 1)] |= led.GCfPH( myPal[9].paletteHSV, led.beat( 5), false);
     // FastLED.show();        
   	delay( yo.currentSpeed * 2);
 }

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML><html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+	<link rel="icon" type="image/vnd.microsoft.icon" href="/favicon.ico" />
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<style>
@@ -23,7 +24,32 @@
 						<li><a><ion-icon name="color-palette-outline" 	class="chider" onclick="raiserFunc( this, 'caiser')"; 	id="chider"></ion-icon></ion-icon></a></li>
 						<li><a><ion-icon name="bonfire-outline" 		class="icandl" onclick="cButtonClick( this)"; 			id='icandl'></ion-icon></a></li>
 						<li><a><ion-icon name="pulse-outline" 			class="ishift" onclick="fButtonClick( this)"; 			id='ishift'></ion-icon></a></li>
+						<li><a><ion-icon name="settings-outline" 		class="isett"  onclick="raiserFunc( this, 'settings')";	id='isett'></ion-icon></a></li>
 					</ul>
+					<div class="settings" id="settings" style='display: none'>
+						<div class="set-rangers">				
+							<div>
+								<span class='candle-name' id='candle-name'>iCandle: </span>
+								<span class='candle-value' id=''> 0</span>
+								<input id='10000102' class='candle' type='range' min='0' max='255' step='1' value='10' onchange='rInput(this)';>
+							</div>
+							<div>
+								<span class='shift-name' id='shift-name'>iShift: </span>
+								<span class='shift-value' id=''> 0</span>
+								<input id='10000101' class='shift' type='range' min='0' max='20' step='1' value='10' onchange='rInput(this)';>
+							</div>		
+							<div>
+								<span class='Temperature-name' id='Temperature-name'>Temperature: </span>
+								<span class='Temperature-value' id=''> 0</span>
+								<input id='10000005' class='Temperature' type='range' min='1' max='50' step='1' value='0' onchange='rInput(this)';>
+							</div>
+							<div>
+								<span class='Saturations-name' id='Saturations-name'>Saturations: </span>
+								<span class='Saturations-value' id=''> 0</span>
+								<input id='10000006' class='Saturations' type='range' min='0' max='100' step='1' value='0' onchange='rInput(this)';>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div> 

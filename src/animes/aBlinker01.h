@@ -66,7 +66,7 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 	{
 		case 1:
 			for ( int i = 0; i < v.var01; i++) {	
-				*( ptLEDS + i) = ( led.GCfPH( v.color, false, led.beatCircle( yo.AUX100, v.aFADER[i]))); 
+				*( ptLEDS + i) = ( led.GCfPH( v.color, false, led.beatSin( yo.AUX100, v.aFADER[i]))); 
 				// *( ptLEDS + i) = led.hsv2rgb( led.GCfPH( v.color, false, led.beatCircle( yo.AUX100, v.aFADER[i])) ); 
 				// uint8_t  val 	= led.beatCircle( yo.AUX100, v.aFADER[i]);
 				// CHSV col 		= led.GCfPH( v.color, false);
@@ -82,7 +82,7 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 		case 2:
 			for ( int i = 0; i < v.var01; i++) {	
 				// *( ptLEDS + i) = CHSV( color, 255, led.beatCircle( led.aVALUE[i], led.aSTATUS[i])); 
-				uint8_t val 	= led.beatCircle( v.aVALUE[i], v.aSTATUS[i]);
+				uint8_t val 	= led.beatSin( v.aVALUE[i], v.aSTATUS[i]);
 				CHSV col 		= led.GCfPH( v.color, false);
 				col.val 		= val; //((uint16_t)( ( col.val * val))) >> 8;
 				*( ptLEDS + i) 	= col; //led.hsv2rgb( col); 
@@ -92,7 +92,7 @@ void aBllinker02anime( uint8_t base, uint8_t force){
 		case 3:
 			for ( int i = 0; i < v.var01; i++) {	
 				// *( ptLEDS + i) = CHSV( color, 255, led.beatCircle( yo.AUX100, 255 - led.aFEDOR[i])); 
-				uint8_t val 	= led.beatCircle( yo.AUX100, 255 - v.aFADER[i]);
+				uint8_t val 	= led.beatSin( yo.AUX100, 255 - v.aFADER[i]);
 				CHSV col 		= led.GCfPH( v.color, false);
 				col.val 		= val; //((uint16_t)(( col.val * val))) >> 8;
 				*( ptLEDS + i) 	= col; //led.hsv2rgb( col); 

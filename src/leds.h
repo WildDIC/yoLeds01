@@ -17,6 +17,7 @@ class Ledas{
 		void OFF();
 		void blinkLong();
 		void blinkShort();
+		void blinkPixel( uint8_t value, uint8_t max = 255);
 		void fadeOUT();
 
 		static void setSpeed( 	int value);
@@ -25,6 +26,8 @@ class Ledas{
 		static void setAUX255( 	int value);
 		static void setAUX355( 	int value);
 		static void setAUX455( 	int value);
+		static void setShift( 	int value);
+		static void setCandle( 	int value);
 		static void setSaturation( int value);
 		static void setTemperature(int value);
 		static void setBrightness( int value);
@@ -43,16 +46,21 @@ class Ledas{
 
 		CRGB blend( const CRGB& c1, const CRGB& c2, uint16_t blend);
 
-		uint8_t beat(  uint8_t bpm = 4);
-		uint8_t beat8( uint8_t bpm, uint8_t timeScale = 8);
+		uint8_t beat(  uint8_t timeScale = 4, uint16_t highest = 256);
+		uint8_t beat8( uint8_t bpm = 16, uint8_t timeScale = 8, uint16_t highest = 256);
 
-		uint8_t saw8(uint8_t in);
-		uint8_t circle8(uint8_t in);
-		uint8_t circle( uint8_t ind, uint8_t total, uint8_t ts = 0);
+		uint8_t sin(uint8_t ind);
+		uint8_t sinHigh( uint8_t ind, uint8_t highest, uint8_t timeShift);
 
-		uint8_t beatCircle(   accum88 bpm = 8, uint8_t timeShift = 0, 	uint8_t timeScale = 8);
-		uint8_t beatCircle8(  accum88 bpm = 8, uint8_t highest = 255, 	uint8_t timeShift = 0, 	 uint8_t timeScale = 8);
-		uint8_t beatCircle88( accum88 bpm = 8, uint8_t lowest 	= 0, 	uint8_t highest   = 255, uint8_t timeShift = 0, uint8_t timeScale = 8);
+		uint8_t beatSin(     accum88 bpm = 8, uint8_t timeShift = 0, 	uint8_t timeScale = 8);
+		uint8_t beatSinHi(   accum88 bpm = 8, uint8_t highest = 255, 	uint8_t timeShift = 0, 	 uint8_t timeScale = 8);
+		uint8_t beatSinHiLo( accum88 bpm = 8, uint8_t lowest 	= 0, 	uint8_t highest   = 255, uint8_t timeShift = 0, uint8_t timeScale = 8);
+
+		uint8_t saw(uint8_t ind);
+		uint8_t sawHigh( uint8_t ind, uint8_t highest, uint8_t timeShift = 0);
+
+		uint8_t beatSaw( uint8_t bpm, uint8_t timeShift = 0, uint8_t timeScale = 8);
+		uint8_t beatSawHi( uint8_t bpm, uint16_t highest = 256, uint8_t timeShift = 0, uint8_t timeScale = 8);
 	
 		uint8_t valueChange( uint8_t value, int delta = 1, uint8_t min = 0, uint8_t max = 255);
 	private:

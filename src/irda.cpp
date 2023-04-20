@@ -1,7 +1,6 @@
 #include "IRrecv.h"
 #include "config.h"
 #include "irda.h"
-#include "leds.h"
 #include "animeClass.h"
 
 IRrecv irrecv(RECV_PIN);
@@ -119,14 +118,13 @@ void irdaServer( int codeFromWeb = 0, int webValue = 0)
 	{		
 		Serial.printf( "irda| Code from web [%d]. webValue: %d. resValue #%d.", codeFromWeb, webValue, resValue);
 		
-		if ( keyCodes[resValue])
+		if ( keyCodes[resValue])						// ищем много-к-одному в списке ИР кодов пришедшее
 		{	
 			resValue = keyCodes[resValue]; 
 			Serial.printf( " -=> [%d].", resValue);
 		}
 
-		mbIter = mWaves.find( resValue);
-		if ( mbIter != mWaves.end())
+		if ( a.isID( resValue))
 		{
 			Serial.print( " И наш выбор: '" + mWaves[resValue].name + "'.\n");
 			a.changeWave( resValue, webValue);		

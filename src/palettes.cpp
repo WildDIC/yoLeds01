@@ -56,10 +56,10 @@ void paletteStartUP()
 		{ ind++, "- red to violet",	redToViolet_my},
 		{ ind++, "- blue to violet",blueToViolet_my},
 
-		{ ind++, "Light of my fire",lightFie_my},				  // Light of my fire
+		{ ind++, "Light of my fire",lightFie_my},				   // Light of my fire
 		{ ind++, "Swamp fire",		retro2_16_gp},                 //17-04 Swamp fire
 		{ ind++, "Orangery fire",	Orangery_gp},                  //47-34 Orangery
-		{ ind++, "Hell fire",		orangeFire_my},				  // Hell fire
+		{ ind++, "Hell fire",		orangeFire_my},				   // Hell fire
 		{ ind++, "Sakura",			Sakura_gp},                    //49-36 Sakura
 
 		{ ind++, "Pastel",			Sunset_Yellow_gp},             //20-07 Pastel
@@ -81,7 +81,7 @@ void paletteStartUP()
 		{ ind++, "Red Flash",		red_flash_gp},                 //66-53 Red Flash
 
 		{ ind++, "Пастила",			deepForest_my},
-		{ ind++, "Strange Fire",	candy2_gp},                     //70-57 Candy2
+		{ ind++, "Strange Fire",	candy2_gp},                    //70-57 Candy2
 		{ ind++, "Lite Cactus",		lite_light_gp},                //65-52 Lite Light
 		{ ind++, "Sunset",			Sunset_Real_gp},               //13-00 Sunset
 		{ ind++, "Rivendell",		es_rivendell_15_gp},           //14-01 Rivendell

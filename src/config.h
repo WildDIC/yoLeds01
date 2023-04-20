@@ -52,10 +52,12 @@ struct config{
 	void (*pt2webUpRange)( const String&, uint8_t); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
 	void (*pt2webUpColor)( void);	// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
 
-	clock_t now 	= 0;				// текущее время в clock()
+	clock_t now 		= 0;				// текущее время в clock()
 	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
-	uint8_t candle 	= 0;
-	uint8_t shift 	= 0;
+	uint8_t candle 		= 0;
+	uint8_t shift 		= 0;
+	uint8_t candleServ 	= 0;
+	uint8_t shiftServ 	= 0;
 	bool againButton 	= true;			// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
 	bool ONOFF 			= false;        // Включено или выключено питание ленты
 	bool iscandle 		= false;

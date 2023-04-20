@@ -20,7 +20,7 @@ void wifiCheckConnect(){
 		if ( wifiConnecting){
 			wifiConnecting = false;
 			wifiChecks = 0;
-			Serial.print( "\nwifi| Connection connect.\nIP address: ");
+			Serial.print( "\nwifi| Connection connect.\nwifi| IP address: ");
 			Serial.println( WiFi.localIP()); 
 		}		
 		return;

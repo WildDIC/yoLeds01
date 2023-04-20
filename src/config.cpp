@@ -25,7 +25,8 @@ int parseInt(char* chars)
 {
     int sum = 0;
     int len = strlen(chars);
-    for (int x = 0; x < len; x++) {
+    for (int x = 0; x < len; x++) 
+	{
         int n = chars[len - (x + 1)] - '0';
         sum = sum + powInt(n, x);
     }

@@ -29,7 +29,7 @@ void aFire03()
 		{
 		case 0:
 			v.var00 	= v.aVALUE[pos] + v.color;
-			leds[pos] 	= led.GCfPH( v.var00, false, led.circle8( v.var00)); 
+			leds[pos] 	= led.GCfPH( v.var00, false, led.sin( v.var00)); 
 
 			if ( v.var00 == 255) v.aSTATUS[pos] = random8( yo.AUX255 >> 1, yo.AUX255); 
 			break;
