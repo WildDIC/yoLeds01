@@ -38,3 +38,16 @@ bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher)
 		// yo.c1 = CHSV( 0,0,0);	
 	return lowwer <= number &&  number <= higher;	
 }
+
+// int arr[5];
+
+uint8_t map88( uint8_t x, uint8_t in_min, uint8_t in_max) 
+{
+	// arr[4] = 1;
+	
+    const uint8_t divisor = in_max - in_min;
+    const uint8_t delta = x - in_min;
+
+    return (( delta << 8) + (divisor >> 1)) / divisor;
+}
+

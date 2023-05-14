@@ -11,13 +11,16 @@
 clock_t startTimeWF = clock();
 clock_t startLastDot = 0; //clock();
 clock_t startCheck = 0; // - WIFI_CHECK_DELAY;
-byte wifiChecks = 1;
+uint8_t wifiChecks = 0;
 bool wifiConnecting = false;
 
 
-void wifiCheckConnect(){
-	if ( WiFi.status() == WL_CONNECTED){		
-		if ( wifiConnecting){
+void wifiCheckConnect()
+{
+	if ( WiFi.status() == WL_CONNECTED)
+	{		
+		if ( wifiConnecting)
+		{
 			wifiConnecting = false;
 			wifiChecks = 0;
 			Serial.print( "\nwifi| Connection connect.\nwifi| IP address: ");
@@ -26,12 +29,15 @@ void wifiCheckConnect(){
 		return;
 	}
 
-	if ( wifiConnecting){		
-		if ( yo.now > startLastDot){   // + WIFI_CONNECT_PRINT){
+	if ( wifiConnecting)
+	{		
+		if ( yo.now > startLastDot)
+		{
 			Serial.print( '.');
 			startLastDot = yo.now + WIFI_CONNECT_PRINT;
 		}
-		if ( yo.now > startTimeWF){
+		if ( yo.now > startTimeWF)
+		{
 			WiFi.disconnect();
 			Serial.println( "\nwifi| Connection time out error.");
 			wifiConnecting = false;
@@ -39,15 +45,15 @@ void wifiCheckConnect(){
 		return;
 	}
 
-	if ( WiFi.status() != WL_CONNECTED){	
-		
+	if ( WiFi.status() != WL_CONNECTED)
+	{	
 		WiFi.begin(WIFI_SSID, WIFI_PASS);	
 		
 		startTimeWF = yo.now + WIFI_CONNECT_TIME;
 		wifiChecks++;
 		wifiConnecting = true;
 
-		Serial.printf( "\nwifi| [%d] Connecting to: %s ", wifiChecks, WIFI_SSID);
+		Serial.printf( "\nwifi| [%d] Connecting to: %s", wifiChecks, WIFI_SSID);
 	}
 
 	// if ( yo.now - startTimeWF > WIFI_CHECK_DELAY){		

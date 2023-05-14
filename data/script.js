@@ -245,7 +245,7 @@ function reseter( data){
 	if ( json.vIsCndl && item){ item.classList.add('active');}
 	else{ 						item.classList.remove('active'); }
 
-	item = document.getElementById( 551489775);									// кнопка питания он-оффф
+	item = document.getElementById( 'ipower');									// кнопка питания он-оффф
 	if ( json.vONOFF && item){ item.classList.add('active');}
 	else{ 				 	   item.classList.remove('active'); }
 }

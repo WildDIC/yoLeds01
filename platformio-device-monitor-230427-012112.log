@@ -1,0 +1,31 @@
+
+eepr| Read config from EEPROM [24 times]. EEPROM used 710b ( reserved 710b). 20 waves with size 22b ( max 26b). yo size = 152b.
+anim| Wave ID:   3. Web value: 666. И наш выбор: 'Костерок v3.ix'.
+
+wifi| [1] Connecting to: hive2g.fps | 967
+...
+wifi| Connection connect.
+wifi| IP address: 192.168.1.9
+fps | 21115
+fps | 21139
+fps | 21240
+fps | 21196
+webs| Client reconnected! Last message ID that it gat is: 44860
+fps | 21073
+fps | 21164
+fps | 21132
+fps | 21142
+fps | 21204
+fps | 21316
+fps | 21138
+fps | 21196
+fps | 21115
+fps | 21170
+fps | 21198
+fps | 21310
+fps | 21163
+fps | 21206
+fps | 21174
+fps | 21141
+fps | 21121
+fps | 21139

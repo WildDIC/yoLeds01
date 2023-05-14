@@ -7,7 +7,7 @@ extern void requestSave();
 CRGBPalette16 activePollitre;
 CHSVPalette16 activePollitreHSV;
 pollitraZ myPal[NUM_POLLITR];
-CRGB c10, c20, c21, c30, c31, c32, c40, c41, c42, c43; // набор CRGB для формирования цвета для подменый переменных к случайным палитрам
+CRGB c10, c20, c21, c30, c31, c32;
 
 void rgb2hsvpalette( uint8_t ind) //, CRGBPalette16 rgbpalette = activePollitre)
 {
@@ -74,13 +74,15 @@ void paletteStartUP()
 		{ ind++, "Orange & Teal",	Orange_Teal_gp},               //44-31 Orange & Teal	
 		{ ind++, "Toxy Reaf",		toxy_reaf_gp},                 //58-45 Toxy Reaf
 		{ ind++, "Drywet",			GMT_drywet_gp},                //30-17 Drywet
-		{ ind++, "Yelblu",			Blue_Cyan_Yellow_gp},          //43-30 Yelblu
+		{ ind++, "Blue Cyan Yell",	Blue_Cyan_Yellow_gp},          //43-30 Yelblu
 		{ ind++, "Tertiary",		Tertiary_01_gp},               //34-21 Tertiary
+		{ ind++, "cIcIIcIII",		C9_gp},                        //48-35 C9
 		{ ind++, "Atlantica",		Atlantica_gp},                 //51-38 Atlantica
 		{ ind++, "Retro Clown",		retro_clown_gp},               //56-43 Retro Clown
 		{ ind++, "Red Flash",		red_flash_gp},                 //66-53 Red Flash
 
 		{ ind++, "Пастила",			deepForest_my},
+		{ ind++, "cIIV-balanced",	Beech_gp},                     //22-09 Beech
 		{ ind++, "Strange Fire",	candy2_gp},                    //70-57 Candy2
 		{ ind++, "Lite Cactus",		lite_light_gp},                //65-52 Lite Light
 		{ ind++, "Sunset",			Sunset_Real_gp},               //13-00 Sunset
@@ -89,24 +91,22 @@ void paletteStartUP()
 		{ ind++, "Red & Blue",		rgi_15_gp},                    //16-03 Red & Blue
 		{ ind++, "Splash",			es_pinksplash_08_gp},          //19-06 Splash
 		{ ind++, "Sunset 2",		Another_Sunset_gp},            //21-08 Sunset2
-		{ ind++, "Beech",			Beech_gp},                     //22-09 Beech
 		{ ind++, "Vintage",			es_vintage_01_gp},             //23-10 Vintage
-		{ ind++, "Departure",		departure_gp},                 //24-11 Departure
-		{ ind++, "Landscape",		es_landscape_64_gp},           //25-12 Landscape
-		{ ind++, "Beach",			es_landscape_33_gp},           //26-13 Beach
+	// { ind++, "Departure",		departure_gp},                 //24-11 Departure
+	// { ind++, "Landscape",		es_landscape_64_gp},           //25-12 Landscape
+	// { ind++, "Beach",			es_landscape_33_gp},           //26-13 Beach
 		{ ind++, "Sherbet",			rainbowsherbet_gp},            //27-14 Sherbet
 		{ ind++, "Hult",			gr65_hult_gp},                 //28-15 Hult
 		{ ind++, "Hult 64",			gr64_hult_gp},                 //29-16 Hult64
 		{ ind++, "Jul",				ib_jul01_gp},                  //31-18 Jul
 		{ ind++, "Rewhi",			ib15_gp},                      //33-20 Rewhi
-		{ ind++, "Cyane",			Colorfull_gp},                 //37-24 Cyane
+	// { ind++, "Cyane",			Colorfull_gp},                 //37-24 Cyane
 		{ ind++, "Light Pink",		Pink_Purple_gp},               //38-25 Light Pink
 		{ ind++, "Autumn",			es_autumn_19_gp},              //39-26 Autumn
 		{ ind++, "Magenta",			BlacK_Blue_Magenta_White_gp},  //40-27 Magenta
 		{ ind++, "Yelmag",			BlacK_Red_Magenta_Yellow_gp},  //42-29 Yelmag
 		{ ind++, "Tiamat",			Tiamat_gp},                    //45-32 Tiamat
 		{ ind++, "April Night",		April_Night_gp},               //46-33 April Night
-		{ ind++, "C9",				C9_gp},                        //48-35 C9
 		{ ind++, "Aurora",			Aurora_gp},                    //50-37 Aurora
 		{ ind++, "C9 2",			C9_2_gp},                      //52-39 C9 2
 		{ ind++, "C9 New",			C9_new_gp},                    //53-40 C9 New
@@ -120,8 +120,8 @@ void paletteStartUP()
 		{ ind++, "Blink Red",		blink_red_gp},                 //67-54 Blink Red
 		{ ind++, "Red Shift",		red_shift_gp},                 //68-55 Red Shift
 		{ ind++, "Red Tide",		red_tide_gp},                  //69-56 Red Tide
-		{ ind++, "RainbowStripeColors",RainbowStripeColors_my},
-		{ ind++, "File Colors",	ForestColors_my}
+		{ ind++, "RainbowStripeColors",RainbowStripeColors_my}
+	// { ind++, "File Colors",	ForestColors_my}
 	};
 
 	yo.palRandom	= 8;
@@ -153,10 +153,11 @@ void paletteStartUP()
 		{
 			byte tcp[72]; //support gradient palettes with up to 18 entries
 			memcpy_P( tcp, ( byte*) pgm_read_dword( &( pal.pals)), 72);	
+			// myPal[ind].palette.loadDynamicGradientPalette( tcp);
 			activePollitre.loadDynamicGradientPalette( tcp);
-			
-			myPal[ind].palette = activePollitre;		
 
+			myPal[ind].palette = activePollitre;		
+			
 			rgb2hsvpalette( ind);	
 			
 			PALL_HOLDER += "\t\t\t--gr"+ String( ind) +": linear-gradient( 90deg, ";
@@ -213,7 +214,7 @@ void paletteSetActive( byte pollitraID, bool force)
 			activePollitre = CRGBPalette16( c10);		
 			break;
 		case 3:
-			c20 = getCol( c20);	c21 = getCol( c21);
+			c20 = getCol( c20); c21 = getCol( c21);
 			yo.rndStyle = "\"--gr3: linear-gradient( 90deg, "+ getHEX(c20)+", "+ getHEX(c21)+", "+ getHEX(c20)+");\"";
 			activePollitre = CRGBPalette16( c20, c21, c20);		
 			break;		

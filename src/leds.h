@@ -41,8 +41,8 @@ class Ledas{
 		CRGB GCfP( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 		CRGB GCfP( const struct CRGBPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
 		
-		CHSV GCfPH( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
-		CHSV GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0, bool candle = false);
+		CHSV GCfPH( uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0);
+		CHSV GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped = true, uint8_t brightness = 255, uint8_t addToColor = 0);
 
 		CRGB blend( const CRGB& c1, const CRGB& c2, uint16_t blend);
 

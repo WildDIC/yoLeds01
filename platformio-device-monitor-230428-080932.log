@@ -1,0 +1,129 @@
+
+eepr| Read config from EEPROM [44 times]. EEPROM used 710b ( reserved 710b). 20 waves with size 22b ( max 26b). yo size = 152b.
+anim| Wave ID:   3. Web value: 666. И наш выбор: 'Костерок v3.ix'.
+
+wifi| [1] Connecting to: hive2g....
+wifi| Connection connect.
+wifi| IP address: 192.168.1.9
+anim| Wave ID: 205. Web value:  14. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  13. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  12. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  11. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  10. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   9. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   8. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   7. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   6. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   5. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   4. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   3. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   2. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   1. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   2. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   3. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   4. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   5. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   6. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   7. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   8. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:   9. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  10. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  11. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  12. И наш выбор: 'AUX100'.
+anim| Wave ID: 205. Web value:  13. И наш выбор: 'AUX100'.
+eepr| Saved [ 0 write] data [45] times. Size of yo = 152b
+eepr| Saved [ 3 write] wave #  3, [infWeb =  4], [savNO = 34], 'Костерок v3.ix'.
+eepr| Saved [ 0 write] data [46] times. Size of yo = 152b
+eepr| Saved [ 1 write] wave #  3, [infWeb =  4], [savNO = 34], 'Костерок v3.ix'.
+irda| Received code is:  632192737. Not wave found id here...
+irda| Received code is:  632192737. Not wave found id here...
+irda| Received code is:  632192736. Not wave found id here...
+irda| Received code is: -131295846. Not wave found id here...
+irda| Received code is:  632192736. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 141 -> 136.
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 136 -> 131.
+irda| Received code is:  489672705. Not wave found id here...
+irda| Received code is: -624375327. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 131 -> 126.
+irda| Received code is: -1544448312. Not wave found id here...
+irda| Received code is: 2107614133. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 126 -> 121.
+irda| Received code is: -2146346798. Not wave found id here...
+irda| Received code is: 1334000556. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 121 -> 116.
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 116 -> 111.
+irda| Received code is:  489672705. Not wave found id here...
+irda| Received code is: 1496565187. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 111 -> 106.
+irda| Received code is: -1968691945. Not wave found id here...
+irda| Received code is:  -95484650. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 106 -> 101.
+irda| Received code is: -2146346798. Not wave found id here...
+irda| Received code is: 1369380286. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 101 -> 96.
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 96 -> 91.
+irda| Received code is:  489672705. Not wave found id here...
+irda| Received code is: 1417857742. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 91 -> 86.
+irda| Received code is:  971208940. Not wave found id here...
+irda| Received code is: -2105641420. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 86 -> 81.
+irda| Received code is: -2146346798. Not wave found id here...
+irda| Received code is: -2091880415. Not wave found id here...
+irda| Received code is:  615415119. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 81 -> 76.
+irda| Received code is:  778763590. Not wave found id here...
+irda| Received code is: 1372634753. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 76 -> 71.
+irda| Received code is:  971208940. Not wave found id here...
+irda| Received code is: 1083376872. Not wave found id here...
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 71 -> 66.
+irda| Received code is: 1270268222. -=> Wave ID: 101. Looks like 'Brightness -'.
+anim| Wave ID: 101. Web value:   0. И наш выбор: 'Brightness -'.
+chng| Brightness [-5]: 66 -> 61.
+irda| Received code is: -2146346798. Not wave found id here...
+eepr| Saved [ 1 write] data [47] times. Size of yo = 152b
+eepr| Saved [ 0 write] wave #  3, [infWeb =  4], [savNO = 34], 'Костерок v3.ix'.
+anim| Wave ID: 200. Web value:  19. И наш выбор: 'Brightness'.
+eepr| Saved [ 1 write] data [48] times. Size of yo = 152b
+eepr| Saved [ 0 write] wave #  3, [infWeb =  4], [savNO = 34], 'Костерок v3.ix'.
+irda| Received code is:  581859881. Not wave found id here...
+irda| Received code is:  581859881. Not wave found id here...
+irda| Received code is: -1898040048. Not wave found id here...
+anim| Wave ID: 200. Web value:  94. И наш выбор: 'Brightness'.
+anim| Wave ID: 200. Web value: 130. И наш выбор: 'Brightness'.
+eepr| Saved [ 1 write] data [49] times. Size of yo = 152b
+eepr| Saved [ 0 write] wave #  3, [infWeb =  4], [savNO = 34], 'Костерок v3.ix'.
+irda| Received code is:  632192736. Not wave found id here...
+irda| Received code is:  432077278. Not wave found id here...
+irda| Received code is: -1226003818. Not wave found id here...

@@ -5,7 +5,10 @@
 		"bitset": "cpp",
 		"random": "cpp",
 		"unordered_set": "cpp",
-		"set": "cpp"
+		"set": "cpp",
+		"cstring": "cpp",
+		"*.tcc": "cpp",
+		"map": "cpp"
 	},
 	"better-comments.highlightPlainText": true,
 	"better-comments.multilineComments": true,

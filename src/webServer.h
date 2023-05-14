@@ -7,7 +7,7 @@
 #include "palettes.h"
 #include "leds.h"
 #include "animeClass.h"
-#include "irda.h"
+// #include "irda.h"
 
 void webServerUpdate();
 void webServerUnsave();

@@ -6,8 +6,8 @@
 
 #define WEB_ENABLE 
 #define EERPROM_ENABLE 
-// #define JSON_ENABLE
 // #define FPSCOUNT_ENABLE
+// #define JSON_ENABLE
 // #define DEBUG_ENABLE 
 
 #ifdef DEBUG_ENABLE
@@ -43,8 +43,8 @@
 // typedef enum { ANIME_STATIC=0, ANIME_DYNAMIC=1, ANIME_SETTER=2, ANIME_CHANGER=4 } AnimeType;
 
 struct config{
-	int waveID;							// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
-	int lastReceive = 0;                // ПОследнее значение с ИР приемника
+	uint8_t waveID;							// Последнее действие для Ледов/Вэйвов для фидбека на веб-сервер
+	// int lastReceive = 0;                // ПОследнее значение с ИР приемника
 
 	void (*pt2webUpdate)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
 	void (*pt2webUpRanges)(void); 		// Указатель на функцию для эвента обновляльного данных с вебсервера на клиент. Подменяется с фууфанк на правильную, при поднятии вебсервера
@@ -54,8 +54,8 @@ struct config{
 
 	clock_t now 		= 0;				// текущее время в clock()
 	clock_t EEPROMsaveTime = 0;			// отодвигатель текущего времени на Х секунд, при каждом попадании в ИРСервер, для отложенной записи
-	uint8_t candle 		= 0;
-	uint8_t shift 		= 0;
+	uint8_t candle 		= 128;
+	uint8_t shift 		= 10;
 	uint8_t candleServ 	= 0;
 	uint8_t shiftServ 	= 0;
 	bool againButton 	= true;			// флаг нажания кнопки у веб-клиента, 0 - новая активности, 1 - повтор, для обновления случайностей в paletteSetActive
@@ -97,16 +97,16 @@ extern void (*pt2Func)();				// ссылка на анима-функция
 
 // новое дописываем строго вниз ( ниже aux255), ибо собьем таблицу с определениями в main
 struct waveItem{
-    int code = 0;							// IR code
-    String name;						// Web button name
+    uint8_t code = 0;						// WAVE ID code
+    String name;							// Web button name
 	byte typeWeb = 0;						// 0 = None, 1 = bList, 2 = rList 
 	byte indWeb = 0;						// IND in web list 
-	bool leadOFF = false;						// fill black and save LastPressed
-	bool isEffect = false;						// is pt2 change ( ON/OF)
-	void (*pt2Funca)(void) = nullptr;				// point to amination function
-	void (*pt2static)(void) = nullptr;			// point to solo function
-	void (*pt2setter)(int) = nullptr;				// point to pre-wave function
-	void (*pt2changer)(int) = nullptr;			// point to pre-wave function
+	bool leadOFF = false;					// fill black and save LastPressed
+	bool isEffect = false;					// is pt2 change ( ON/OF)
+	void (*pt2Funca)(void) = nullptr;		// point to amination function
+	void (*pt2static)(void) = nullptr;		// point to solo function
+	void (*pt2setter)(int) = nullptr;		// point to pre-wave function
+	void (*pt2changer)(int) = nullptr;		// point to pre-wave function
 	int min = 0;							// min value for web-range
 	int max = 255;							// max value for web-range
 	byte palDefault = 9;					// ID код поллитры по-умолчанию из myPollitra[]	
@@ -124,8 +124,6 @@ struct waveItem{
 	CRGB c3 = CRGB{ 0, 0, 255};
 	byte palCurrent = 9;					// ID код текущей поллитры из myPollitra[], сохраняется в ЕППРОМе
 	uint16_t savno = 0; 					// количество записей вавы в память [Save No]
-	// uint8_t minSpeed;
-	// uint8_t maxSpeed;
 	signed char delta = 1;							// 
 	// AnimeType animeType;
 };										// list for: IRDA - function - WEB
@@ -178,6 +176,7 @@ extern int temperList[NUM_TEMPS];
 int powInt(int x, int y);
 int parseInt(char* chars);
 bool isBetween( uint8_t number, uint8_t lowwer, uint8_t higher);
+uint8_t map88( uint8_t x, uint8_t in_min, uint8_t in_max);
 
 // CRGB& CRGB::operator=(const CHSV& rhs) = delete;
 

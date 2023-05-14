@@ -2,7 +2,7 @@
 #include "irda.h"
 #include "leds.h"
 #include "palettes.h"
-#include "animes/_animeCollector.h"
+#include "animeCollector.h"
 
 #ifdef EERPROM_ENABLE 
 #include "eerpromer.h"
@@ -12,12 +12,6 @@
 #include "wi-fi.h"
 #include "webServer.h"
 #else
-#endif
-
-#define IR_DELAY 300
-#ifdef FPSCOUNT_ENABLE 
-clock_t startFPS = clock() + 1000;
-int fpsCount = 0;
 #endif
 
 // заглушка на пустую функцию, если/пока нет вебсервеа.
@@ -43,14 +37,18 @@ void setup() {
 
 	animmeStartUP();
 
-	#ifdef EERPROM_ENABLE
-		eepromStartUP();				
-	#endif
+#ifdef EERPROM_ENABLE
+	eepromStartUP();		
 
-	#ifdef WEB_ENABLE
-		wifiStartUP();
-		webServerStartUP();
-	#endif		
+	if ( yo.ONOFF) led.powerON();
+	led.setBrightness( yo.currentBri);		
+	a.animeSet( yo.waveID, 666);					// 666 что бы не было запроса на сохранение после ресета 
+#endif
+
+#ifdef WEB_ENABLE
+	wifiStartUP();
+	webServerStartUP();
+#endif		
 }
 
 
@@ -64,9 +62,9 @@ void loop()
 	if ( yo.ONOFF && pt2Func)
 	{		
 		if ( yo.ishifter) 	yo.shift  = led.beat( yo.shiftServ);
-		if ( yo.iscandle) 	yo.candle = 255 - qsub8( inoise8( millis() >> 3, millis()), yo.candleServ);
+		if ( yo.iscandle) 	yo.candle = 255 - qsub8( inoise8( yo.now >> 3, yo.now), yo.candleServ);
 
-		pt2Func();			// БАТЯ всех функцийю КОРОЛЬ анимаций! ВСЕ РАДИ ЭТОГО!!!
+		pt2Func();			// БОСС КАЧАЛКИ!!! БАТЯ всех функцийю! КОРОЛЬ анимаций! ВСЕ РАДИ ЭТОГО!!!
 
 		delay( 1);			
 		FastLED.show();
@@ -76,18 +74,26 @@ void loop()
 
 	EVERY_N_MILLISECONDS( 250)
 	{
-		irdaServer( 0, 0);
+		uint8_t waveID = irdaCheckIRcode();
 
-	#ifdef EERPROM_ENABLE
+		if ( waveID) 
+		{
+			a.animeSet( waveID);			
+		}
+
+#ifdef EERPROM_ENABLE
 		eepromSaveHandler();
-	#endif
+#endif
 
-	#ifdef WEB_ENABLE		
+#ifdef WEB_ENABLE		
 		wifiCheckConnect();	
-	#endif	
+#endif	
 	}
 
-	#ifdef FPSCOUNT_ENABLE
+#ifdef FPSCOUNT_ENABLE
+	static int fpsCount = 0;
+	static clock_t startFPS = clock() + 1000;
+
 	fpsCount++;
 	if ( yo.now >= startFPS)
 	{
@@ -95,7 +101,7 @@ void loop()
 		startFPS = yo.now + 1000;
 		fpsCount = 0;
 	}
-	#endif
+#endif
 
 }
 

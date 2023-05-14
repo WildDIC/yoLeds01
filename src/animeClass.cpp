@@ -3,16 +3,17 @@
 extern void paletteSetActive( byte pollitraID, bool force);
 extern void requestSave();
 
+
 animeClass a;
 
 
-bool animeClass::isID( int id)
+bool animeClass::isID( uint8_t id)
 {
 	return keysAll.find( id) != keysAll.end();
 }
 
 
-bool animeClass::insertID( int id)
+bool animeClass::insertID( uint8_t id)
 {
     // if ( this->keys.find( id) != this->keys.end()){ // ERROR
     // } else { this->keys.insert( id); }
@@ -24,13 +25,13 @@ bool animeClass::insertID( int id)
 	return !itKeys.second;
 }
 
-waveItem* animeClass::addDefault( int id)
+waveItem* animeClass::addDefault( uint8_t id)
 {
 	insertID( id);
 	return new waveItem;
 }
 
-void animeClass::addStatic( int id, const String& name, void (*ptStatic)(), bool forWeb, uint8_t polDefault)
+void animeClass::addStatic( uint8_t id, const String& name, void (*ptStatic)(), bool forWeb, uint8_t polDefault)
 {
 	mWaves[id] 				= *addDefault( id);
 	mWaves[id].code 		= id;
@@ -43,13 +44,13 @@ void animeClass::addStatic( int id, const String& name, void (*ptStatic)(), bool
 	{
 		mWaves[id].isEffect 	= true;
 		mWaves[id].leadOFF 		= true;
-		mWaves[id].indWeb 	= ++indAnime;
+		mWaves[id].indWeb 		= ++indAnime;
 		this->keyButton.insert( id);
 	} 
 }
 
 
-void animeClass::addAmine( int id, const String& name, void (*ptAnime)(), bool forWeb, uint8_t polDefault, void (*ptAnimePre)())
+void animeClass::addAmine( uint8_t id, const String& name, void (*ptAnime)(), bool forWeb, uint8_t polDefault, void (*ptAnimePre)())
 {
 	mWaves[id] 				= *addDefault( id);
 	mWaves[id].code 		= id;
@@ -69,7 +70,7 @@ void animeClass::addAmine( int id, const String& name, void (*ptAnime)(), bool f
 	}
 }
 
-void animeClass::addSetter( int id, const String& name,  void (*ptSetter)(int), int min, int max, bool forWeb)
+void animeClass::addSetter( uint8_t id, const String& name,  void (*ptSetter)(int), int min, int max, bool forWeb)
 {
 	mWaves[id]				= *addDefault( id);
 	mWaves[id].code 		= id;
@@ -87,7 +88,7 @@ void animeClass::addSetter( int id, const String& name,  void (*ptSetter)(int), 
 }
 
 
-void animeClass::addChanger( int id, const String& name, void (*ptChanger)( int), signed char delta )
+void animeClass::addChanger( uint8_t id, const String& name, void (*ptChanger)( int), signed char delta )
 {	
 	mWaves[id]	 			= *addDefault( id);
 	mWaves[id].code 		= id;
@@ -125,30 +126,28 @@ void animeClass::applyWaveData( const waveItem &c)
 	yo.name455 		= "AUX455";
 	yo.nameSpeed	= "Speed";
 
-	led.setColors(		c.c1, 	c.c2,	 c.c3);
-	// setBrightness( 	mbIter->second.bright);
-	led.setSpeed( 		c.speed);
-	led.setSaturation( 	c.saturn);
-	led.setTemperature( c.temp);
-	led.setAUX010( 		c.aux010);
-	led.setAUX100( 		c.aux100);
-	led.setAUX255( 		c.aux255);
-	led.setAUX355( 		c.aux355);
-	led.setAUX455( 		c.aux455);
-	
-	led.setShift( 		yo.shiftServ);
-	led.setCandle(		yo.candleServ);
+	Ledas::setColors(		c.c1, 	c.c2,	 c.c3);
+	Ledas::setSpeed( 		c.speed);
+	Ledas::setSaturation( 	c.saturn);
+	Ledas::setTemperature(  c.temp);
+	Ledas::setAUX010( 		c.aux010);
+	Ledas::setAUX100( 		c.aux100);
+	Ledas::setAUX255( 		c.aux255);
+	Ledas::setAUX355( 		c.aux355);
+	Ledas::setAUX455( 		c.aux455);	
+	Ledas::setShift( 		yo.shiftServ);
+	Ledas::setCandle(		yo.candleServ);
 
 	yo.loadOutside = true;
 
-	a.currentNoWaves = c.indWeb - 1;
+	currentNoWaves = c.indWeb - 1;
 }
 
 
-void animeClass::changeWave( int resValue, int webValue)
+void animeClass::changeWave( uint8_t id, int webValue)
 {
 	changed  = true;			
-	waveItem c = mWaves[resValue];
+	waveItem c = mWaves[id];
 
 	if ( c.isEffect)
 	{	 													// палитра, при смене активности, меняется засчет овновления селектора списка палитр. вызывается вебсервером.
@@ -181,5 +180,18 @@ void animeClass::nextWave( int delta)
 
 	Serial.printf( "anim| Wave switch to: a.curIND = %d, size = %d, nextWave = %d \n", a.currentNoWaves, a.vButton.size(), a.vButton[a.currentNoWaves]);
 
-	irdaServer( a.vButton[a.currentNoWaves], 0);
+	a.animeSet( a.vButton[a.currentNoWaves], 0);
 }
+
+
+void animeClass::animeSet( uint8_t id, int webValue)
+{
+	if ( id && isID( id))
+	{
+		Serial.printf( "anim| Wave ID: %3d. Web value: %3d.", id, webValue);
+		Serial.print( " И наш выбор: '" + mWaves[id].name + "'.\n");
+
+		changeWave( id, webValue);		
+	} 	
+}
+

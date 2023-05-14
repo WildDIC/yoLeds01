@@ -32,12 +32,14 @@ void collectData()
 	// RANGERS собираем полоски-двигалки 
 	for( auto ind : a.vRanges)
 	{
-		if ( ind == 10000004)  // уменьшалка - ( speed)
+		String name = mWaves[ind].name;
+
+		if ( name == "Speed")  // уменьшалка - ( speed)
 		{
 			RANGE_HOLDER += "\t\t<div class='raiser' id='raiser' style='display: none;'>\n\n";
 		}
-		RANGE_HOLDER += "\t\t<div><span class='" + mWaves[ind].name+"-name' id='" + mWaves[ind].name + "-name'>" + mWaves[ind].name + ": </span><span class='" + mWaves[ind].name+"-value' id=''> 0</span>\n";
-		RANGE_HOLDER += "\t\t\t<input id='"+String( mWaves[ind].code) + "' class='" + mWaves[ind].name + "' type='range' min='" + mWaves[ind].min + "' max='" + mWaves[ind].max + "' step='1' value='0' onchange='rInput(this)';></div>\n";
+		RANGE_HOLDER += "\t\t<div><span class='" + name +"-name' id='" + name + "-name'>" + name + ": </span><span class='" + name +"-value' id=''> 0</span>\n";
+		RANGE_HOLDER += "\t\t\t<input id='"+String( mWaves[ind].code) + "' class='" + name + "' type='range' min='" + mWaves[ind].min + "' max='" + mWaves[ind].max + "' step='1' value='0' onchange='rInput(this)';></div>\n";
 	}	
 
 	// BUTTONS
@@ -214,17 +216,10 @@ void webServerStartUP()
 	// server.on("/json", 		HTTP_GET, [](AsyncWebServerRequest *request){ request->send( SPIFFS, "/config.txt", "application/json"); });
 	server.on( "/save",     	HTTP_GET, [](AsyncWebServerRequest *request){ yo.EEPROMsaveTime = 0; 				request->send(200, "text/plain", "Saved.");});
 	server.on( "/candle",   	HTTP_GET, [](AsyncWebServerRequest *request){ yo.iscandle = !yo.iscandle; 			request->send(200, "text/plain", "Candle.");});
-	server.on( "/shift",   		HTTP_GET, [](AsyncWebServerRequest *request){ yo.ishifter = !yo.ishifter; 			request->send(200, "text/plain", "Shifter.");});
+	server.on( "/shift",   		HTTP_GET, [](AsyncWebServerRequest *request){ yo.ishifter ^= true;  				request->send(200, "text/plain", "Shifter.");});
 	server.on( "/power",    	HTTP_GET, [](AsyncWebServerRequest *request){ led.powerONOFF();	webServerUpdate(); 	request->send(200, "text/plain", "Powered.");});
-
-
-	server.on( "/giveData",		HTTP_GET, [](AsyncWebServerRequest *request)
-	{ 
-		bool fullUp = false;		
-		if (request->hasParam( "full")) fullUp = true; // request->getParam( PARAM_INPUT_2)->value();
-		request->send( 200,    "application/json", webServerMakeJSON( fullUp));
-	});
-
+	server.on( "/giveData",		HTTP_GET, [](AsyncWebServerRequest *request){ 
+																bool b = request->hasParam( "full") ? true : false; request->send(200, "application/json", webServerMakeJSON( b));});
 
 	server.on( "/update", 		HTTP_GET, [](AsyncWebServerRequest *request) 
 	{
@@ -238,7 +233,7 @@ void webServerStartUP()
 				inputMessage02 = request->getParam( PARAM_INPUT_2)->value();
 				yo.againButton = atoi( inputMessage02.c_str());
 			}			
-			irdaServer( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
+			a.animeSet( atoi( inputMessage01.c_str()), atoi( inputMessage02.c_str()));
 		}
 		request->send(200, "text/plain", "OK");
 	});

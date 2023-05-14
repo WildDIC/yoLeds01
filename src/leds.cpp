@@ -51,18 +51,15 @@ CRGB Ledas::GCfP( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t ad
 	return color;
 }
 
-
 /* Забираем цвет colorID из указанной colorPalette палитры.
 @param colorPalette цветовая паллитка, если не указано - текущая, из myPal[ind].palette или имя
 @param colorID номер цвета в паллитре ( 0-255)
 @param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
-@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CHSV Ledas::GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
+@param addToColor добавить к sat ( 0-255)*/
+CHSV Ledas::GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor)
 {
 	if ( isMapped == true)				{ colorID *= REVERS_NUM_LEDS; }	
-
 	CHSV color = ColorFromPalette( colorPalette, colorID, brightness, LINEARBLEND); 
 
 	if ( addToColor || yo.antiSaturn)	{ color.sat = qsub8( color.sat, addToColor + yo.antiSaturn);}
@@ -75,11 +72,10 @@ CHSV Ledas::GCfPH( const struct CHSVPalette16& colorPalette, uint8_t colorID, bo
 @param colorID номер цвета в паллитре ( 0-255)
 @param isMapped экстраполировать ли номер на всю длину палитры (true = 0-255 -> 0-NUM_LEDS) или брать как есть (false) 
 @param brightness  уйти в темненькое ( 0-255)
-@param addToColor добавить к каждому каналу ( 0-255) типа сатурации, но нет...
-@param candle свечная мигалчка ( 0-1) значение = yo.AUX355. */
-CHSV Ledas::GCfPH( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor, bool candle)
+@param addToColor добавить к sat ( 0-255)*/
+CHSV Ledas::GCfPH( uint8_t colorID, bool isMapped, uint8_t brightness, uint8_t addToColor)
 {
-	CHSV color = this->GCfPH( activePollitreHSV, colorID, isMapped, brightness, addToColor, candle);
+	CHSV color = this->GCfPH( activePollitreHSV, colorID, isMapped, brightness, addToColor);
 	return color;
 }
 
@@ -199,7 +195,7 @@ void Ledas::blinkPixel( uint8_t value, uint8_t max)
 
 	leds[   qsub8( pos, 1)] 	= CRGB::Black;
 	leds[			   pos] 	= CRGB::Red;
-	leds[ ++pos % NUM_LEDS] 	= CRGB::Black;
+	leds[ ++pos % NUM_LEDS] 	= CRGB::White;
 
 	FastLED.show();
 	FastLED.delay( 8);
@@ -437,6 +433,32 @@ uint8_t Ledas::beat( uint8_t timeScale, uint16_t highest)
 	return ( millis() >> timeScale) % highest;
 }
 
+
+/*
+	Псево sin(), выдает [0, 255, 0] с замедлением на вершинах
+	@param ind index [0. 255]
+	@return full circle [0, 255, 0]
+*/
+uint8_t Ledas::sin( uint8_t ind)
+{
+	uint8_t out;
+    if( ind & 0x80) ind = 255 - ind;
+        
+    if ( ind < 64)
+	{
+        ind = ind << 1;
+        out  = ( ind * ind) >> 7;
+    }
+	else
+	{
+        ind = ( 128 - ind) << 1;
+        out = 255 - (( ind * ind) >> 7);  // (( in * in) / 255) * 2 = ( scale8( in, in))
+    }
+    
+	return out;
+}
+
+
 /*
 	In/Out triwave circle:
 	@param ind index [0, 255]
@@ -491,29 +513,6 @@ uint8_t Ledas::beatSawHi( uint8_t bpm, uint16_t highest, uint8_t timeShift, uint
 }
 
 
-/*
-	Псево sin(), выдает [0, 255, 0] с замедлением на вершинах
-	@param ind index [0. 255]
-	@return full circle [0, 255, 0]
-*/
-uint8_t Ledas::sin( uint8_t ind)
-{
-	uint8_t out;
-    if( ind & 0x80) ind = 255 - ind;
-        
-    if ( ind < 64)
-	{
-        ind = ind << 1;
-        out  = ( ind * ind) >> 7;
-    }
-	else
-	{
-        ind = ( 128 - ind) << 1;
-        out = 255 - (( ind * ind) >> 7);  // (( in * in) / 255) * 2 = ( scale8( in, in))
-    }
-    
-	return out;
-}
 /*
 	In/Out circle: like triwave, but with custom period		
 	@param ind circle index
